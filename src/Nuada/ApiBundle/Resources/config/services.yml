@@ -1,0 +1,7 @@
+services:
+      nuada_api.listing_manager:
+        class: Nuada\ApiBundle\Manager\ListingManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
