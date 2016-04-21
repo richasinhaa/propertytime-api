@@ -25,10 +25,11 @@ class ListingManager
         $this->validator = $validator;
     }
 
-    public function load($id = null, $requestParams=null)
+    public function load($requestParams=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
 
+        $id = $requestParams['id'] ? $requestParams['id'] : null;
         $limit = $requestParams['limit'] ? $requestParams['limit'] : self::LIMIT;
         $offset = $requestParams['offset'] ? $requestParams['offset'] : self::OFFSET;
         $withDeleted = $requestParams['with_deleted'] ? $requestParams['with_deleted'] : null;
@@ -46,6 +47,8 @@ class ListingManager
         $maxArea = $requestParams['max_area'] ? $requestParams['max_area'] : null;
         $furnishing = $requestParams['furnishing'] ? $requestParams['furnishing'] : null;
         $agentId = $requestParams['agent_id'] ? $requestParams['agent_id'] : null;
+        $sortOn = $requestParams['sort_on'] ? $requestParams['sort_on'] : null;
+        $reverse = $requestParams['reverse'] ? $requestParams['reverse'] : false;
 
         $properties = $er->retrieveAll(
             $id,
@@ -65,7 +68,9 @@ class ListingManager
             $minArea,
             $maxArea,
             $furnishing,
-            $agentId);
+            $agentId,
+            $sortOn,
+            $reverse);
 
         return $properties;
 

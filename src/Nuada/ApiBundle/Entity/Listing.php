@@ -723,13 +723,10 @@ class Listing
      * Set reraNumber
      *
      * @param string $reraNumber
-     * @return Listing
      */
     public function setReraNumber($reraNumber)
     {
         $this->reraNumber = $reraNumber;
-    
-        return $this;
     }
 
     /**

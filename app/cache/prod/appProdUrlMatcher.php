@@ -25,16 +25,44 @@ class appProdUrlMatcher extends Symfony\Bundle\FrameworkBundle\Routing\Redirecta
         $allow = array();
         $pathinfo = rawurldecode($pathinfo);
 
-        // get_listings
-        if (0 === strpos($pathinfo, '/api/listings') && preg_match('#^/api/listings(?:\\.(?P<_format>json|pdf|html))?$#s', $pathinfo, $matches)) {
-            if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                $allow = array_merge($allow, array('GET', 'HEAD'));
-                goto not_get_listings;
+        if (0 === strpos($pathinfo, '/api')) {
+            if (0 === strpos($pathinfo, '/api/listings')) {
+                // get_listings
+                if (preg_match('#^/api/listings(?:\\.(?P<_format>json|pdf|html))?$#s', $pathinfo, $matches)) {
+                    if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                        $allow = array_merge($allow, array('GET', 'HEAD'));
+                        goto not_get_listings;
+                    }
+
+                    return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_listings')), array (  '_controller' => 'Nuada\\ApiBundle\\Controller\\ListingsController::getListingsAction',  '_format' => 'json',));
+                }
+                not_get_listings:
+
+                // post_listings
+                if (preg_match('#^/api/listings(?:\\.(?P<_format>json|pdf|html))?$#s', $pathinfo, $matches)) {
+                    if ($this->context->getMethod() != 'POST') {
+                        $allow[] = 'POST';
+                        goto not_post_listings;
+                    }
+
+                    return $this->mergeDefaults(array_replace($matches, array('_route' => 'post_listings')), array (  '_controller' => 'Nuada\\ApiBundle\\Controller\\ListingsController::postListingsAction',  '_format' => 'json',));
+                }
+                not_post_listings:
+
             }
 
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_listings')), array (  '_controller' => 'Nuada\\ApiBundle\\Controller\\ListingsController::getListingsAction',  '_format' => 'json',));
+            // get_agencies
+            if (0 === strpos($pathinfo, '/api/agencies') && preg_match('#^/api/agencies(?:\\.(?P<_format>json|pdf|html))?$#s', $pathinfo, $matches)) {
+                if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                    $allow = array_merge($allow, array('GET', 'HEAD'));
+                    goto not_get_agencies;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_agencies')), array (  '_controller' => 'Nuada\\ApiBundle\\Controller\\AgenciesController::getAgenciesAction',  '_format' => 'json',));
+            }
+            not_get_agencies:
+
         }
-        not_get_listings:
 
         throw 0 < count($allow) ? new MethodNotAllowedException(array_unique($allow)) : new ResourceNotFoundException();
     }

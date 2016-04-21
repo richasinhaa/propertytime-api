@@ -38,7 +38,7 @@ class ListingRepository extends EntityRepository
     public function retrieveAll($id = null, $limit = null, $offset = null, $withDeleted = false, $city = null, 
         $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, $minBed = null, 
         $maxBed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, $furnishing = null, 
-        $agentId = null)
+        $agentId = null, $sortOn = null, $reverse = false)
     {
     	if (!is_null($id)) {
         	return $this->find($id);
@@ -104,6 +104,11 @@ class ListingRepository extends EntityRepository
                      ->setParameter('agentId', $agentId);
         }
 
+        if ($sortOn) {
+            $order = $this->getSortCriteria($sortOn, $reverse);
+            
+            $qb->orderBy('e.'.$order['column'], $order['direction']);
+        }
         
         if ($offset) {
             $qb->setMaxResults($limit);
@@ -118,5 +123,48 @@ class ListingRepository extends EntityRepository
 
 
         return $query->getResult();
+    }
+
+
+     /**
+     * @param string  $sortOn  - Sort field
+     * @param boolean $reverse - Sort in reverse
+     *
+     * @return array
+     */
+    public function getSortCriteria($sortOn, $reverse)
+    {
+        if (empty($sortOn)) {
+            return array();
+        }
+        $sort = array();
+        $sort['direction'] = $reverse?'DESC':'ASC';
+
+        if ($sortOn == 'modified_on') {
+            $sort['column'] = 'modifiedOn';
+        }
+        if ($sortOn == 'price') {
+            $sort['column'] = 'price';
+        }
+        if ($sortOn == 'area') {
+            $sort['column'] = 'sqft';
+        }
+        if ($sortOn == 'build_year') {
+            $sort['column'] = 'buildYear';
+        }
+        if ($sortOn == 'floor') {
+            $sort['column'] = 'floor';
+        }
+        if ($sortOn == 'bedroom') {
+            $sort['column'] = 'bedroom';
+        }
+        if ($sortOn == 'last_viewed') {
+            $sort['column'] = 'lastViewed';
+        }
+        if ($sortOn == 'created_on') {
+            $sort['column'] = 'createdOn';
+        }
+
+        return $sort;
     }
 }

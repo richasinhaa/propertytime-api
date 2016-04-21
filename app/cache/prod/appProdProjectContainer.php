@@ -134,6 +134,7 @@ class appProdProjectContainer extends Container
             'monolog.logger.request' => 'getMonolog_Logger_RequestService',
             'monolog.logger.router' => 'getMonolog_Logger_RouterService',
             'monolog.logger.security' => 'getMonolog_Logger_SecurityService',
+            'nuada_api.agency_manager' => 'getNuadaApi_AgencyManagerService',
             'nuada_api.listing_manager' => 'getNuadaApi_ListingManagerService',
             'property_accessor' => 'getPropertyAccessorService',
             'request' => 'getRequestService',
@@ -769,6 +770,10 @@ class appProdProjectContainer extends Container
         $this->services['monolog.logger.security'] = $instance = new \Symfony\Bridge\Monolog\Logger('security');
         $instance->pushHandler($this->get('monolog.handler.main'));
         return $instance;
+    }
+    protected function getNuadaApi_AgencyManagerService()
+    {
+        return $this->services['nuada_api.agency_manager'] = new \Nuada\ApiBundle\Manager\AgencyManager($this->get('doctrine'), $this->get('security.context'), $this->get('validator'));
     }
     protected function getNuadaApi_ListingManagerService()
     {

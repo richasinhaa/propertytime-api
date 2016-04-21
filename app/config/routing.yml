@@ -3,3 +3,8 @@ listings:
     prefix: /api
     type:  rest
 
+agencie:
+    resource: Nuada\ApiBundle\Controller\AgenciesController
+    prefix: /api
+    type:  rest
+

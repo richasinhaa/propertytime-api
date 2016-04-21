@@ -1,1 +1,1 @@
-<?php return unserialize('a:0:{}');
+<?php return unserialize('a:1:{i:0;O:55:"Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\Method":1:{s:10:"' . "\0" . '*' . "\0" . 'methods";a:1:{i:0;s:3:"GET";}}}');
