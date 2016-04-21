@@ -2,3 +2,4 @@ listings:
     resource: Nuada\ApiBundle\Controller\ListingsController
     prefix: /api
     type:  rest
+

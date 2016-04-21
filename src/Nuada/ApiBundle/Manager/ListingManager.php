@@ -25,13 +25,47 @@ class ListingManager
         $this->validator = $validator;
     }
 
-    public function loadAll($id = null, $limit = null, $offset = null, $withDeleted = false)
+    public function load($id = null, $requestParams=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
-        $limit = $limit ? $limit : self::LIMIT;
-        $offset = $offset ? $offset : self::OFFSET;
 
-        $properties = $er->retrieveAll($id, $limit, $offset, $withDeleted);
+        $limit = $requestParams['limit'] ? $requestParams['limit'] : self::LIMIT;
+        $offset = $requestParams['offset'] ? $requestParams['offset'] : self::OFFSET;
+        $withDeleted = $requestParams['with_deleted'] ? $requestParams['with_deleted'] : null;
+        $city = $requestParams['city'] ? $requestParams['city'] : null;
+        $community = $requestParams['community'] ? $requestParams['community'] : null;
+        $category = $requestParams['category'] ? $requestParams['category'] : null;
+        $category = $requestParams['sub_category'] ? $requestParams['sub_category'] : null;
+        $type = $requestParams['type'] ? $requestParams['type'] : null;
+        $agencyId = $requestParams['agency_id'] ? $requestParams['agency_id'] : null;
+        $minBed = $requestParams['min_bed'] ? $requestParams['min_bed'] : null;
+        $maxBed = $requestParams['max_bed'] ? $requestParams['max_bed'] : null;
+        $minPrice = $requestParams['min_price'] ? $requestParams['min_price'] : null;
+        $maxPrice = $requestParams['max_price'] ? $requestParams['max_price'] : null;
+        $minArea = $requestParams['min_area'] ? $requestParams['min_area'] : null;
+        $maxArea = $requestParams['max_area'] ? $requestParams['max_area'] : null;
+        $furnishing = $requestParams['furnishing'] ? $requestParams['furnishing'] : null;
+        $agentId = $requestParams['agent_id'] ? $requestParams['agent_id'] : null;
+
+        $properties = $er->retrieveAll(
+            $id,
+            $limit,
+            $offset,
+            $withDeleted,
+            $city,
+            $community,
+            $category,
+            $subcategory,
+            $type,
+            $agencyId,
+            $minBed,
+            $maxBed,
+            $minPrice,
+            $maxPrice,
+            $minArea,
+            $maxArea,
+            $furnishing,
+            $agentId);
 
         return $properties;
 

@@ -15,11 +15,30 @@ class ListingRepository extends EntityRepository
      * Retrieve All
      *
      * @param integer $id          - Listing Id
+     * @param integer $limit       - Limit
+     * @param integer $offset      - Offset
      * @param boolean $withDeleted - With deleted listing
+     * @param integer $city        - City
+     * @param integer $community   - Community
+     * @param integer $category    - category
+     * @param boolean $subcategory - Sub category
+     * @param integer $type        - Type
+     * @param integer $agencyId    - Agency Id
+     * @param integer $minBed      - Min Bed
+     * @param boolean $maxBed      - Max Bed
+     * @param integer $minPrice    - Min Price
+     * @param integer $maxPrice    - Max Price
+     * @param integer $minArea     - Min Area
+     * @param boolean $maxArea     - Max Area
+     * @param boolean $furnishing  - Furnishing
+     * @param boolean $agentId     - Agent Id
      *
      * @return array
      */
-    public function retrieveAll($id=null, $limit = null, $offset = null, $withDeleted=false)
+    public function retrieveAll($id = null, $limit = null, $offset = null, $withDeleted = false, $city = null, 
+        $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, $minBed = null, 
+        $maxBed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, $furnishing = null, 
+        $agentId = null)
     {
     	if (!is_null($id)) {
         	return $this->find($id);
@@ -31,6 +50,60 @@ class ListingRepository extends EntityRepository
         if (!$withDeleted) {
             $qb = $qb->andWhere('e.deleted = false');
         }
+        
+        if (!is_null($city)) {
+            $qb = $qb->andWhere('e.city = :city')
+                     ->setParameter('city', $city);
+        }
+        if (!is_null($community)) {
+            $qb = $qb->andWhere('e.community = :community')
+                     ->setParameter('community', $community);
+        }
+        if (!is_null($category)) {
+            $qb = $qb->andWhere('e.listingCategory = :category')
+                     ->setParameter('category', $category);
+        }
+        if (!is_null($subcategory)) {
+            $qb = $qb->andWhere('e.listingSubCategory = :subcategory')
+                     ->setParameter('subcategory', $subcategory);
+        }
+        if (!is_null($type)) {
+            $qb = $qb->andWhere('e.listingType = :type')
+                     ->setParameter('type', $type);
+        }
+        if (!is_null($agencyId)) {
+             $qb = $qb->andWhere('e.companyId = :agencyId')
+                      ->setParameter('agencyId', $agencyId);
+        }
+        if (!is_null($minBed)) {
+            $qb = $qb->andWhere('e.bedroom >= :minBed')
+                     ->setParameter('minBed', $minBed);
+        }
+        if (!is_null($maxBed)) {
+            $qb = $qb->andWhere('e.bedroom <= :maxBed')
+                     ->setParameter('maxBed', $maxBed);
+        }
+        if (!is_null($minPrice)) {
+            $qb = $qb->andWhere('e.price >= :minPrice')
+                     ->setParameter('minPrice', $minPrice);
+        }
+        if (!is_null($maxPrice)) {
+            $qb = $qb->andWhere('e.price <= :maxPrice')
+                     ->setParameter('maxPrice', $maxPrice);
+        }
+        if (!is_null($minArea)) {
+            $qb = $qb->andWhere('e.sqft >= :minArea')
+                     ->setParameter('minArea', $minArea);
+        }
+        if (!is_null($maxArea)) {
+            $qb = $qb->andWhere('e.sqft <= :maxArea')
+                     ->setParameter('maxArea', $maxArea);
+        }
+        if (!is_null($agentId)) {
+            $qb = $qb->andWhere('e.agentId = :agentId')
+                     ->setParameter('agentId', $agentId);
+        }
+
         
         if ($offset) {
             $qb->setMaxResults($limit);
