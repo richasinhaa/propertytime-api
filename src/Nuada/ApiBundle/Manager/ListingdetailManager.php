@@ -7,7 +7,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Finder\Finder;
 
-class AgencyManager
+class ListingdetailManager
 {
     protected $doctrine;
     protected $securityContext;
@@ -28,29 +28,27 @@ class AgencyManager
             $limit = null,
             $offset = null,
             $withDeleted = null,
-            $name = null,
-            $userId = null,
-            $userName = null,
+            $listingId = null,
+            $imageId = null,
             $sortOn = null,
             $reverse = false)
     {
-        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listingdetail');
 
         $limit = $limit ? $limit : self::LIMIT;
         $offset = $offset ? $offset : self::OFFSET;
 
-        $agencies = $er->retrieveAll(
+        $details = $er->retrieveAll(
             $id,
             $limit,
             $offset,
             $withDeleted,
-            $name,
-            $userId,
-            $userName,
+            $listingId,
+            $imageId,
             $sortOn,
             $reverse);
 
-        return $agencies;
+        return $details;
 
     }
 

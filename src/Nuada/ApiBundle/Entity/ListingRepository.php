@@ -143,25 +143,25 @@ class ListingRepository extends EntityRepository
         if ($sortOn == 'modified_on') {
             $sort['column'] = 'modifiedOn';
         }
-        if ($sortOn == 'price') {
+        else if ($sortOn == 'price') {
             $sort['column'] = 'price';
         }
-        if ($sortOn == 'area') {
+        else if ($sortOn == 'area') {
             $sort['column'] = 'sqft';
         }
-        if ($sortOn == 'build_year') {
+        else if ($sortOn == 'build_year') {
             $sort['column'] = 'buildYear';
         }
-        if ($sortOn == 'floor') {
+        else if ($sortOn == 'floor') {
             $sort['column'] = 'floor';
         }
-        if ($sortOn == 'bedroom') {
+        else if ($sortOn == 'bedroom') {
             $sort['column'] = 'bedroom';
         }
-        if ($sortOn == 'last_viewed') {
+        else if ($sortOn == 'last_viewed') {
             $sort['column'] = 'lastViewed';
         }
-        if ($sortOn == 'created_on') {
+        else if ($sortOn == 'created_on') {
             $sort['column'] = 'createdOn';
         }
 
