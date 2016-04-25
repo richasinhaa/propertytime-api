@@ -27,3 +27,4 @@ services:
         - @security.context
         - @validator
         - @doctrine.dbal.default_connection
+        - @service_container

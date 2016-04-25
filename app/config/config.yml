@@ -108,3 +108,7 @@ fos_rest:
     exception:
         codes:
             'Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException': 401
+
+services:
+        cache:
+            class: Doctrine\Common\Cache\ApcCache
