@@ -15,9 +15,6 @@ class LocationManager
     protected $securityContext;
     protected $container;
 
-    const LIMIT = 25;
-    const OFFSET = 0;
-
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
                                 ValidatorInterface $validator,
@@ -41,7 +38,7 @@ class LocationManager
         $searchResult = array();
         
         foreach ($allLocations as $location) {
-            if((substr(strtolower($location), 0, 1) === $search)) {
+            if(strpos(strtolower($location), $search) !== false) {
                 $searchResult[] = $location;
             }
         }
