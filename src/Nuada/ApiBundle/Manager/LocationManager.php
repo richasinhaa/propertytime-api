@@ -58,13 +58,15 @@ class LocationManager
             fclose($fh);
         } else {
             $query = $this->legacyConnection->executeQuery("
-                SELECT DISTINCT comm
-                FROM (
-                     SELECT DISTINCT LTRIM(RTRIM(community)) as comm
-                            FROM bf_listing
-                ) A 
-                WHERE comm != ''
-                ORDER BY comm asc");
+                SELECT derived.location from
+                    (SELECT city as location FROM bf_listing
+                    UNION
+                    SELECT community  as location from bf_listing 
+                    UNION
+                    SELECT sub_community as location from bf_listing
+                    UNION
+                    select tower as location from bf_listing) derived
+                where derived.location is not null");
 
             $data = $query->fetchAll();
             $locations = $this->hydrate($data);
