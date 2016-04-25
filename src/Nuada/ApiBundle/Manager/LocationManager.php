@@ -84,7 +84,7 @@ class LocationManager
         $locations = array();
         
         foreach ($data as $value) {
-            $locations[] = $value['comm'];
+            $locations[] = $value['location'];
         }
 
         return $locations;
