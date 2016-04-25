@@ -75,7 +75,7 @@ class PdoSessionHandler implements \SessionHandlerInterface
         }
         $this->pdo = $pdo;
         $dbOptions = array_merge(array(
-            'db_id_col' => 'sess_id',
+            'db_id_col'   => 'sess_id',
             'db_data_col' => 'sess_data',
             'db_time_col' => 'sess_time',
         ), $dbOptions);
@@ -251,5 +251,15 @@ class PdoSessionHandler implements \SessionHandlerInterface
             case 'sqlite':
                 return "INSERT OR REPLACE INTO $this->table ($this->idCol, $this->dataCol, $this->timeCol) VALUES (:id, :data, :time)";
         }
+    }
+
+    /**
+     * Return a PDO instance
+     *
+     * @return \PDO
+     */
+    protected function getConnection()
+    {
+        return $this->pdo;
     }
 }

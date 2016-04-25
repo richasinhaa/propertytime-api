@@ -63,12 +63,18 @@ table th, table td {
     font-size: 12px;
     padding: 8px 10px;
 }
+table td em {
+    color: #aaa;
+}
 fieldset {
     border: none;
 }
 abbr {
     border-bottom: 1px dotted #000;
     cursor: help;
+}
+pre, code {
+    font-size: 0.9em;
 }
 .clear {
     clear: both;
@@ -128,7 +134,7 @@ abbr {
 }
 #menu-profiler li a span.label {
     display: block;
-    padding: 20px 0 16px 65px;
+    padding: 20px 0px 16px 65px;
     min-height: 16px;
     overflow: hidden;
 }
@@ -199,7 +205,7 @@ li {
 #resume {
     background-color: #f6f6f6;
     border-bottom: 1px solid #dfdfdf;
-    padding: 18px 10px 0;
+    padding: 18px 10px 0px;
     margin-left: 250px;
     height: 34px;
     color: #313131;
@@ -266,6 +272,7 @@ ul.alt li.warning {
     margin-bottom: 1px;
 }
 ul.sf-call-stack li {
+    text-size: small;
     padding: 0 0 0 20px;
 }
 td.main, td.menu {
@@ -365,12 +372,13 @@ td.main, td.menu {
     line-height: 1.5em;
 }
 .sf-profiler-timeline .legends span {
-    border-left: 10px solid;
+    border-left-width: 10px;
+    border-left-style: solid;
     padding: 0 10px 0 5px;
 }
 .sf-profiler-timeline canvas {
-    border: 1px #999;
-    border-style: solid none;
+    border: 1px solid #999;
+    border-width: 1px 0;
 }
 .collapsed-menu-parents #resume,
 .collapsed-menu-parents #collector-content {

@@ -11,12 +11,12 @@
 
 namespace FOS\RestBundle\Tests\EventListener;
 
-use Symfony\Component\HttpFoundation\Request,
-    Symfony\Component\HttpKernel\HttpKernelInterface;
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use FOS\RestBundle\EventListener\MimeTypeListener;
+
 /**
- * Request listener test
+ * Request listener test.
  *
  * @author Lukas Kahwe Smith <smith@pooteeweet.org>
  */
@@ -24,10 +24,18 @@ class MimeTypeListenerTest extends \PHPUnit_Framework_TestCase
 {
     public function testOnKernelRequest()
     {
-        $listener = new MimeTypeListener(array('jsonp' => array('application/javascript')));
+        $formatNegotiator = $this->getMockBuilder('FOS\RestBundle\Util\FormatNegotiator')
+            ->disableOriginalConstructor()->getMock();
+        $formatNegotiator->expects($this->any())
+            ->method('registerFormat')
+            ->with('jsonp', array('application/javascript+jsonp'), true)
+            ->will($this->returnValue(null));
 
-        $request = new Request;
-        $event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')->disableOriginalConstructor()->getMock();
+        $listener = new MimeTypeListener(array('enabled' => true, 'formats' => array('jsonp' => array('application/javascript+jsonp'))), $formatNegotiator);
+
+        $request = new Request();
+        $event = $this->getMockBuilder('Symfony\Component\HttpKernel\Event\GetResponseEvent')
+            ->disableOriginalConstructor()->getMock();
         $event->expects($this->any())
               ->method('getRequest')
               ->will($this->returnValue($request));
@@ -44,6 +52,6 @@ class MimeTypeListenerTest extends \PHPUnit_Framework_TestCase
 
         $listener->onKernelRequest($event);
 
-        $this->assertEquals('application/javascript', $request->getMimeType('jsonp'));
+        $this->assertEquals('application/javascript+jsonp', $request->getMimeType('jsonp'));
     }
 }

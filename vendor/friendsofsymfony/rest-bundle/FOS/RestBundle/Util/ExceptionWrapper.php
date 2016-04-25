@@ -11,20 +11,51 @@
 
 namespace FOS\RestBundle\Util;
 
+use Symfony\Component\Form\FormInterface;
+
+/**
+ * Wraps an exception into the FOSRest exception format.
+ */
 class ExceptionWrapper
 {
-    private $status;
-    private $statusCode;
-    private $statusText;
-    private $currentContent;
+    private $code;
     private $message;
+    private $errors;
 
+    /**
+     * @param array $data
+     */
     public function __construct($data)
     {
-        $this->status = $data['status'];
-        $this->statusCode = $data['status_code'];
-        $this->statusText = $data['status_text'];
-        $this->currentContent = $data['currentContent'];
+        $this->code = $data['status_code'];
         $this->message = $data['message'];
+
+        if (isset($data['errors'])) {
+            $this->errors = $data['errors'];
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @return FormInterface
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 }

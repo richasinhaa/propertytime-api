@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the FOSRestBundle package.
  *
@@ -11,19 +12,15 @@
 namespace FOS\RestBundle\EventListener;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-
 use FOS\RestBundle\Response\AllowedMethodsLoader\AllowedMethodsLoaderInterface;
 
 /**
- * Listener to append Allow-ed methods for a given route/resource
+ * Listener to append Allow-ed methods for a given route/resource.
  *
  * @author Boris Guéry <guery.b@gmail.com>
  */
 class AllowedMethodsListener
 {
-    /**
-     * @var AllowedMethodsLoaderInterface
-     */
     private $loader;
 
     /**
@@ -44,7 +41,6 @@ class AllowedMethodsListener
         $allowedMethods = $this->loader->getAllowedMethods();
 
         if (isset($allowedMethods[$event->getRequest()->get('_route')])) {
-
             $event->getResponse()
                 ->headers
                 ->set('Allow', implode(', ', $allowedMethods[$event->getRequest()->get('_route')]));

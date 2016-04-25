@@ -11,21 +11,22 @@
 
 namespace FOS\RestBundle\Decoder;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
-
-use FOS\Rest\Decoder\DecoderProviderInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides encoders through the Symfony2 DIC
+ * Provides encoders through the Symfony2 DIC.
  *
  * @author Igor Wiedler <igor@wiedler.ch>
  */
-class ContainerDecoderProvider extends ContainerAware implements DecoderProviderInterface
+class ContainerDecoderProvider implements DecoderProviderInterface, ContainerAwareInterface
 {
-    /**
-     * @var array
-     */
     private $decoders;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Constructor.
@@ -38,9 +39,7 @@ class ContainerDecoderProvider extends ContainerAware implements DecoderProvider
     }
 
     /**
-     * @param string $format format
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function supports($format)
     {
@@ -48,15 +47,24 @@ class ContainerDecoderProvider extends ContainerAware implements DecoderProvider
     }
 
     /**
-     * @param string $format format
+     * Sets the Container associated with this Controller.
      *
-     * @throws \InvalidArgumentException
-     * @return FOS\Rest\Decoder\DecoderInterface
+     * @param ContainerInterface $container A ContainerInterface instance
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getDecoder($format)
     {
         if (!$this->supports($format)) {
-            throw new \InvalidArgumentException(sprintf("Format '%s' is not supported by ContainerDecoderProvider.", $format));
+            throw new \InvalidArgumentException(
+                sprintf("Format '%s' is not supported by ContainerDecoderProvider.", $format)
+            );
         }
 
         return $this->container->get($this->decoders[$format]);

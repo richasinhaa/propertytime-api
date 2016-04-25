@@ -22,6 +22,13 @@ class LanguageValidatorTest extends AbstractConstraintValidatorTest
         return new LanguageValidator();
     }
 
+    protected function setUp()
+    {
+        IntlTestHelper::requireFullIntl($this);
+
+        parent::setUp();
+    }
+
     public function testNullIsValid()
     {
         $this->validator->validate(null, new Language());
@@ -89,8 +96,6 @@ class LanguageValidatorTest extends AbstractConstraintValidatorTest
 
     public function testValidateUsingCountrySpecificLocale()
     {
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault('fr_FR');
         $existingLanguage = 'en';
 

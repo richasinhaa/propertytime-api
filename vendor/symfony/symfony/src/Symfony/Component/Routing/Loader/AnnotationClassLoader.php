@@ -109,18 +109,19 @@ abstract class AnnotationClassLoader implements LoaderInterface
         }
 
         $globals = array(
-            'path' => '',
+            'path'         => '',
             'requirements' => array(),
-            'options' => array(),
-            'defaults' => array(),
-            'schemes' => array(),
-            'methods' => array(),
-            'host' => '',
+            'options'      => array(),
+            'defaults'     => array(),
+            'schemes'      => array(),
+            'methods'      => array(),
+            'host'         => '',
+            'condition'    => '',
         );
 
         $class = new \ReflectionClass($class);
         if ($class->isAbstract()) {
-            throw new \InvalidArgumentException(sprintf('Annotations from class "%s" cannot be read as it is abstract.', $class->getName()));
+            throw new \InvalidArgumentException(sprintf('Annotations from class "%s" cannot be read as it is abstract.', $class));
         }
 
         if ($annot = $this->reader->getClassAnnotation($class, $this->routeAnnotationClass)) {
@@ -154,6 +155,10 @@ abstract class AnnotationClassLoader implements LoaderInterface
             if (null !== $annot->getHost()) {
                 $globals['host'] = $annot->getHost();
             }
+
+            if (null !== $annot->getCondition()) {
+                $globals['condition'] = $annot->getCondition();
+            }
         }
 
         $collection = new RouteCollection();
@@ -180,7 +185,7 @@ abstract class AnnotationClassLoader implements LoaderInterface
 
         $defaults = array_replace($globals['defaults'], $annot->getDefaults());
         foreach ($method->getParameters() as $param) {
-            if (!isset($defaults[$param->getName()]) && $param->isDefaultValueAvailable()) {
+            if (!isset($defaults[$param->getName()]) && $param->isOptional()) {
                 $defaults[$param->getName()] = $param->getDefaultValue();
             }
         }
@@ -194,7 +199,12 @@ abstract class AnnotationClassLoader implements LoaderInterface
             $host = $globals['host'];
         }
 
-        $route = new Route($globals['path'].$annot->getPath(), $defaults, $requirements, $options, $host, $schemes, $methods);
+        $condition = $annot->getCondition();
+        if (null === $condition) {
+            $condition = $globals['condition'];
+        }
+
+        $route = new Route($globals['path'].$annot->getPath(), $defaults, $requirements, $options, $host, $schemes, $methods, $condition);
 
         $this->configureRoute($route, $class, $method, $annot);
 
@@ -237,7 +247,7 @@ abstract class AnnotationClassLoader implements LoaderInterface
         if ($this->defaultRouteIndex > 0) {
             $name .= '_'.$this->defaultRouteIndex;
         }
-        ++$this->defaultRouteIndex;
+        $this->defaultRouteIndex++;
 
         return $name;
     }

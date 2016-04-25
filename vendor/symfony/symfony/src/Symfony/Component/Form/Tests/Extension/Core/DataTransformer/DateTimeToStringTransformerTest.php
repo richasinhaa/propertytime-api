@@ -60,7 +60,7 @@ class DateTimeToStringTransformerTest extends DateTimeTestCase
         );
 
         // This test will fail < 5.3.9 - see https://bugs.php.net/51994
-        if (PHP_VERSION_ID >= 50309) {
+        if (version_compare(phpversion(), '5.3.9', '>=')) {
             $data[] = array('Y-z', '2010-33', '2010-02-03 00:00:00 UTC');
         }
 
@@ -97,20 +97,6 @@ class DateTimeToStringTransformerTest extends DateTimeTestCase
         $this->assertEquals($output, $transformer->transform($input));
     }
 
-    /**
-     * @requires PHP 5.5
-     */
-    public function testTransformDateTimeImmutable()
-    {
-        $transformer = new DateTimeToStringTransformer('Asia/Hong_Kong', 'America/New_York', 'Y-m-d H:i:s');
-
-        $input = new \DateTimeImmutable('2010-02-03 12:05:06 America/New_York');
-        $output = $input->format('Y-m-d H:i:s');
-        $input = $input->setTimezone(new \DateTimeZone('Asia/Hong_Kong'));
-
-        $this->assertEquals($output, $transformer->transform($input));
-    }
-
     public function testTransformExpectsDateTime()
     {
         $transformer = new DateTimeToStringTransformer();
@@ -122,10 +108,13 @@ class DateTimeToStringTransformerTest extends DateTimeTestCase
 
     /**
      * @dataProvider dataProvider
-     * @requires PHP 5.3.7
      */
     public function testReverseTransformUsingPipe($format, $input, $output)
     {
+        if (version_compare(phpversion(), '5.3.7', '<')) {
+            $this->markTestSkipped('Pipe usage requires PHP 5.3.7 or newer.');
+        }
+
         $reverseTransformer = new DateTimeToStringTransformer('UTC', 'UTC', $format, true);
 
         $output = new \DateTime($output);
@@ -158,7 +147,7 @@ class DateTimeToStringTransformerTest extends DateTimeTestCase
 
         $output = new \DateTime('2010-02-03 16:05:06 Asia/Hong_Kong');
         $input = $output->format('Y-m-d H:i:s');
-        $output->setTimezone(new \DateTimeZone('America/New_York'));
+        $output->setTimeZone(new \DateTimeZone('America/New_York'));
 
         $this->assertDateTimeEquals($output, $reverseTransformer->reverseTransform($input));
     }

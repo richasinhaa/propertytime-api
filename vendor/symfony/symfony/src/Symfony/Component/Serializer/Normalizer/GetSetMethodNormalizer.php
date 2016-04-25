@@ -43,7 +43,7 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
     /**
      * Set normalization callbacks.
      *
-     * @param array $callbacks help normalize the result
+     * @param callable[] $callbacks help normalize the result
      *
      * @throws InvalidArgumentException if a non-callable callback is set
      */
@@ -58,7 +58,7 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
     }
 
     /**
-     * Set ignored attributes for normalization.
+     * Set ignored attributes for normalization
      *
      * @param array $ignoredAttributes
      */
@@ -68,7 +68,7 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
     }
 
     /**
-     * Set attributes to be camelized on denormalize.
+     * Set attributes to be camelized on denormalize
      *
      * @param array $camelizedAttributes
      */
@@ -99,6 +99,9 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
                     $attributeValue = call_user_func($this->callbacks[$attributeName], $attributeValue);
                 }
                 if (null !== $attributeValue && !is_scalar($attributeValue)) {
+                    if (!$this->serializer instanceof NormalizerInterface) {
+                        throw new \LogicException(sprintf('Cannot normalize attribute "%s" because injected serializer is not a normalizer', $attributeName));
+                    }
                     $attributeValue = $this->serializer->normalize($attributeValue, $format);
                 }
 
@@ -136,19 +139,11 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
             foreach ($constructorParameters as $constructorParameter) {
                 $paramName = lcfirst($this->formatAttribute($constructorParameter->name));
 
-                if (method_exists($constructorParameter, 'isVariadic') && $constructorParameter->isVariadic()) {
-                    if (isset($normalizedData[$paramName])) {
-                        if (!is_array($normalizedData[$paramName])) {
-                            throw new RuntimeException(sprintf('Cannot create an instance of %s from serialized data because the variadic parameter %s can only accept an array.', $class, $constructorParameter->name));
-                        }
-
-                        $params = array_merge($params, $normalizedData[$paramName]);
-                    }
-                } elseif (isset($normalizedData[$paramName])) {
+                if (isset($normalizedData[$paramName])) {
                     $params[] = $normalizedData[$paramName];
                     // don't run set for a parameter passed to the constructor
                     unset($normalizedData[$paramName]);
-                } elseif ($constructorParameter->isDefaultValueAvailable()) {
+                } elseif ($constructorParameter->isOptional()) {
                     $params[] = $constructorParameter->getDefaultValue();
                 } else {
                     throw new RuntimeException(
@@ -178,10 +173,9 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
     /**
      * Format attribute name to access parameters or methods
      * As option, if attribute name is found on camelizedAttributes array
-     * returns attribute name in camelcase format.
+     * returns attribute name in camelcase format
      *
      * @param string $attributeName
-     *
      * @return string
      */
     protected function formatAttribute($attributeName)
@@ -238,14 +232,14 @@ class GetSetMethodNormalizer extends SerializerAwareNormalizer implements Normal
      *
      * @param \ReflectionMethod $method the method to check
      *
-     * @return bool whether the method is a getter.
+     * @return bool    whether the method is a getter.
      */
     private function isGetMethod(\ReflectionMethod $method)
     {
-        return
+        return (
             0 === strpos($method->name, 'get') &&
             3 < strlen($method->name) &&
             0 === $method->getNumberOfRequiredParameters()
-        ;
+        );
     }
 }

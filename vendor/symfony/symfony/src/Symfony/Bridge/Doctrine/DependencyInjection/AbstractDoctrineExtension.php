@@ -52,7 +52,7 @@ abstract class AbstractDoctrineExtension extends Extension
             foreach (array_keys($container->getParameter('kernel.bundles')) as $bundle) {
                 if (!isset($objectManager['mappings'][$bundle])) {
                     $objectManager['mappings'][$bundle] = array(
-                        'mapping' => true,
+                        'mapping'   => true,
                         'is_bundle' => true,
                     );
                 }
@@ -65,8 +65,8 @@ abstract class AbstractDoctrineExtension extends Extension
             }
 
             $mappingConfig = array_replace(array(
-                'dir' => false,
-                'type' => false,
+                'dir'    => false,
+                'type'   => false,
                 'prefix' => false,
             ), (array) $mappingConfig);
 
@@ -129,15 +129,11 @@ abstract class AbstractDoctrineExtension extends Extension
      */
     protected function setMappingDriverConfig(array $mappingConfig, $mappingName)
     {
-        $mappingDirectory = $mappingConfig['dir'];
-        if (!is_dir($mappingDirectory)) {
+        if (is_dir($mappingConfig['dir'])) {
+            $this->drivers[$mappingConfig['type']][$mappingConfig['prefix']] = realpath($mappingConfig['dir']);
+        } else {
             throw new \InvalidArgumentException(sprintf('Invalid Doctrine mapping path given. Cannot load Doctrine mapping/bundle named "%s".', $mappingName));
         }
-
-        if (substr($mappingDirectory, 0, 7) !== 'phar://') {
-            $mappingDirectory = realpath($mappingDirectory);
-        }
-        $this->drivers[$mappingConfig['type']][$mappingConfig['prefix']] = $mappingDirectory;
     }
 
     /**
@@ -153,7 +149,7 @@ abstract class AbstractDoctrineExtension extends Extension
      */
     protected function getMappingDriverBundleConfigDefaults(array $bundleConfig, \ReflectionClass $bundle, ContainerBuilder $container)
     {
-        $bundleDir = dirname($bundle->getFileName());
+        $bundleDir = dirname($bundle->getFilename());
 
         if (!$bundleConfig['type']) {
             $bundleConfig['type'] = $this->detectMetadataDriver($bundleDir, $container);
@@ -256,7 +252,7 @@ abstract class AbstractDoctrineExtension extends Extension
             throw new \InvalidArgumentException(sprintf('Can only configure "xml", "yml", "annotation", "php" or '.
                 '"staticphp" through the DoctrineBundle. Use your own bundle to configure other metadata drivers. '.
                 'You can register them by adding a new driver to the '.
-                '"%s" service definition.', $this->getObjectManagerElementName($objectManagerName.'_metadata_driver')
+                '"%s" service definition.', $this->getObjectManagerElementName($objectManagerName.'.metadata_driver')
             ));
         }
     }
@@ -367,9 +363,13 @@ abstract class AbstractDoctrineExtension extends Extension
         }
 
         $cacheDef->setPublic(false);
-        // generate a unique namespace for the given application
-        $namespace = 'sf2'.$this->getMappingResourceExtension().'_'.$objectManager['name'].'_'.md5($container->getParameter('kernel.root_dir').$container->getParameter('kernel.environment'));
-        $cacheDef->addMethodCall('setNamespace', array($namespace));
+
+        if (!isset($cacheDriver['namespace'])) {
+            // generate a unique namespace for the given application
+            $cacheDriver['namespace'] = 'sf2'.$this->getMappingResourceExtension().'_'.$objectManager['name'].'_'.hash('sha256',($container->getParameter('kernel.root_dir').$container->getParameter('kernel.environment')));
+        }
+
+        $cacheDef->addMethodCall('setNamespace', array($cacheDriver['namespace']));
 
         $container->setDefinition($cacheDriverService, $cacheDef);
     }

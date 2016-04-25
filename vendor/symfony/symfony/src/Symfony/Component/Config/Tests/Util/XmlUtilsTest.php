@@ -63,14 +63,11 @@ class XmlUtilsTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadFileWithInternalErrorsEnabled()
     {
-        $internalErrors = libxml_use_internal_errors(true);
+        libxml_use_internal_errors(true);
 
         $this->assertSame(array(), libxml_get_errors());
         $this->assertInstanceOf('DOMDocument', XmlUtils::loadFile(__DIR__.'/../Fixtures/Util/invalid_schema.xml'));
         $this->assertSame(array(), libxml_get_errors());
-
-        libxml_clear_errors();
-        libxml_use_internal_errors($internalErrors);
     }
 
     /**
@@ -118,6 +115,7 @@ class XmlUtilsTest extends \PHPUnit_Framework_TestCase
     public function getDataForPhpize()
     {
         return array(
+            array('', ''),
             array(null, 'null'),
             array(true, 'true'),
             array(false, 'false'),
@@ -126,6 +124,7 @@ class XmlUtilsTest extends \PHPUnit_Framework_TestCase
             array(false, 'False'),
             array(0, '0'),
             array(1, '1'),
+            array(-1, '-1'),
             array(0777, '0777'),
             array(255, '0xFF'),
             array(100.0, '1e2'),
@@ -141,13 +140,14 @@ class XmlUtilsTest extends \PHPUnit_Framework_TestCase
             array('111,222,333,444', '111,222,333,444'),
             array('1111,2222,3333,4444,5555', '1111,2222,3333,4444,5555'),
             array('foo', 'foo'),
+            array(6, '0b0110'),
         );
     }
 
     public function testLoadEmptyXmlFile()
     {
         $file = __DIR__.'/../Fixtures/foo.xml';
-        $this->setExpectedException('InvalidArgumentException', sprintf('File %s does not contain valid XML, it is empty.', $file));
+        $this->setExpectedException('InvalidArgumentException', 'File '.$file.' does not contain valid XML, it is empty.');
         XmlUtils::loadFile($file);
     }
 
@@ -163,17 +163,10 @@ class XmlUtilsTest extends \PHPUnit_Framework_TestCase
 
         $file = __DIR__.'/../Fixtures/foo.xml';
         try {
-            try {
-                XmlUtils::loadFile($file);
-                $this->fail('An exception should have been raised');
-            } catch (\InvalidArgumentException $e) {
-                $this->assertEquals(sprintf('File %s does not contain valid XML, it is empty.', $file), $e->getMessage());
-            }
-        } catch (\Exception $e) {
-            restore_error_handler();
-            error_reporting($errorReporting);
-
-            throw $e;
+            XmlUtils::loadFile($file);
+            $this->fail('An exception should have been raised');
+        } catch (\InvalidArgumentException $e) {
+            $this->assertEquals(sprintf('File %s does not contain valid XML, it is empty.', $file), $e->getMessage());
         }
 
         restore_error_handler();

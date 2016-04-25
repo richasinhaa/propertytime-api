@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Symfony Translation Component",
     "keywords": [],
-    "homepage": "https://symfony.com",
+    "homepage": "http://symfony.com",
     "license": "MIT",
     "authors": [
         {
@@ -12,14 +12,14 @@
         },
         {
             "name": "Symfony Community",
-            "homepage": "https://symfony.com/contributors"
+            "homepage": "http://symfony.com/contributors"
         }
     ],
     "require": {
         "php": ">=5.3.3"
     },
     "require-dev": {
-        "symfony/config": "~2.3,>=2.3.12",
+        "symfony/config": "~2.0",
         "symfony/intl": "~2.3",
         "symfony/yaml": "~2.2"
     },
@@ -28,16 +28,13 @@
         "symfony/yaml": ""
     },
     "autoload": {
-        "psr-0": { "Symfony\\Component\\Translation\\": "" },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
+        "psr-0": { "Symfony\\Component\\Translation\\": "" }
     },
     "target-dir": "Symfony/Component/Translation",
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.3-dev"
+            "dev-master": "2.4-dev"
         }
     }
 }

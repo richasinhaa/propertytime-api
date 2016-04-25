@@ -31,7 +31,7 @@ class Shell
     private $history;
     private $output;
     private $hasReadline;
-    private $processIsolation;
+    private $processIsolation = false;
 
     /**
      * Constructor.
@@ -47,7 +47,6 @@ class Shell
         $this->application = $application;
         $this->history = getenv('HOME').'/.history_'.$application->getName();
         $this->output = new ConsoleOutput();
-        $this->processIsolation = false;
     }
 
     /**
@@ -68,7 +67,7 @@ class Shell
         if ($this->processIsolation) {
             $finder = new PhpExecutableFinder();
             $php = $finder->find();
-            $this->output->writeln(<<<'EOF'
+            $this->output->writeln(<<<EOF
 <info>Running with process isolation, you should consider this:</info>
   * each command is executed as separate process,
   * commands don't support interactivity, all params must be passed explicitly,
@@ -164,7 +163,7 @@ EOF;
      *
      * @param string $text The last segment of the entered text
      *
-     * @return bool|array A list of guessed strings or true
+     * @return bool|array    A list of guessed strings or true
      */
     private function autocompleter($text)
     {
@@ -207,7 +206,7 @@ EOF;
         } else {
             $this->output->write($this->getPrompt());
             $line = fgets(STDIN, 1024);
-            $line = (false === $line || '' === $line) ? false : rtrim($line);
+            $line = (!$line && strlen($line) == 0) ? false : rtrim($line);
         }
 
         return $line;

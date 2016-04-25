@@ -11,10 +11,8 @@
 
 namespace Symfony\Component\HttpKernel\Tests\DataCollector;
 
-use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\HttpKernel\DataCollector\LoggerDataCollector;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Debug\ErrorHandler;
 
 class LoggerDataCollectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,11 +26,11 @@ class LoggerDataCollectorTest extends \PHPUnit_Framework_TestCase
         $logger->expects($this->exactly(2))->method('getLogs')->will($this->returnValue($logs));
 
         $c = new LoggerDataCollector($logger);
-        $c->collect(new Request(), new Response());
+        $c->lateCollect();
 
         $this->assertSame('logger', $c->getName());
         $this->assertSame($nb, $c->countErrors());
-        $this->assertSame($expectedLogs ?: $logs, $c->getLogs());
+        $this->assertSame($expectedLogs ? $expectedLogs : $logs, $c->getLogs());
         $this->assertSame($expectedDeprecationCount, $c->countDeprecations());
     }
 

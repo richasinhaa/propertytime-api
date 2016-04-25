@@ -38,7 +38,7 @@ class EsiFragmentRenderer extends RoutableFragmentRenderer
      * @param FragmentRendererInterface $inlineStrategy The inline strategy to use when ESI is not supported
      * @param UriSigner                 $signer
      */
-    public function __construct(Esi $esi, FragmentRendererInterface $inlineStrategy, UriSigner $signer = null)
+    public function __construct(Esi $esi = null, InlineFragmentRenderer $inlineStrategy, UriSigner $signer = null)
     {
         $this->esi = $esi;
         $this->inlineStrategy = $inlineStrategy;
@@ -56,11 +56,11 @@ class EsiFragmentRenderer extends RoutableFragmentRenderer
      *  * alt: an alternative URI to render in case of an error
      *  * comment: a comment to add when returning an esi:include tag
      *
-     * @see Esi
+     * @see Symfony\Component\HttpKernel\HttpCache\ESI
      */
     public function render($uri, Request $request, array $options = array())
     {
-        if (!$this->esi->hasSurrogateEsiCapability($request)) {
+        if (!$this->esi || !$this->esi->hasSurrogateEsiCapability($request)) {
             return $this->inlineStrategy->render($uri, $request, $options);
         }
 

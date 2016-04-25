@@ -16,55 +16,17 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Test class for Filesystem.
  */
-class FilesystemTest extends \PHPUnit_Framework_TestCase
+class FilesystemTest extends FilesystemTestCase
 {
-    private $umask;
-    private $longPathNamesWindows = array();
-
     /**
-     * @var string
-     */
-    private $workspace = null;
-
-    /**
-     * @var \Symfony\Component\Filesystem\Filesystem
+     * @var \Symfony\Component\Filesystem\Filesystem $filesystem
      */
     private $filesystem = null;
 
-    private static $symlinkOnWindows = null;
-
-    public static function setUpBeforeClass()
+    public function setUp()
     {
-        if ('\\' === DIRECTORY_SEPARATOR && null === self::$symlinkOnWindows) {
-            $target = tempnam(sys_get_temp_dir(), 'sl');
-            $link = sys_get_temp_dir().'/sl'.microtime(true).mt_rand();
-            if (@symlink($target, $link)) {
-                self::$symlinkOnWindows = @is_link($link);
-                unlink($link);
-            }
-            unlink($target);
-        }
-    }
-
-    protected function setUp()
-    {
-        $this->umask = umask(0);
+        parent::setUp();
         $this->filesystem = new Filesystem();
-        $this->workspace = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().mt_rand(0, 1000);
-        mkdir($this->workspace, 0777, true);
-        $this->workspace = realpath($this->workspace);
-    }
-
-    protected function tearDown()
-    {
-        if (!empty($this->longPathNamesWindows)) {
-            foreach ($this->longPathNamesWindows as $path) {
-                exec('DEL '.$path);
-            }
-        }
-
-        $this->filesystem->remove($this->workspace);
-        umask($this->umask);
     }
 
     public function testCopyCreatesNewFile()
@@ -361,28 +323,6 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->filesystem->exists($basePath.'folder'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Filesystem\Exception\IOException
-     */
-    public function testFilesExistsFails()
-    {
-        if ('\\' !== DIRECTORY_SEPARATOR) {
-            $this->markTestSkipped('Test covers edge case on Windows only.');
-        }
-
-        $basePath = $this->workspace.'\\directory\\';
-
-        $oldPath = getcwd();
-        mkdir($basePath);
-        chdir($basePath);
-        $file = str_repeat('T', 259 - strlen($basePath));
-        $path = $basePath.$file;
-        exec('TYPE NUL >>'.$file); // equivalent of touch, we can not use the php touch() here because it suffers from the same limitation
-        $this->longPathNamesWindows[] = $path; // save this so we can clean up later
-        chdir($oldPath);
-        $this->filesystem->exists($path);
-    }
-
     public function testFilesExistsTraversableObjectOfFilesAndDirectories()
     {
         $basePath = $this->workspace.DIRECTORY_SEPARATOR;
@@ -433,8 +373,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->filesystem->chmod($file, 0400);
         $this->filesystem->chmod($dir, 0753);
 
-        $this->assertEquals(753, $this->getFilePermissions($dir));
-        $this->assertEquals(400, $this->getFilePermissions($file));
+        $this->assertFilePermissions(753, $dir);
+        $this->assertFilePermissions(400, $file);
     }
 
     public function testChmodWrongMod()
@@ -459,8 +399,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->filesystem->chmod($file, 0400, 0000, true);
         $this->filesystem->chmod($dir, 0753, 0000, true);
 
-        $this->assertEquals(753, $this->getFilePermissions($dir));
-        $this->assertEquals(753, $this->getFilePermissions($file));
+        $this->assertFilePermissions(753, $dir);
+        $this->assertFilePermissions(753, $file);
     }
 
     public function testChmodAppliesUmask()
@@ -471,7 +411,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         touch($file);
 
         $this->filesystem->chmod($file, 0770, 0022);
-        $this->assertEquals(750, $this->getFilePermissions($file));
+        $this->assertFilePermissions(750, $file);
     }
 
     public function testChmodChangesModeOfArrayOfFiles()
@@ -487,8 +427,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->filesystem->chmod($files, 0753);
 
-        $this->assertEquals(753, $this->getFilePermissions($file));
-        $this->assertEquals(753, $this->getFilePermissions($directory));
+        $this->assertFilePermissions(753, $file);
+        $this->assertFilePermissions(753, $directory);
     }
 
     public function testChmodChangesModeOfTraversableFileObject()
@@ -504,24 +444,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->filesystem->chmod($files, 0753);
 
-        $this->assertEquals(753, $this->getFilePermissions($file));
-        $this->assertEquals(753, $this->getFilePermissions($directory));
-    }
-
-    public function testChmodChangesZeroModeOnSubdirectoriesOnRecursive()
-    {
-        $this->markAsSkippedIfChmodIsMissing();
-
-        $directory = $this->workspace.DIRECTORY_SEPARATOR.'directory';
-        $subdirectory = $directory.DIRECTORY_SEPARATOR.'subdirectory';
-
-        mkdir($directory);
-        mkdir($subdirectory);
-        chmod($subdirectory, 0000);
-
-        $this->filesystem->chmod($directory, 0753, 0000, true);
-
-        $this->assertEquals(753, $this->getFilePermissions($subdirectory));
+        $this->assertFilePermissions(753, $file);
+        $this->assertFilePermissions(753, $directory);
     }
 
     public function testChown()
@@ -701,7 +625,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenameThrowsExceptionOnError()
     {
-        $file = $this->workspace.DIRECTORY_SEPARATOR.uniqid('fs_test_', true);
+        $file = $this->workspace.DIRECTORY_SEPARATOR.uniqid();
         $newPath = $this->workspace.DIRECTORY_SEPARATOR.'new_file';
 
         $this->filesystem->rename($file, $newPath);
@@ -826,11 +750,9 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
             array('/a/aab/bb', '/a/aa/', '../aab/bb/'),
             array('/a/aab/bb/', '/a/aa', '../aab/bb/'),
             array('/a/aab/bb/', '/a/aa/', '../aab/bb/'),
-            array('/a/aab/bb/', '/', 'a/aab/bb/'),
-            array('/a/aab/bb/', '/b/aab', '../../a/aab/bb/'),
         );
 
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
             $paths[] = array('c:\var\lib/symfony/src/Symfony/', 'c:/var/lib/symfony/', 'src/Symfony/');
         }
 
@@ -877,21 +799,6 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->filesystem->exists($targetPath.'directory'.DIRECTORY_SEPARATOR.'file1'));
     }
 
-    public function testMirrorCreatesEmptyDirectory()
-    {
-        $sourcePath = $this->workspace.DIRECTORY_SEPARATOR.'source'.DIRECTORY_SEPARATOR;
-
-        mkdir($sourcePath);
-
-        $targetPath = $this->workspace.DIRECTORY_SEPARATOR.'target'.DIRECTORY_SEPARATOR;
-
-        $this->filesystem->mirror($sourcePath, $targetPath);
-
-        $this->assertTrue(is_dir($targetPath));
-
-        $this->filesystem->remove($sourcePath);
-    }
-
     public function testMirrorCopiesLinks()
     {
         $this->markAsSkippedIfSymlinkIsMissing();
@@ -913,7 +820,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
     public function testMirrorCopiesLinkedDirectoryContents()
     {
-        $this->markAsSkippedIfSymlinkIsMissing(true);
+        $this->markAsSkippedIfSymlinkIsMissing();
 
         $sourcePath = $this->workspace.DIRECTORY_SEPARATOR.'source'.DIRECTORY_SEPARATOR;
 
@@ -929,31 +836,6 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_dir($targetPath));
         $this->assertFileEquals($sourcePath.'/nested/file1.txt', $targetPath.DIRECTORY_SEPARATOR.'link1/file1.txt');
         $this->assertTrue(is_link($targetPath.DIRECTORY_SEPARATOR.'link1'));
-    }
-
-    public function testMirrorCopiesRelativeLinkedContents()
-    {
-        $this->markAsSkippedIfSymlinkIsMissing(true);
-
-        $sourcePath = $this->workspace.DIRECTORY_SEPARATOR.'source'.DIRECTORY_SEPARATOR;
-        $oldPath = getcwd();
-
-        mkdir($sourcePath.'nested/', 0777, true);
-        file_put_contents($sourcePath.'/nested/file1.txt', 'FILE1');
-        // Note: Create relative symlink
-        chdir($sourcePath);
-        symlink('nested', 'link1');
-
-        chdir($oldPath);
-
-        $targetPath = $this->workspace.DIRECTORY_SEPARATOR.'target'.DIRECTORY_SEPARATOR;
-
-        $this->filesystem->mirror($sourcePath, $targetPath);
-
-        $this->assertTrue(is_dir($targetPath));
-        $this->assertFileEquals($sourcePath.'/nested/file1.txt', $targetPath.DIRECTORY_SEPARATOR.'link1/file1.txt');
-        $this->assertTrue(is_link($targetPath.DIRECTORY_SEPARATOR.'link1'));
-        $this->assertEquals('nested', readlink($targetPath.DIRECTORY_SEPARATOR.'link1'));
     }
 
     /**
@@ -992,8 +874,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('bar', file_get_contents($filename));
 
         // skip mode check on Windows
-        if ('\\' !== DIRECTORY_SEPARATOR) {
-            $this->assertEquals(753, $this->getFilePermissions($filename));
+        if (!defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $this->assertFilePermissions(753, $filename);
         }
     }
 
@@ -1007,8 +889,8 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('bar', file_get_contents($filename));
 
         // skip mode check on Windows
-        if ('\\' !== DIRECTORY_SEPARATOR) {
-            $this->assertEquals(600, $this->getFilePermissions($filename));
+        if (!defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $this->assertFilePermissions(600, $filename);
         }
     }
 
@@ -1021,72 +903,5 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFileExists($filename);
         $this->assertSame('bar', file_get_contents($filename));
-    }
-
-    /**
-     * Returns file permissions as three digits (i.e. 755).
-     *
-     * @param string $filePath
-     *
-     * @return int
-     */
-    private function getFilePermissions($filePath)
-    {
-        return (int) substr(sprintf('%o', fileperms($filePath)), -3);
-    }
-
-    private function getFileOwner($filepath)
-    {
-        $this->markAsSkippedIfPosixIsMissing();
-
-        $infos = stat($filepath);
-        if ($datas = posix_getpwuid($infos['uid'])) {
-            return $datas['name'];
-        }
-    }
-
-    private function getFileGroup($filepath)
-    {
-        $this->markAsSkippedIfPosixIsMissing();
-
-        $infos = stat($filepath);
-        if ($datas = posix_getgrgid($infos['gid'])) {
-            return $datas['name'];
-        }
-
-        $this->markTestSkipped('Unable to retrieve file group name');
-    }
-
-    /**
-     * @param bool $relative Whether support for relative symlinks is required
-     */
-    private function markAsSkippedIfSymlinkIsMissing($relative = false)
-    {
-        if (!function_exists('symlink')) {
-            $this->markTestSkipped('symlink is not supported');
-        }
-
-        if (false === self::$symlinkOnWindows) {
-            $this->markTestSkipped('symlink requires "Create symbolic links" privilege on Windows');
-        }
-
-        // https://bugs.php.net/bug.php?id=69473
-        if ($relative && '\\' === DIRECTORY_SEPARATOR && 1 === PHP_ZTS) {
-            $this->markTestSkipped('symlink does not support relative paths on thread safe Windows PHP versions');
-        }
-    }
-
-    private function markAsSkippedIfChmodIsMissing()
-    {
-        if ('\\' === DIRECTORY_SEPARATOR) {
-            $this->markTestSkipped('chmod is not supported on Windows');
-        }
-    }
-
-    private function markAsSkippedIfPosixIsMissing()
-    {
-        if ('\\' === DIRECTORY_SEPARATOR || !function_exists('posix_isatty')) {
-            $this->markTestSkipped('POSIX is not supported');
-        }
     }
 }

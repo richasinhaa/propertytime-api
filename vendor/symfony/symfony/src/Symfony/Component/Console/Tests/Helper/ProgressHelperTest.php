@@ -14,9 +14,6 @@ namespace Symfony\Component\Console\Tests\Helper;
 use Symfony\Component\Console\Helper\ProgressHelper;
 use Symfony\Component\Console\Output\StreamOutput;
 
-/**
- * @group time-sensitive
- */
 class ProgressHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function testAdvance()
@@ -154,11 +151,12 @@ class ProgressHelperTest extends \PHPUnit_Framework_TestCase
         $progress->advance(1);
     }
 
-    /**
-     * @requires extension mbstring
-     */
     public function testMultiByteSupport()
     {
+        if (!function_exists('mb_strlen') || (false === $encoding = mb_detect_encoding('■'))) {
+            $this->markTestSkipped('The mbstring extension is needed for multi-byte support');
+        }
+
         $progress = new ProgressHelper();
         $progress->start($output = $this->getOutputStream());
         $progress->setBarCharacter('■');
@@ -166,6 +164,20 @@ class ProgressHelperTest extends \PHPUnit_Framework_TestCase
 
         rewind($output->getStream());
         $this->assertEquals($this->generateOutput('    3 [■■■>------------------------]'), stream_get_contents($output->getStream()));
+    }
+
+    public function testClear()
+    {
+        $progress = new ProgressHelper();
+        $progress->start($output = $this->getOutputStream(), 50);
+        $progress->setCurrent(25);
+        $progress->clear();
+
+        rewind($output->getStream());
+        $this->assertEquals(
+            $this->generateOutput(' 25/50 [==============>-------------]  50%').$this->generateOutput(''),
+            stream_get_contents($output->getStream())
+        );
     }
 
     public function testPercentNotHundredBeforeComplete()

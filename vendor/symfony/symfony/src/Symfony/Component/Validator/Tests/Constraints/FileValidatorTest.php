@@ -151,13 +151,13 @@ abstract class FileValidatorTest extends AbstractConstraintValidatorTest
      */
     public function testMaxSizeExceeded($bytesWritten, $limit, $sizeAsString, $limitAsString, $suffix)
     {
-        fseek($this->file, $bytesWritten - 1, SEEK_SET);
+        fseek($this->file, $bytesWritten-1, SEEK_SET);
         fwrite($this->file, '0');
         fclose($this->file);
 
         $constraint = new File(array(
-            'maxSize' => $limit,
-            'maxSizeMessage' => 'myMessage',
+            'maxSize'           => $limit,
+            'maxSizeMessage'    => 'myMessage',
         ));
 
         $this->validator->validate($this->getFile($this->path), $constraint);
@@ -200,13 +200,13 @@ abstract class FileValidatorTest extends AbstractConstraintValidatorTest
      */
     public function testMaxSizeNotExceeded($bytesWritten, $limit)
     {
-        fseek($this->file, $bytesWritten - 1, SEEK_SET);
+        fseek($this->file, $bytesWritten-1, SEEK_SET);
         fwrite($this->file, '0');
         fclose($this->file);
 
         $constraint = new File(array(
-            'maxSize' => $limit,
-            'maxSizeMessage' => 'myMessage',
+            'maxSize'           => $limit,
+            'maxSizeMessage'    => 'myMessage',
         ));
 
         $this->validator->validate($this->getFile($this->path), $constraint);

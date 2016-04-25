@@ -52,7 +52,7 @@ class RouterMatchCommand extends ContainerAwareCommand
                 new InputArgument('path_info', InputArgument::REQUIRED, 'A path info'),
             ))
             ->setDescription('Helps debug routes by simulating a path info match')
-            ->setHelp(<<<'EOF'
+            ->setHelp(<<<EOF
 The <info>%command.name%</info> simulates a path info match:
 
   <info>php %command.full_name% /foo</info>
@@ -72,7 +72,7 @@ EOF
         $traces = $matcher->getTraces($input->getArgument('path_info'));
 
         $matches = false;
-        foreach ($traces as $trace) {
+        foreach ($traces as $i => $trace) {
             if (TraceableUrlMatcher::ROUTE_ALMOST_MATCHES == $trace['level']) {
                 $output->writeln(sprintf('<fg=yellow>Route "%s" almost matches but %s</>', $trace['name'], lcfirst($trace['log'])));
             } elseif (TraceableUrlMatcher::ROUTE_MATCHES == $trace['level']) {

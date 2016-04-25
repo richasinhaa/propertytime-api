@@ -37,10 +37,7 @@ class RegisterListenersPassTest extends \PHPUnit_Framework_TestCase
             ->method('getClass')
             ->will($this->returnValue('stdClass'));
 
-        $builder = $this->getMock(
-            'Symfony\Component\DependencyInjection\ContainerBuilder',
-            array('hasDefinition', 'findTaggedServiceIds', 'getDefinition')
-        );
+        $builder = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
         $builder->expects($this->any())
             ->method('hasDefinition')
             ->will($this->returnValue(true));
@@ -72,10 +69,7 @@ class RegisterListenersPassTest extends \PHPUnit_Framework_TestCase
             ->method('getClass')
             ->will($this->returnValue('Symfony\Component\HttpKernel\Tests\DependencyInjection\SubscriberService'));
 
-        $builder = $this->getMock(
-            'Symfony\Component\DependencyInjection\ContainerBuilder',
-            array('hasDefinition', 'findTaggedServiceIds', 'getDefinition')
-        );
+        $builder = $this->getMock('Symfony\Component\DependencyInjection\ContainerBuilder');
         $builder->expects($this->any())
             ->method('hasDefinition')
             ->will($this->returnValue(true));
@@ -89,8 +83,11 @@ class RegisterListenersPassTest extends \PHPUnit_Framework_TestCase
             ->method('getDefinition')
             ->will($this->returnValue($definition));
 
-        $registerListenersPass = new RegisterListenersPass();
+        $builder->expects($this->atLeastOnce())
+            ->method('findDefinition')
+            ->will($this->returnValue($definition));
 
+        $registerListenersPass = new RegisterListenersPass();
         $registerListenersPass->process($builder);
     }
 
@@ -130,58 +127,6 @@ class RegisterListenersPassTest extends \PHPUnit_Framework_TestCase
     {
         $container = new ContainerBuilder();
         $container->register('foo', 'stdClass')->setAbstract(true)->addTag('kernel.event_listener', array());
-        $container->register('event_dispatcher', 'stdClass');
-
-        $registerListenersPass = new RegisterListenersPass();
-        $registerListenersPass->process($container);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The service "foo" must not be abstract as event subscribers are lazy-loaded.
-     */
-    public function testAbstractEventSubscriber()
-    {
-        $container = new ContainerBuilder();
-        $container->register('foo', 'stdClass')->setAbstract(true)->addTag('kernel.event_subscriber', array());
-        $container->register('event_dispatcher', 'stdClass');
-
-        $registerListenersPass = new RegisterListenersPass();
-        $registerListenersPass->process($container);
-    }
-
-    public function testEventSubscriberResolvableClassName()
-    {
-        $container = new ContainerBuilder();
-
-        $container->setParameter('subscriber.class', 'Symfony\Component\HttpKernel\Tests\DependencyInjection\SubscriberService');
-        $container->register('foo', '%subscriber.class%')->addTag('kernel.event_subscriber', array());
-        $container->register('event_dispatcher', 'stdClass');
-
-        $registerListenersPass = new RegisterListenersPass();
-        $registerListenersPass->process($container);
-
-        $definition = $container->getDefinition('event_dispatcher');
-        $expected_calls = array(
-            array(
-                'addSubscriberService',
-                array(
-                    'foo',
-                    'Symfony\Component\HttpKernel\Tests\DependencyInjection\SubscriberService',
-                ),
-            ),
-        );
-        $this->assertSame($expected_calls, $definition->getMethodCalls());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage You have requested a non-existent parameter "subscriber.class"
-     */
-    public function testEventSubscriberUnresolvableClassName()
-    {
-        $container = new ContainerBuilder();
-        $container->register('foo', '%subscriber.class%')->addTag('kernel.event_subscriber', array());
         $container->register('event_dispatcher', 'stdClass');
 
         $registerListenersPass = new RegisterListenersPass();

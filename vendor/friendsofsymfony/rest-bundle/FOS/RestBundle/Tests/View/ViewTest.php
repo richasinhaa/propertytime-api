@@ -12,15 +12,11 @@
 namespace FOS\RestBundle\Tests\View;
 
 use FOS\RestBundle\View\View;
-use FOS\RestBundle\View\RedirectView;
-use FOS\RestBundle\View\RouteRedirectView;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
-use FOS\Rest\Util\Codes;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use FOS\RestBundle\Util\Codes;
 
 /**
- * View test
+ * View test.
  *
  * @author Victor Berchet <victor@suumit.com>
  */
@@ -47,7 +43,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $url = 'users';
         $code = 500;
 
-        $view = RedirectView::create($url, $code);
+        $view = View::createRedirect($url, $code);
         $this->assertAttributeEquals($url, 'location', $view);
         $this->assertAttributeEquals(null, 'route', $view);
         $this->assertEquals($code, $view->getResponse()->getStatusCode());
@@ -62,7 +58,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     {
         $routeName = 'users';
 
-        $view = RouteRedirectView::create($routeName);
+        $view = View::createRouteRedirect($routeName, array(), Codes::HTTP_CREATED);
         $this->assertAttributeEquals($routeName, 'route', $view);
         $this->assertAttributeEquals(null, 'location', $view);
         $this->assertEquals(Codes::HTTP_CREATED, $view->getResponse()->getStatusCode());
@@ -92,6 +88,25 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         return array(
             'null as data' => array(null),
             'array as data' => array(array('foo' => 'bar')),
+        );
+    }
+
+    /**
+     * @dataProvider setTemplateDataDataProvider
+     */
+    public function testSetTemplateData($templateData)
+    {
+        $view = new View();
+        $view->setTemplateData($templateData);
+        $this->assertEquals($templateData, $view->getTemplateData());
+    }
+
+    public static function setTemplateDataDataProvider()
+    {
+        return array(
+            'null as data' => array(null),
+            'array as data' => array(array('foo' => 'bar')),
+            'function as data' => array(function () {}),
         );
     }
 

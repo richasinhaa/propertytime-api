@@ -98,7 +98,9 @@
             },
 
             toggle: function(selector, elOn, elOff) {
-                var tmp = elOn.style.display,
+                var i,
+                    style,
+                    tmp = elOn.style.display,
                     el = document.getElementById(selector);
 
                 elOn.style.display = elOff.style.display;

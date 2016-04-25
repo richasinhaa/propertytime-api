@@ -20,7 +20,6 @@ use Symfony\Component\Validator\Tests\Fixtures\StubGlobalExecutionContext;
 
 /**
  * @since  2.5.3
- *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
 abstract class AbstractConstraintValidatorTest extends \PHPUnit_Framework_TestCase
@@ -81,7 +80,7 @@ abstract class AbstractConstraintValidatorTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * @param mixed  $message
+     * @param        $message
      * @param array  $parameters
      * @param string $propertyPath
      * @param string $invalidValue
@@ -183,7 +182,7 @@ abstract class AbstractConstraintValidatorTest extends \PHPUnit_Framework_TestCa
     }
 
     /**
-     * @param mixed  $message
+     * @param        $message
      * @param array  $parameters
      * @param string $propertyPath
      * @param string $invalidValue

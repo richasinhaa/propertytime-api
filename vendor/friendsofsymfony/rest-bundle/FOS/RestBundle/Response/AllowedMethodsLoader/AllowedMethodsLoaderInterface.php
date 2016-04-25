@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the FOSRestBundle package.
  *
@@ -11,14 +12,14 @@
 namespace FOS\RestBundle\Response\AllowedMethodsLoader;
 
 /**
- * AllowedMethodsLoaderInterface
+ * AllowedMethodsLoaderInterface.
  *
  * @author Boris Guéry <guery.b@gmail.com>
  */
 interface AllowedMethodsLoaderInterface
 {
     /**
-     * Returns the allowed http methods
+     * Returns the allowed http methods.
      *
      * array(
      *  'some_route'    => array('GET', 'POST'),
@@ -27,5 +28,5 @@ interface AllowedMethodsLoaderInterface
      *
      * @return array
      */
-    function getAllowedMethods();
+    public function getAllowedMethods();
 }

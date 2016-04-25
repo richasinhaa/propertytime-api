@@ -63,11 +63,17 @@ class Application extends BaseApplication
      * @param InputInterface  $input  An Input instance
      * @param OutputInterface $output An Output instance
      *
-     * @return int 0 if everything went fine, or an error code
+     * @return int     0 if everything went fine, or an error code
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
         $this->kernel->boot();
+
+        if (!$this->commandsRegistered) {
+            $this->registerCommands();
+
+            $this->commandsRegistered = true;
+        }
 
         $container = $this->kernel->getContainer();
 
@@ -90,33 +96,15 @@ class Application extends BaseApplication
         return parent::doRun($input, $output);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function get($name)
-    {
-        $this->registerCommands();
-
-        return parent::get($name);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function all($namespace = null)
-    {
-        $this->registerCommands();
-
-        return parent::all($namespace);
-    }
-
     protected function registerCommands()
     {
-        if ($this->commandsRegistered) {
-            return;
-        }
+        $container = $this->kernel->getContainer();
 
-        $this->commandsRegistered = true;
+        if ($container->hasParameter('console.command.ids')) {
+            foreach ($container->getParameter('console.command.ids') as $id) {
+                $this->add($container->get($id));
+            }
+        }
 
         foreach ($this->kernel->getBundles() as $bundle) {
             if ($bundle instanceof Bundle) {

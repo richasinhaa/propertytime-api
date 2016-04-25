@@ -298,18 +298,6 @@
                 <source>The image is portrait oriented ({{ width }}x{{ height }}px). Portrait oriented images are not allowed.</source>
                 <target>Bilden är porträttsorienterad ({{ width }}x{{ height }}px). Porträttsorienterade bilder tillåts inte.</target>
             </trans-unit>
-            <trans-unit id="78">
-                <source>An empty file is not allowed.</source>
-                <target>En tom fil är inte tillåten.</target>
-            </trans-unit>
-            <trans-unit id="79">
-                <source>The host could not be resolved.</source>
-                <target>Värddatorn kunde inte hittas.</target>
-            </trans-unit>
-            <trans-unit id="80">
-                <source>This value does not match the expected {{ charset }} charset.</source>
-                <target>Detta värde har inte den förväntade teckenkodningen {{ charset }}.</target>
-            </trans-unit>
         </body>
     </file>
 </xliff>

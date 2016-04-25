@@ -11,8 +11,6 @@
 
 namespace Symfony\Component\Form\Extension\Csrf\CsrfProvider;
 
-use Symfony\Component\Security\Core\Util\StringUtils;
-
 /**
  * Default implementation of CsrfProviderInterface.
  *
@@ -20,18 +18,22 @@ use Symfony\Component\Security\Core\Util\StringUtils;
  * user-defined secret value to secure the CSRF token.
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @deprecated Deprecated since version 2.4, to be removed in Symfony 3.0. Use
+ *             {@link \Symfony\Component\Security\Csrf\CsrfTokenManager} in
+ *             combination with {@link \Symfony\Component\Security\Csrf\TokenStorage\NativeSessionTokenStorage}
+ *             instead.
  */
 class DefaultCsrfProvider implements CsrfProviderInterface
 {
     /**
-     * A secret value used for generating the CSRF token.
-     *
+     * A secret value used for generating the CSRF token
      * @var string
      */
     protected $secret;
 
     /**
-     * Initializes the provider with a secret value.
+     * Initializes the provider with a secret value
      *
      * A recommended value for the secret is a generated value with at least
      * 32 characters and mixed letters, digits and special characters.
@@ -56,17 +58,7 @@ class DefaultCsrfProvider implements CsrfProviderInterface
      */
     public function isCsrfTokenValid($intention, $token)
     {
-        $expectedToken = $this->generateCsrfToken($intention);
-
-        if (function_exists('hash_equals')) {
-            return hash_equals($expectedToken, $token);
-        }
-
-        if (class_exists('Symfony\Component\Security\Core\Util\StringUtils')) {
-            return StringUtils::equals($expectedToken, $token);
-        }
-
-        return $token === $expectedToken;
+        return $token === $this->generateCsrfToken($intention);
     }
 
     /**
@@ -78,7 +70,7 @@ class DefaultCsrfProvider implements CsrfProviderInterface
      */
     protected function getSessionId()
     {
-        if (PHP_VERSION_ID >= 50400) {
+        if (version_compare(PHP_VERSION, '5.4', '>=')) {
             if (PHP_SESSION_NONE === session_status()) {
                 session_start();
             }

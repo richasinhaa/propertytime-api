@@ -22,34 +22,14 @@ use Symfony\Component\Config\Definition\Exception\UnsetKeyException;
  */
 class ArrayNode extends BaseNode implements PrototypeNodeInterface
 {
-    protected $xmlRemappings;
-    protected $children;
-    protected $allowFalse;
-    protected $allowNewKeys;
-    protected $addIfNotSet;
-    protected $performDeepMerging;
-    protected $ignoreExtraKeys;
-    protected $normalizeKeys;
-
-    /**
-     * Constructor.
-     *
-     * @param string        $name   The Node's name
-     * @param NodeInterface $parent The node parent
-     */
-    public function __construct($name, NodeInterface $parent = null)
-    {
-        parent::__construct($name, $parent);
-
-        $this->children = array();
-        $this->xmlRemappings = array();
-        $this->removeKeyAttribute = true;
-        $this->allowFalse = false;
-        $this->addIfNotSet = false;
-        $this->allowNewKeys = true;
-        $this->performDeepMerging = true;
-        $this->normalizeKeys = true;
-    }
+    protected $xmlRemappings = array();
+    protected $children = array();
+    protected $allowFalse = false;
+    protected $allowNewKeys = true;
+    protected $addIfNotSet = false;
+    protected $performDeepMerging = true;
+    protected $ignoreExtraKeys = false;
+    protected $normalizeKeys = true;
 
     public function setNormalizeKeys($normalizeKeys)
     {
@@ -75,17 +55,14 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
             return $value;
         }
 
-        $normalized = array();
-
         foreach ($value as $k => $v) {
             if (false !== strpos($k, '-') && false === strpos($k, '_') && !array_key_exists($normalizedKey = str_replace('-', '_', $k), $value)) {
-                $normalized[$normalizedKey] = $v;
-            } else {
-                $normalized[$k] = $v;
+                $value[$normalizedKey] = $v;
+                unset($value[$k]);
             }
         }
 
-        return $normalized;
+        return $value;
     }
 
     /**
@@ -109,10 +86,20 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
     }
 
     /**
+     * Gets the xml remappings that should be performed.
+     *
+     * @return array $remappings an array of the form array(array(string, string))
+     */
+    public function getXmlRemappings()
+    {
+        return $this->xmlRemappings;
+    }
+
+    /**
      * Sets whether to add default values for this array if it has not been
      * defined in any of the configuration files.
      *
-     * @param bool $boolean
+     * @param bool    $boolean
      */
     public function setAddIfNotSet($boolean)
     {
@@ -122,7 +109,7 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
     /**
      * Sets whether false is allowed as value indicating that the array should be unset.
      *
-     * @param bool $allow
+     * @param bool    $allow
      */
     public function setAllowFalse($allow)
     {
@@ -132,7 +119,7 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
     /**
      * Sets whether new keys can be defined in subsequent configurations.
      *
-     * @param bool $allow
+     * @param bool    $allow
      */
     public function setAllowNewKeys($allow)
     {
@@ -142,7 +129,7 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
     /**
      * Sets if deep merging should occur.
      *
-     * @param bool $boolean
+     * @param bool    $boolean
      */
     public function setPerformDeepMerging($boolean)
     {
@@ -152,7 +139,7 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
     /**
      * Whether extra keys should just be ignore without an exception.
      *
-     * @param bool $boolean To allow extra keys
+     * @param bool    $boolean To allow extra keys
      */
     public function setIgnoreExtraKeys($boolean)
     {
@@ -259,7 +246,7 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
 
             try {
                 $value[$name] = $child->finalize($value[$name]);
-            } catch (UnsetKeyException $e) {
+            } catch (UnsetKeyException $unset) {
                 unset($value[$name]);
             }
         }
@@ -315,7 +302,7 @@ class ArrayNode extends BaseNode implements PrototypeNodeInterface
 
         // if extra fields are present, throw exception
         if (count($value) && !$this->ignoreExtraKeys) {
-            $msg = sprintf('Unrecognized option%s "%s" under "%s"', 1 === count($value) ? '' : 's', implode(', ', array_keys($value)), $this->getPath());
+            $msg = sprintf('Unrecognized options "%s" under "%s"', implode(', ', array_keys($value)), $this->getPath());
             $ex = new InvalidConfigurationException($msg);
             $ex->setPath($this->getPath());
 

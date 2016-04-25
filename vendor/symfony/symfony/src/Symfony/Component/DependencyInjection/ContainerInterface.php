@@ -20,14 +20,16 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
+ *
+ * @api
  */
 interface ContainerInterface
 {
     const EXCEPTION_ON_INVALID_REFERENCE = 1;
-    const NULL_ON_INVALID_REFERENCE = 2;
-    const IGNORE_ON_INVALID_REFERENCE = 3;
-    const SCOPE_CONTAINER = 'container';
-    const SCOPE_PROTOTYPE = 'prototype';
+    const NULL_ON_INVALID_REFERENCE      = 2;
+    const IGNORE_ON_INVALID_REFERENCE    = 3;
+    const SCOPE_CONTAINER                = 'container';
+    const SCOPE_PROTOTYPE                = 'prototype';
 
     /**
      * Sets a service.
@@ -35,6 +37,8 @@ interface ContainerInterface
      * @param string $id      The service identifier
      * @param object $service The service instance
      * @param string $scope   The scope of the service
+     *
+     * @api
      */
     public function set($id, $service, $scope = self::SCOPE_CONTAINER);
 
@@ -46,10 +50,13 @@ interface ContainerInterface
      *
      * @return object The associated service
      *
+     * @throws InvalidArgumentException if the service is not defined
      * @throws ServiceCircularReferenceException When a circular reference is detected
-     * @throws ServiceNotFoundException          When the service is not defined
+     * @throws ServiceNotFoundException When the service is not defined
      *
      * @see Reference
+     *
+     * @api
      */
     public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE);
 
@@ -58,7 +65,9 @@ interface ContainerInterface
      *
      * @param string $id The service identifier
      *
-     * @return bool true if the service is defined, false otherwise
+     * @return bool    true if the service is defined, false otherwise
+     *
+     * @api
      */
     public function has($id);
 
@@ -67,9 +76,11 @@ interface ContainerInterface
      *
      * @param string $name The parameter name
      *
-     * @return mixed The parameter value
+     * @return mixed  The parameter value
      *
      * @throws InvalidArgumentException if the parameter is not defined
+     *
+     * @api
      */
     public function getParameter($name);
 
@@ -78,7 +89,9 @@ interface ContainerInterface
      *
      * @param string $name The parameter name
      *
-     * @return bool The presence of parameter in container
+     * @return bool    The presence of parameter in container
+     *
+     * @api
      */
     public function hasParameter($name);
 
@@ -87,36 +100,46 @@ interface ContainerInterface
      *
      * @param string $name  The parameter name
      * @param mixed  $value The parameter value
+     *
+     * @api
      */
     public function setParameter($name, $value);
 
     /**
-     * Enters the given scope.
+     * Enters the given scope
      *
      * @param string $name
+     *
+     * @api
      */
     public function enterScope($name);
 
     /**
-     * Leaves the current scope, and re-enters the parent scope.
+     * Leaves the current scope, and re-enters the parent scope
      *
      * @param string $name
+     *
+     * @api
      */
     public function leaveScope($name);
 
     /**
-     * Adds a scope to the container.
+     * Adds a scope to the container
      *
      * @param ScopeInterface $scope
+     *
+     * @api
      */
     public function addScope(ScopeInterface $scope);
 
     /**
-     * Whether this container has the given scope.
+     * Whether this container has the given scope
      *
      * @param string $name
      *
      * @return bool
+     *
+     * @api
      */
     public function hasScope($name);
 
@@ -128,6 +151,8 @@ interface ContainerInterface
      * @param string $name
      *
      * @return bool
+     *
+     * @api
      */
     public function isScopeActive($name);
 }

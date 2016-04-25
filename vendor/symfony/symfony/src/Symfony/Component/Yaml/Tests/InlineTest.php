@@ -46,19 +46,15 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Your platform does not support locales.');
         }
 
-        try {
-            $requiredLocales = array('fr_FR.UTF-8', 'fr_FR.UTF8', 'fr_FR.utf-8', 'fr_FR.utf8', 'French_France.1252');
-            if (false === setlocale(LC_NUMERIC, $requiredLocales)) {
-                $this->markTestSkipped('Could not set any of required locales: '.implode(', ', $requiredLocales));
-            }
-
-            $this->assertEquals('1.2', Inline::dump(1.2));
-            $this->assertContains('fr', strtolower(setlocale(LC_NUMERIC, 0)));
-            setlocale(LC_NUMERIC, $locale);
-        } catch (\Exception $e) {
-            setlocale(LC_NUMERIC, $locale);
-            throw $e;
+        $required_locales = array('fr_FR.UTF-8', 'fr_FR.UTF8', 'fr_FR.utf-8', 'fr_FR.utf8', 'French_France.1252');
+        if (false === setlocale(LC_ALL, $required_locales)) {
+            $this->markTestSkipped('Could not set any of required locales: '.implode(", ", $required_locales));
         }
+
+        $this->assertEquals('1.2', Inline::dump(1.2));
+        $this->assertContains('fr', strtolower(setlocale(LC_NUMERIC, 0)));
+
+        setlocale(LC_ALL, $locale);
     }
 
     public function testHashStringsResemblingExponentialNumericsShouldNotBeChangedToINF()
@@ -194,15 +190,7 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             "'#cfcfcf'" => '#cfcfcf',
             '::form_base.html.twig' => '::form_base.html.twig',
 
-            // Pre-YAML-1.2 booleans
-            "'y'" => 'y',
-            "'n'" => 'n',
-            "'yes'" => 'yes',
-            "'no'" => 'no',
-            "'on'" => 'on',
-            "'off'" => 'off',
-
-            '2007-10-30' => gmmktime(0, 0, 0, 10, 30, 2007),
+            '2007-10-30' => mktime(0, 0, 0, 10, 30, 2007),
             '2007-10-30T02:59:43Z' => gmmktime(2, 59, 43, 10, 30, 2007),
             '2007-10-30 02:59:43 Z' => gmmktime(2, 59, 43, 10, 30, 2007),
             '1960-10-30 02:59:43 Z' => gmmktime(2, 59, 43, 10, 30, 1960),
@@ -222,8 +210,8 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             '{ foo  : bar, bar : foo,  false  :   false,  null  :   null,  integer :  12  }' => array('foo' => 'bar', 'bar' => 'foo', 'false' => false, 'null' => null, 'integer' => 12),
             '{foo: \'bar\', bar: \'foo: bar\'}' => array('foo' => 'bar', 'bar' => 'foo: bar'),
             '{\'foo\': \'bar\', "bar": \'foo: bar\'}' => array('foo' => 'bar', 'bar' => 'foo: bar'),
-            '{\'foo\'\'\': \'bar\', "bar\"": \'foo: bar\'}' => array('foo\'' => 'bar', 'bar"' => 'foo: bar'),
-            '{\'foo: \': \'bar\', "bar: ": \'foo: bar\'}' => array('foo: ' => 'bar', 'bar: ' => 'foo: bar'),
+            '{\'foo\'\'\': \'bar\', "bar\"": \'foo: bar\'}' => array('foo\'' => 'bar', "bar\"" => 'foo: bar'),
+            '{\'foo: \': \'bar\', "bar: ": \'foo: bar\'}' => array('foo: ' => 'bar', "bar: " => 'foo: bar'),
 
             // nested sequences and mappings
             '[foo, [bar, foo]]' => array('foo', array('bar', 'foo')),
@@ -255,9 +243,9 @@ class InlineTest extends \PHPUnit_Framework_TestCase
             '12.30e+02' => 12.30e+02,
             '1234' => 0x4D2,
             '1243' => 02333,
+            '.Inf' => -log(0),
             '-.Inf' => log(0),
             "'686e444'" => '686e444',
-            '.Inf' => 646e444,
             '"foo\r\nbar"' => "foo\r\nbar",
             "'foo#bar'" => 'foo#bar',
             "'foo # bar'" => 'foo # bar',
@@ -267,14 +255,6 @@ class InlineTest extends \PHPUnit_Framework_TestCase
 
             "'-dash'" => '-dash',
             "'-'" => '-',
-
-            // Pre-YAML-1.2 booleans
-            "'y'" => 'y',
-            "'n'" => 'n',
-            "'yes'" => 'yes',
-            "'no'" => 'no',
-            "'on'" => 'on',
-            "'off'" => 'off',
 
             // sequences
             '[foo, bar, false, null, 12]' => array('foo', 'bar', false, null, 12),

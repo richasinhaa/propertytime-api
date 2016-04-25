@@ -17,6 +17,13 @@ use Symfony\Component\Validator\Constraints\CountryValidator;
 
 class CountryValidatorTest extends AbstractConstraintValidatorTest
 {
+    protected function setUp()
+    {
+        IntlTestHelper::requireFullIntl($this);
+
+        parent::setUp();
+    }
+
     protected function createValidator()
     {
         return new CountryValidator();

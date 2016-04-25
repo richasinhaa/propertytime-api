@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 /**
  * Integration tests for {@see \Symfony\Component\DependencyInjection\Dumper\PhpDumper} combined
- * with the ProxyManager bridge.
+ * with the ProxyManager bridge
  *
  * @author Marco Pivetta <ocramius@gmail.com>
  */
@@ -45,16 +45,11 @@ class PhpDumperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Verifies that the generated container retrieves the same proxy instance on multiple subsequent requests.
+     * Verifies that the generated container retrieves the same proxy instance on multiple subsequent requests
      */
     public function testDumpContainerWithProxyServiceWillShareProxies()
     {
-        // detecting ProxyManager v2
-        if (class_exists('ProxyManager\ProxyGenerator\LazyLoading\MethodGenerator\StaticProxyConstructor')) {
-            require_once __DIR__.'/../Fixtures/php/lazy_service_with_hints.php';
-        } else {
-            require_once __DIR__.'/../Fixtures/php/lazy_service.php';
-        }
+        require_once __DIR__.'/../Fixtures/php/lazy_service.php';
 
         $container = new \LazyServiceProjectServiceContainer();
 

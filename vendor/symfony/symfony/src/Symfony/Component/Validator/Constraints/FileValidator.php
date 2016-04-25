@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @api
  */
 class FileValidator extends ConstraintValidator
 {

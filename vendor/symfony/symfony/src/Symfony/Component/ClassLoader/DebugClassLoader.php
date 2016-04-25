@@ -20,6 +20,10 @@ namespace Symfony\Component\ClassLoader;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Christophe Coevoet <stof@notk.org>
+ *
+ * @api
+ *
+ * @deprecated Deprecated since version 2.4, to be removed in 3.0. Use the DebugClassLoader provided by the Debug component instead.
  */
 class DebugClassLoader
 {
@@ -29,10 +33,22 @@ class DebugClassLoader
      * Constructor.
      *
      * @param object $classFinder
+     *
+     * @api
      */
     public function __construct($classFinder)
     {
         $this->classFinder = $classFinder;
+    }
+
+    /**
+     * Gets the wrapped class loader.
+     *
+     * @return object a class loader instance
+     */
+    public function getClassLoader()
+    {
+        return $this->classFinder;
     }
 
     /**
@@ -66,7 +82,7 @@ class DebugClassLoader
     }
 
     /**
-     * Finds a file by class name.
+     * Finds a file by class name
      *
      * @param string $class A class name to resolve to file
      *
@@ -82,7 +98,7 @@ class DebugClassLoader
      *
      * @param string $class The name of the class
      *
-     * @return bool|null True, if loaded
+     * @return bool|null    True, if loaded
      *
      * @throws \RuntimeException
      */

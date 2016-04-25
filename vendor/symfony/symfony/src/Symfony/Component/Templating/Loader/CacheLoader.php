@@ -46,17 +46,20 @@ class CacheLoader extends Loader
      *
      * @param TemplateReferenceInterface $template A template
      *
-     * @return Storage|bool false if the template cannot be loaded, a Storage instance otherwise
+     * @return Storage|bool    false if the template cannot be loaded, a Storage instance otherwise
      */
     public function load(TemplateReferenceInterface $template)
     {
-        $key = md5($template->getLogicalName());
+        $key = hash('sha256', $template->getLogicalName());
         $dir = $this->dir.DIRECTORY_SEPARATOR.substr($key, 0, 2);
         $file = substr($key, 2).'.tpl';
         $path = $dir.DIRECTORY_SEPARATOR.$file;
 
         if (is_file($path)) {
-            if (null !== $this->debugger) {
+            if (null !== $this->logger) {
+                $this->logger->debug(sprintf('Fetching template "%s" from cache', $template->get('name')));
+            } elseif (null !== $this->debugger) {
+                // just for BC, to be removed in 3.0
                 $this->debugger->log(sprintf('Fetching template "%s" from cache', $template->get('name')));
             }
 
@@ -69,13 +72,16 @@ class CacheLoader extends Loader
 
         $content = $storage->getContent();
 
-        if (!is_dir($dir) && !@mkdir($dir, 0777, true) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Cache Loader was not able to create directory "%s"', $dir));
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
         }
 
         file_put_contents($path, $content);
 
-        if (null !== $this->debugger) {
+        if (null !== $this->logger) {
+            $this->logger->debug(sprintf('Storing template "%s" in cache', $template->get('name')));
+        } elseif (null !== $this->debugger) {
+            // just for BC, to be removed in 3.0
             $this->debugger->log(sprintf('Storing template "%s" in cache', $template->get('name')));
         }
 

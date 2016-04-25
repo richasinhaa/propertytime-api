@@ -11,13 +11,19 @@
 
 namespace FOS\RestBundle\Request;
 
-use FOS\Rest\Util\Codes;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\Param;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
-use Doctrine\Common\Util\ClassUtils;
+use FOS\RestBundle\Util\ViolationFormatterInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\ValidatorInterface as LegacyValidatorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Helper to validate parameters of the active request.
@@ -27,93 +33,130 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Boris Guéry <guery.b@gmail.com>
  */
-class ParamFetcher implements ParamFetcherInterface
+class ParamFetcher implements ParamFetcherInterface, ContainerAwareInterface
 {
-    /**
-     * @var ParamReader
-     */
-    private $paramReader;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var array
-     */
-    private $params;
-
+    private $parameterBag;
+    private $requestStack;
+    private $validator;
+    private $violationFormatter;
     /**
      * @var callable
      */
     private $controller;
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Initializes fetcher.
      *
-     * @param ParamReader $paramReader Query param reader
-     * @param Request     $request     Active request
+     * @param ParamReader                                 $paramReader
+     * @param Request|RequestStack|null                   $request
+     * @param ValidatorInterface|LegacyValidatorInterface $validator
+     * @param ViolationFormatterInterface                 $violationFormatter
      */
-    public function __construct(ParamReader $paramReader, Request $request)
+    public function __construct(ParamReader $paramReader, $requestStack, ViolationFormatterInterface $violationFormatter, $validator = null)
     {
-        $this->paramReader = $paramReader;
-        $this->request = $request;
+        if (null === $requestStack || $requestStack instanceof Request) {
+            @trigger_error('Support of Symfony\Component\HttpFoundation\Request in FOS\RestBundle\Request\ParamFetcher is deprecated since version 1.7 and will be removed in 2.0. Use Symfony\Component\HttpFoundation\RequestStack instead.', E_USER_DEPRECATED);
+        } elseif (!($requestStack instanceof RequestStack)) {
+            throw new \InvalidArgumentException(sprintf('Argument 3 of %s constructor must be either an instance of Symfony\Component\HttpFoundation\Request or Symfony\Component\HttpFoundation\RequestStack.', get_class($this)));
+        }
+
+        $this->requestStack = $requestStack;
+        $this->violationFormatter = $violationFormatter;
+        $this->validator = $validator;
+
+        $this->parameterBag = new ParameterBag($paramReader);
+
+        if ($validator !== null && !$validator instanceof LegacyValidatorInterface && !$validator instanceof ValidatorInterface) {
+            throw new \InvalidArgumentException(sprintf(
+                'Validator has expected to be an instance of %s or %s, "%s" given',
+                'Symfony\Component\Validator\ValidatorInterface',
+                'Symfony\Component\Validator\Validator\ValidatorInterface',
+                get_class($validator)
+            ));
+        }
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the Container associated with this Controller.
+     *
+     * @param ContainerInterface $container A ContainerInterface instance
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function setController($controller)
     {
-        $this->controller = $controller;
+        $this->parameterBag->setController($this->getRequest(), $controller);
     }
 
     /**
-     * {@inheritDoc}
+     * Add additional params to the ParamFetcher during runtime.
+     *
+     * Note that adding a param that has the same name as an existing param will override that param.
+     *
+     * @param Param $param
+     */
+    public function addParam(Param $param)
+    {
+        $this->parameterBag->addParam($this->getRequest(), $param);
+    }
+
+    /**
+     * @return Param[]
+     */
+    public function getParams()
+    {
+        return $this->parameterBag->getParams($this->getRequest());
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function get($name, $strict = null)
     {
-        if (null === $this->params) {
-            $this->initParams();
-        }
+        $params = $this->getParams();
 
-        if (!array_key_exists($name, $this->params)) {
+        if (!array_key_exists($name, $params)) {
             throw new \InvalidArgumentException(sprintf("No @QueryParam/@RequestParam configuration for parameter '%s'.", $name));
         }
 
-        $config   = $this->params[$name];
+        /** @var Param $config */
+        $config = $params[$name];
         $nullable = $config->nullable;
-        $default  = $config->default;
-
-        if ($config->array) {
-            $default = (array) $default;
-        }
+        $default = $config->default;
+        $paramType = $config instanceof QueryParam ? 'Query' : 'Request';
 
         if (null === $strict) {
             $strict = $config->strict;
         }
 
         if ($config instanceof RequestParam) {
-            $param = $this->request->request->get($name, $default);
+            $param = $this->getRequest()->request->get($config->getKey(), $default);
         } elseif ($config instanceof QueryParam) {
-            $param = $this->request->query->get($name, $default);
+            $param = $this->getRequest()->query->get($config->getKey(), $default);
         } else {
             $param = null;
         }
 
         if ($config->array) {
-            $failMessage = null;
-
-            if (!is_array($param)) {
-                $failMessage = sprintf("Query parameter value of '%s' is not an array", $name);
-            } elseif (count($param) !== count($param, COUNT_RECURSIVE)) {
-                $failMessage = sprintf("Query parameter value of '%s' must not have a depth of more than one", $name);
+            if (($default !== null || !$strict) || $nullable) {
+                $default = (array) $default;
             }
 
-            if (null !== $failMessage) {
-                if ($strict) {
-                    throw new HttpException(Codes::HTTP_BAD_REQUEST, $failMessage);
+            if (!is_array($param)) {
+                if ($strict && !$nullable) {
+                    throw new BadRequestHttpException(
+                        sprintf("%s parameter value of '%s' is not an array", $paramType, $name)
+                    );
                 }
 
                 return $default;
@@ -130,11 +173,11 @@ class ParamFetcher implements ParamFetcherInterface
         if (!is_scalar($param)) {
             if (!$nullable) {
                 if ($strict) {
-                    $paramType = $config instanceof QueryParam ? 'Query' : 'Request';
                     $problem = empty($param) ? 'empty' : 'not a scalar';
 
-                    throw new HttpException(Codes::HTTP_BAD_REQUEST,
-                        sprintf('%s parameter "%s" is %s', $paramType, $name, $problem));
+                    throw new BadRequestHttpException(
+                        sprintf('%s parameter "%s" is %s', $paramType, $name, $problem)
+                    );
                 }
 
                 return $this->cleanParamWithRequirements($config, $param, $strict);
@@ -147,25 +190,78 @@ class ParamFetcher implements ParamFetcherInterface
     }
 
     /**
-     * @param Param   $config config
-     * @param string  $param  param to clean
-     * @param boolean $strict is strict
+     * @param Param  $config
+     * @param string $param
+     * @param bool   $strict
      *
-     * @throws \RuntimeException
      * @return string
+     *
+     * @throws BadRequestHttpException
+     * @throws \RuntimeException
      */
     public function cleanParamWithRequirements(Param $config, $param, $strict)
     {
         $default = $config->default;
+        $paramType = $config instanceof QueryParam ? 'Query' : 'Request';
 
-        if ('' !== $config->requirements
-            && ($param !== $default || null === $default)
-            && !preg_match('#^'.$config->requirements.'$#xs', $param)
-        ) {
+        if (null !== $config->requirements && null === $this->validator) {
+            throw new \RuntimeException(
+                'The ParamFetcher requirements feature requires the symfony/validator component.'
+            );
+        }
+
+        $this->checkNotIncompatibleParams($config);
+
+        if (null === $config->requirements || ($param === $default && null !== $default)) {
+            return $param;
+        }
+
+        $constraint = $config->requirements;
+
+        if (is_scalar($constraint)) {
+            if (is_array($param)) {
+                if ($strict) {
+                    throw new BadRequestHttpException(
+                        sprintf('%s parameter is an array', $paramType)
+                    );
+                }
+
+                return $default;
+            }
+            $constraint = new Regex(array(
+                'pattern' => '#^'.$config->requirements.'$#xsu',
+                'message' => sprintf(
+                    "%s parameter value '%s', does not match requirements '%s'",
+                    $paramType,
+                    $param,
+                    $config->requirements
+                ),
+            ));
+        } elseif (is_array($constraint) && isset($constraint['rule']) && $constraint['error_message']) {
+            $constraint = new Regex(array(
+                'pattern' => '#^'.$config->requirements['rule'].'$#xsu',
+                'message' => $config->requirements['error_message'],
+            ));
+        }
+
+        if (false === $config->allowBlank) {
+            $constraint = array(new NotBlank(), $constraint);
+        }
+
+        if ($this->validator instanceof ValidatorInterface) {
+            $errors = $this->validator->validate($param, $constraint);
+        } else {
+            $errors = $this->validator->validateValue($param, $constraint);
+        }
+
+        if (0 !== count($errors)) {
             if ($strict) {
-                $paramType = $config instanceof QueryParam ? 'Query' : 'Request';
-
-                throw new HttpException(Codes::HTTP_BAD_REQUEST, $paramType . " parameter value '$param', does not match requirements '{$config->requirements}'");
+                if (is_array($config->requirements) && isset($config->requirements['error_message'])) {
+                    $errorMessage = $config->requirements['error_message'];
+                } else {
+                    $errorMessage = $this->violationFormatter->formatList($config, $errors);
+                }
+                throw new BadRequestHttpException($errorMessage);
             }
 
             return null === $default ? '' : $default;
@@ -175,16 +271,14 @@ class ParamFetcher implements ParamFetcherInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function all($strict = null)
     {
-        if (null === $this->params) {
-            $this->initParams();
-        }
+        $configuredParams = $this->getParams();
 
         $params = array();
-        foreach ($this->params as $name => $config) {
+        foreach ($configuredParams as $name => $config) {
             $params[$name] = $this->get($name, $strict);
         }
 
@@ -192,20 +286,56 @@ class ParamFetcher implements ParamFetcherInterface
     }
 
     /**
-     * Initialize the parameters
+     * Check if current param is not in conflict with other parameters
+     * according to the "incompatibles" field.
      *
-     * @throws \InvalidArgumentException
+     * @param Param $config the configuration for the param fetcher
+     *
+     * @throws BadRequestHttpException
      */
-    private function initParams()
+    private function checkNotIncompatibleParams(Param $config)
     {
-        if (empty($this->controller)) {
-            throw new \InvalidArgumentException('Controller and method needs to be set via setController');
+        if (!$config instanceof QueryParam) {
+            return;
+        };
+
+        foreach ($config->incompatibles as $incompatibleParam) {
+            $isIncompatiblePresent = $this->getRequest()->query->get(
+                $incompatibleParam,
+                null
+            ) !== null;
+
+            if ($isIncompatiblePresent) {
+                $exceptionMessage = sprintf(
+                    "'%s' param is incompatible with %s param",
+                    $config->name,
+                    $incompatibleParam
+                );
+
+                throw new BadRequestHttpException($exceptionMessage);
+            }
+        }
+    }
+
+    /**
+     * @throws \RuntimeException
+     *
+     * @return Request
+     */
+    private function getRequest()
+    {
+        if ($this->requestStack instanceof Request) {
+            return $this->requestStack;
+        } elseif ($this->requestStack instanceof RequestStack) {
+            $request = $this->requestStack->getCurrentRequest();
+        } else {
+            $request = $this->container->get('request');
         }
 
-        if (!is_array($this->controller) || empty($this->controller[0]) || !is_object($this->controller[0])) {
-            throw new \InvalidArgumentException('Controller needs to be set as a class instance (closures/functions are not supported)');
+        if ($request !== null) {
+            return $request;
         }
 
-        $this->params = $this->paramReader->read(new \ReflectionClass(ClassUtils::getClass($this->controller[0])), $this->controller[1]);
+        throw new \RuntimeException('There is no current request.');
     }
 }

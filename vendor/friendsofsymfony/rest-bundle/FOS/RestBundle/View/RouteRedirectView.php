@@ -11,7 +11,7 @@
 
 namespace FOS\RestBundle\View;
 
-use FOS\Rest\Util\Codes;
+use FOS\RestBundle\Util\Codes;
 
 /**
  * Route based redirect implementation.
@@ -24,13 +24,17 @@ class RouteRedirectView
     /**
      * Convenience method to allow for a fluent interface.
      *
-     * @param string  $route
-     * @param mixed   $data
-     * @param integer $statusCode
-     * @param array   $headers
+     * @param string $route
+     * @param array  $parameters
+     * @param int    $statusCode
+     * @param array  $headers
+     *
+     * @return View
+     *
+     * @deprecated To be removed in FOSRestBundle 2.0.0. Use View::createRouteRedirect instead.
      */
-    public static function create($route, array $data = array(), $statusCode = Codes::HTTP_CREATED, array $headers = array())
+    public static function create($route, array $parameters = array(), $statusCode = Codes::HTTP_CREATED, array $headers = array())
     {
-        return View::create($data, $statusCode, $headers)->setRoute($route);
+        return View::createRouteRedirect($route, $parameters, $statusCode, $headers);
     }
 }

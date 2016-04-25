@@ -13,10 +13,6 @@ namespace Symfony\Component\HttpFoundation\Tests\Session\Storage\Handler;
 
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcacheSessionHandler;
 
-/**
- * @requires extension memcache
- * @group time-sensitive
- */
 class MemcacheSessionHandlerTest extends \PHPUnit_Framework_TestCase
 {
     const PREFIX = 'prefix_';
@@ -30,7 +26,10 @@ class MemcacheSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        parent::setUp();
+        if (!class_exists('Memcache')) {
+            $this->markTestSkipped('Skipped tests Memcache class is not present');
+        }
+
         $this->memcache = $this->getMock('Memcache');
         $this->storage = new MemcacheSessionHandler(
             $this->memcache,
@@ -42,7 +41,6 @@ class MemcacheSessionHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->memcache = null;
         $this->storage = null;
-        parent::tearDown();
     }
 
     public function testOpenSession()
@@ -122,5 +120,13 @@ class MemcacheSessionHandlerTest extends \PHPUnit_Framework_TestCase
             array(array('prefix' => 'session', 'expiretime' => 200), true),
             array(array('expiretime' => 100, 'foo' => 'bar'), false),
         );
+    }
+
+    public function testGetConnection()
+    {
+        $method = new \ReflectionMethod($this->storage, 'getMemcache');
+        $method->setAccessible(true);
+
+        $this->assertInstanceOf('\Memcache', $method->invoke($this->storage));
     }
 }

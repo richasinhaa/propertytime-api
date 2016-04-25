@@ -46,7 +46,6 @@ abstract class AbstractComparisonValidatorTestCase extends AbstractConstraintVal
 
     /**
      * @dataProvider provideValidComparisons
-     *
      * @param mixed $dirtyValue
      * @param mixed $comparisonValue
      */
@@ -66,7 +65,6 @@ abstract class AbstractComparisonValidatorTestCase extends AbstractConstraintVal
 
     /**
      * @dataProvider provideInvalidComparisons
-     *
      * @param mixed  $dirtyValue
      * @param mixed  $dirtyValueAsString
      * @param mixed  $comparedValue
@@ -79,10 +77,6 @@ abstract class AbstractComparisonValidatorTestCase extends AbstractConstraintVal
         // Make sure we have the correct version loaded
         if ($dirtyValue instanceof \DateTime) {
             IntlTestHelper::requireIntl($this);
-
-            if (PHP_VERSION_ID < 50304 && !(extension_loaded('intl') && method_exists('IntlDateFormatter', 'setTimeZone'))) {
-                $this->markTestSkipped('Intl supports formatting DateTime objects since 5.3.4');
-            }
         }
 
         $constraint = $this->createConstraint(array('value' => $comparedValue));
@@ -103,8 +97,7 @@ abstract class AbstractComparisonValidatorTestCase extends AbstractConstraintVal
     abstract public function provideInvalidComparisons();
 
     /**
-     * @param array $options Options for the constraint
-     *
+     * @param  array      $options Options for the constraint
      * @return Constraint
      */
     abstract protected function createConstraint(array $options);

@@ -13,9 +13,6 @@ namespace Symfony\Component\Form\Test;
 
 use Symfony\Component\Form\FormEvent;
 
-/**
- * @deprecated since version 2.3, to be removed in 3.0.
- */
 class DeprecationErrorHandler
 {
     public static function handle($errorNumber, $message, $file, $line, $context)

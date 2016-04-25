@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Symfony Validator Component",
     "keywords": [],
-    "homepage": "https://symfony.com",
+    "homepage": "http://symfony.com",
     "license": "MIT",
     "authors": [
         {
@@ -12,38 +12,39 @@
         },
         {
             "name": "Symfony Community",
-            "homepage": "https://symfony.com/contributors"
+            "homepage": "http://symfony.com/contributors"
         }
     ],
     "require": {
         "php": ">=5.3.3",
-        "symfony/translation": "~2.0,>=2.0.5"
+        "symfony/translation": "~2.0",
+        "symfony/property-access": "~2.2"
     },
     "require-dev": {
-        "doctrine/common": "~2.3",
         "symfony/http-foundation": "~2.1",
         "symfony/intl": "~2.3",
-        "symfony/yaml": "~2.0,>=2.0.5",
-        "symfony/config": "~2.2"
+        "symfony/yaml": "~2.0",
+        "symfony/config": "~2.2",
+        "symfony/expression-language": "~2.4",
+        "doctrine/annotations": "~1.0",
+        "doctrine/cache": "~1.0"
     },
     "suggest": {
-        "doctrine/common": "",
+        "doctrine/annotations": "For using the annotation mapping. You will also need doctrine/cache.",
+        "doctrine/cache": "For using the default cached annotation reader",
         "symfony/http-foundation": "",
         "symfony/intl": "",
         "symfony/yaml": "",
         "symfony/config": ""
     },
     "autoload": {
-        "psr-0": { "Symfony\\Component\\Validator\\": "" },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
+        "psr-0": { "Symfony\\Component\\Validator\\": "" }
     },
     "target-dir": "Symfony/Component/Validator",
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.3-dev"
+            "dev-master": "2.4-dev"
         }
     }
 }

@@ -22,15 +22,29 @@ abstract class Param
     /** @var string */
     public $name;
     /** @var string */
-    public $requirements = '';
-    /** @var string */
+    public $key = null;
+    /** @var mixed */
+    public $requirements = null;
+    /** @var mixed */
     public $default = null;
     /** @var string */
     public $description;
-    /** @var boolean */
+    /** @var bool */
     public $strict = false;
-    /** @var boolean */
+    /** @var bool */
     public $array = false;
-    /** @var boolean */
+    /** @var bool */
     public $nullable = false;
+    /** @var bool */
+    public $allowBlank = true;
+    /** @var array */
+    public $incompatibles = array();
+
+    /**
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->key ?: $this->name;
+    }
 }

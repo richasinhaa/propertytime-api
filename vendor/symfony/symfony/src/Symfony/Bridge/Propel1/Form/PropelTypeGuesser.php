@@ -38,22 +38,22 @@ class PropelTypeGuesser implements FormTypeGuesserInterface
             if ($relation->getType() === \RelationMap::MANY_TO_ONE) {
                 if (strtolower($property) === strtolower($relation->getName())) {
                     return new TypeGuess('model', array(
-                        'class' => $relation->getForeignTable()->getClassName(),
+                        'class'    => $relation->getForeignTable()->getClassName(),
                         'multiple' => false,
                     ), Guess::HIGH_CONFIDENCE);
                 }
             } elseif ($relation->getType() === \RelationMap::ONE_TO_MANY) {
                 if (strtolower($property) === strtolower($relation->getPluralName())) {
                     return new TypeGuess('model', array(
-                        'class' => $relation->getForeignTable()->getClassName(),
+                        'class'    => $relation->getForeignTable()->getClassName(),
                         'multiple' => true,
                     ), Guess::HIGH_CONFIDENCE);
                 }
             } elseif ($relation->getType() === \RelationMap::MANY_TO_MANY) {
                 if (strtolower($property) == strtolower($relation->getPluralName())) {
                     return new TypeGuess('model', array(
-                        'class' => $relation->getLocalTable()->getClassName(),
-                        'multiple' => true,
+                        'class'     => $relation->getLocalTable()->getClassName(),
+                        'multiple'  => true,
                     ), Guess::HIGH_CONFIDENCE);
                 }
             }
@@ -175,6 +175,10 @@ class PropelTypeGuesser implements FormTypeGuesserInterface
 
         if ($table && $table->hasColumn($property)) {
             return $this->cache[$class.'::'.$property] = $table->getColumn($property);
+        }
+
+        if ($table && $table->hasColumnByInsensitiveCase($property)) {
+            return $this->cache[$class.'::'.$property] = $table->getColumnByInsensitiveCase($property);
         }
     }
 }

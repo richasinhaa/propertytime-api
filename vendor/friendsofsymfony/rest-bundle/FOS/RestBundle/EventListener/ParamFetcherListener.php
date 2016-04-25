@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * This listener handles various setup tasks related to the query fetcher
+ * This listener handles various setup tasks related to the query fetcher.
  *
  * Setting the controller callable on the query fetcher
  * Setting the query fetcher as a request attribute
@@ -24,18 +24,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class ParamFetcherListener
 {
-    /**
-     * @var ContainerInterface
-     */
     private $container;
-
     private $setParamsAsAttributes;
 
     /**
      * Constructor.
      *
-     * @param ContainerInterface $container             container
-     * @param boolean            $setParamsAsAttributes params as attributes
+     * @param ContainerInterface $container
+     * @param bool               $setParamsAsAttributes
      */
     public function __construct(ContainerInterface $container, $setParamsAsAttributes = false)
     {
@@ -44,22 +40,31 @@ class ParamFetcherListener
     }
 
     /**
-     * Core controller handler
+     * Core controller handler.
      *
-     * @param FilterControllerEvent $event The event
+     * @param FilterControllerEvent $event
+     *
+     * @throws \InvalidArgumentException
      */
     public function onKernelController(FilterControllerEvent $event)
     {
         $request = $event->getRequest();
         $paramFetcher = $this->container->get('fos_rest.request.param_fetcher');
 
-        $paramFetcher->setController($event->getController());
-        $request->attributes->set('paramFetcher', $paramFetcher);
+        $controller = $event->getController();
+
+        if (is_callable($controller) && method_exists($controller, '__invoke')) {
+            $controller = array($controller, '__invoke');
+        }
+
+        $paramFetcher->setController($controller);
+        $attributeName = $this->getAttributeName($controller);
+        $request->attributes->set($attributeName, $paramFetcher);
 
         if ($this->setParamsAsAttributes) {
             $params = $paramFetcher->all();
             foreach ($params as $name => $param) {
-                if ($request->attributes->has($name)) {
+                if ($request->attributes->has($name) && null !== $request->attributes->get($name)) {
                     $msg = sprintf("ParamFetcher parameter conflicts with a path parameter '$name' for route '%s'", $request->attributes->get('_route'));
                     throw new \InvalidArgumentException($msg);
                 }
@@ -67,5 +72,45 @@ class ParamFetcherListener
                 $request->attributes->set($name, $param);
             }
         }
+    }
+
+    /**
+     * Determines which attribute the ParamFetcher should be injected as.
+     *
+     * @param array $controller The controller action as an "array" callable.
+     *
+     * @return string
+     */
+    private function getAttributeName(array $controller)
+    {
+        list($object, $name) = $controller;
+        $method = new \ReflectionMethod($object, $name);
+        foreach ($method->getParameters() as $param) {
+            if ($this->isParamFetcherType($param)) {
+                return $param->getName();
+            }
+        }
+
+        // If there is no typehint, inject the ParamFetcher using a default name.
+        return 'paramFetcher';
+    }
+
+    /**
+     * Returns true if the given controller parameter is type-hinted as
+     * an instance of ParamFetcher.
+     *
+     * @param \ReflectionParameter $controllerParam A parameter of the controller action.
+     *
+     * @return bool
+     */
+    private function isParamFetcherType(\ReflectionParameter $controllerParam)
+    {
+        $type = $controllerParam->getClass();
+        if (null === $type) {
+            return false;
+        }
+        $fetcherInterface = 'FOS\\RestBundle\\Request\\ParamFetcherInterface';
+
+        return $type->implementsInterface($fetcherInterface);
     }
 }

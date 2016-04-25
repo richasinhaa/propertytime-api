@@ -13,10 +13,17 @@ namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 
 use Symfony\Component\Form\Extension\Core\View\ChoiceView;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\Test\TypeTestCase as TestCase;
+use Symfony\Component\Intl\Util\IntlTestHelper;
 
-class TimeTypeTest extends TestCase
+class TimeTypeTest extends TypeTestCase
 {
+    protected function setUp()
+    {
+        IntlTestHelper::requireIntl($this);
+
+        parent::setUp();
+    }
+
     public function testSubmitDateTime()
     {
         $form = $this->factory->create('time', null, array(
@@ -467,6 +474,7 @@ class TimeTypeTest extends TestCase
         $this->assertTrue($form->isPartiallyFilled());
     }
 
+    // Bug fix
     public function testInitializeWithDateTime()
     {
         // Throws an exception if "data_class" option is not explicitly set
@@ -663,36 +671,6 @@ class TimeTypeTest extends TestCase
         $this->factory->create('time', null, array(
             'with_minutes' => false,
             'with_seconds' => true,
-        ));
-    }
-
-    /**
-     * @expectedException \Symfony\Component\OptionsResolver\Exception\InvalidOptionsException
-     */
-    public function testThrowExceptionIfHoursIsInvalid()
-    {
-        $this->factory->create('time', null, array(
-            'hours' => 'bad value',
-        ));
-    }
-
-    /**
-     * @expectedException \Symfony\Component\OptionsResolver\Exception\InvalidOptionsException
-     */
-    public function testThrowExceptionIfMinutesIsInvalid()
-    {
-        $this->factory->create('time', null, array(
-            'minutes' => 'bad value',
-        ));
-    }
-
-    /**
-     * @expectedException \Symfony\Component\OptionsResolver\Exception\InvalidOptionsException
-     */
-    public function testThrowExceptionIfSecondsIsInvalid()
-    {
-        $this->factory->create('time', null, array(
-            'seconds' => 'bad value',
         ));
     }
 }

@@ -81,7 +81,7 @@ class IsbnValidator extends ConstraintValidator
                 return false;
             }
 
-            $checkSum += $digit * (10 - $i);
+            $checkSum += $digit * intval(10 - $i);
         }
 
         return 0 === $checkSum % 11;

@@ -6,13 +6,11 @@
          colors="true"
          bootstrap="vendor/autoload.php"
 >
-    <php>
-        <ini name="error_reporting" value="-1" />
-    </php>
-
     <testsuites>
         <testsuite name="Symfony Security Component Test Suite">
-            <directory>./Tests/</directory>
+            <directory>./Acl/Tests/</directory>
+            <directory>./Core/Tests/</directory>
+            <directory>./Http/Tests/</directory>
         </testsuite>
     </testsuites>
 
@@ -20,10 +18,10 @@
         <whitelist>
             <directory>./</directory>
             <exclude>
-                <directory>./Acl/Resources</directory>
-                <directory>./Resources</directory>
-                <directory>./Tests</directory>
                 <directory>./vendor</directory>
+                <directory>./Acl/Tests</directory>
+                <directory>./Core/Tests</directory>
+                <directory>./Http/Tests</directory>
             </exclude>
         </whitelist>
     </filter>

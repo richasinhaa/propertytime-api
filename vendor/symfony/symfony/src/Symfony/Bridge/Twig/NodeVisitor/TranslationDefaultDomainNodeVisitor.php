@@ -19,7 +19,7 @@ use Symfony\Bridge\Twig\Node\TransDefaultDomainNode;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TranslationDefaultDomainNodeVisitor extends \Twig_BaseNodeVisitor
+class TranslationDefaultDomainNodeVisitor implements \Twig_NodeVisitorInterface
 {
     /**
      * @var Scope
@@ -37,7 +37,7 @@ class TranslationDefaultDomainNodeVisitor extends \Twig_BaseNodeVisitor
     /**
      * {@inheritdoc}
      */
-    protected function doEnterNode(\Twig_Node $node, \Twig_Environment $env)
+    public function enterNode(\Twig_NodeInterface $node, \Twig_Environment $env)
     {
         if ($node instanceof \Twig_Node_Block || $node instanceof \Twig_Node_Module) {
             $this->scope = $this->scope->enter();
@@ -62,20 +62,14 @@ class TranslationDefaultDomainNodeVisitor extends \Twig_BaseNodeVisitor
         }
 
         if ($node instanceof \Twig_Node_Expression_Filter && in_array($node->getNode('filter')->getAttribute('value'), array('trans', 'transchoice'))) {
-            $arguments = $node->getNode('arguments');
             $ind = 'trans' === $node->getNode('filter')->getAttribute('value') ? 1 : 2;
-            if ($this->isNamedArguments($arguments)) {
-                if (!$arguments->hasNode('domain') && !$arguments->hasNode($ind)) {
-                    $arguments->setNode('domain', $this->scope->get('domain'));
+            $arguments = $node->getNode('arguments');
+            if (!$arguments->hasNode($ind)) {
+                if (!$arguments->hasNode($ind - 1)) {
+                    $arguments->setNode($ind - 1, new \Twig_Node_Expression_Array(array(), $node->getLine()));
                 }
-            } else {
-                if (!$arguments->hasNode($ind)) {
-                    if (!$arguments->hasNode($ind - 1)) {
-                        $arguments->setNode($ind - 1, new \Twig_Node_Expression_Array(array(), $node->getLine()));
-                    }
 
-                    $arguments->setNode($ind, $this->scope->get('domain'));
-                }
+                $arguments->setNode($ind, $this->scope->get('domain'));
             }
         } elseif ($node instanceof TransNode) {
             if (null === $node->getNode('domain')) {
@@ -89,7 +83,7 @@ class TranslationDefaultDomainNodeVisitor extends \Twig_BaseNodeVisitor
     /**
      * {@inheritdoc}
      */
-    protected function doLeaveNode(\Twig_Node $node, \Twig_Environment $env)
+    public function leaveNode(\Twig_NodeInterface $node, \Twig_Environment $env)
     {
         if ($node instanceof TransDefaultDomainNode) {
             return false;
@@ -108,19 +102,5 @@ class TranslationDefaultDomainNodeVisitor extends \Twig_BaseNodeVisitor
     public function getPriority()
     {
         return -10;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isNamedArguments($arguments)
-    {
-        foreach ($arguments as $name => $node) {
-            if (!is_int($name)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

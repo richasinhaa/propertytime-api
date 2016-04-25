@@ -15,8 +15,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 /**
  * View annotation class.
+ *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"METHOD","CLASS"})
  */
 class View extends Template
 {
@@ -36,9 +37,20 @@ class View extends Template
     protected $serializerGroups;
 
     /**
+     * @var bool
+     */
+    protected $populateDefaultVars = true;
+
+    /**
+     * @var bool
+     */
+    protected $serializerEnableMaxDepthChecks;
+
+    /**
      * Returns the annotation alias name.
      *
      * @return string
+     *
      * @see Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface
      */
     public function getAliasName()
@@ -83,7 +95,7 @@ class View extends Template
     }
 
     /**
-     * @var array $serializerGroups
+     * @var array
      */
     public function setSerializerGroups($serializerGroups)
     {
@@ -96,5 +108,37 @@ class View extends Template
     public function getSerializerGroups()
     {
         return $this->serializerGroups;
+    }
+
+    /**
+     * @param bool $populateDefaultVars
+     */
+    public function setPopulateDefaultVars($populateDefaultVars)
+    {
+        $this->populateDefaultVars = (bool) $populateDefaultVars;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPopulateDefaultVars()
+    {
+        return $this->populateDefaultVars;
+    }
+
+    /**
+     * @param bool $serializerEnableMaxDepthChecks
+     */
+    public function setSerializerEnableMaxDepthChecks($serializerEnableMaxDepthChecks)
+    {
+        $this->serializerEnableMaxDepthChecks = $serializerEnableMaxDepthChecks;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getSerializerEnableMaxDepthChecks()
+    {
+        return $this->serializerEnableMaxDepthChecks;
     }
 }

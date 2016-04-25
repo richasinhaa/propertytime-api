@@ -160,12 +160,8 @@ class Client extends BaseClient
             $profilerCode = '$kernel->getContainer()->get(\'profiler\')->enable();';
         }
 
-        $errorReporting = error_reporting();
-
         $code = <<<EOF
 <?php
-
-error_reporting($errorReporting);
 
 if ('$autoloader') {
     require_once '$autoloader';

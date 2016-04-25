@@ -44,11 +44,12 @@ class ProcessPipes
         // @see https://bugs.php.net/bug.php?id=51800
         if ($this->useFiles) {
             $this->files = array(
-                Process::STDOUT => tempnam(sys_get_temp_dir(), 'out_sf_proc'),
-                Process::STDERR => tempnam(sys_get_temp_dir(), 'err_sf_proc'),
+                Process::STDOUT => tempnam(sys_get_temp_dir(), 'sf_proc_stdout'),
+                Process::STDERR => tempnam(sys_get_temp_dir(), 'sf_proc_stderr'),
             );
             foreach ($this->files as $offset => $file) {
-                if (false === $file || false === $this->fileHandles[$offset] = fopen($file, 'rb')) {
+                $this->fileHandles[$offset] = fopen($this->files[$offset], 'rb');
+                if (false === $this->fileHandles[$offset]) {
                     throw new RuntimeException('A temporary file could not be opened to write the process output to, verify that your TEMP environment variable is writable');
                 }
             }
@@ -150,7 +151,7 @@ class ProcessPipes
     /**
      * Reads data in file handles and pipes.
      *
-     * @param bool $blocking Whether to use blocking calls or not.
+     * @param bool    $blocking Whether to use blocking calls or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -162,7 +163,7 @@ class ProcessPipes
     /**
      * Reads data in file handles and pipes, closes them if EOF is reached.
      *
-     * @param bool $blocking Whether to use blocking calls or not.
+     * @param bool    $blocking Whether to use blocking calls or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -239,7 +240,7 @@ class ProcessPipes
     /**
      * Reads data in file handles.
      *
-     * @param bool $close Whether to close file handles or not.
+     * @param bool    $close Whether to close file handles or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -275,8 +276,8 @@ class ProcessPipes
     /**
      * Reads data in file pipes streams.
      *
-     * @param bool $blocking Whether to use blocking calls or not.
-     * @param bool $close    Whether to close file handles or not.
+     * @param bool    $blocking Whether to use blocking calls or not.
+     * @param bool    $close    Whether to close file handles or not.
      *
      * @return array An array of read data indexed by their fd.
      */
@@ -345,7 +346,7 @@ class ProcessPipes
     }
 
     /**
-     * Removes temporary files.
+     * Removes temporary files
      */
     private function removeFiles()
     {

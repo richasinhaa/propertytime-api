@@ -19,10 +19,12 @@ use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @api
  */
 class Collection extends Constraint
 {
-    public $fields;
+    public $fields = array();
     public $allowExtraFields = false;
     public $allowMissingFields = false;
     public $extraFieldsMessage = 'This field was not expected.';

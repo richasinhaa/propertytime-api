@@ -14,7 +14,7 @@ namespace Symfony\Component\Config\Definition;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
- * This node represents a numeric value in the config tree.
+ * This node represents a numeric value in the config tree
  *
  * @author David Jeanmonod <david.jeanmonod@gmail.com>
  */
@@ -51,14 +51,5 @@ class NumericNode extends ScalarNode
         }
 
         return $value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function isValueEmpty($value)
-    {
-        // a numeric value cannot be empty
-        return false;
     }
 }

@@ -22,14 +22,19 @@ class Scope
     private $parent;
 
     /**
+     * @var Scope[]
+     */
+    private $children;
+
+    /**
      * @var array
      */
-    private $data;
+    private $data = array();
 
     /**
      * @var bool
      */
-    private $left;
+    private $left = false;
 
     /**
      * @param Scope $parent
@@ -37,8 +42,6 @@ class Scope
     public function __construct(Scope $parent = null)
     {
         $this->parent = $parent;
-        $this->left = false;
-        $this->data = array();
     }
 
     /**
@@ -48,7 +51,10 @@ class Scope
      */
     public function enter()
     {
-        return new self($this);
+        $child = new self($this);
+        $this->children[] = $child;
+
+        return $child;
     }
 
     /**

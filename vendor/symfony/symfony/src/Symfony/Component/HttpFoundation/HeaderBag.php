@@ -15,21 +15,23 @@ namespace Symfony\Component\HttpFoundation;
  * HeaderBag is a container for HTTP headers.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class HeaderBag implements \IteratorAggregate, \Countable
 {
-    protected $headers;
-    protected $cacheControl;
+    protected $headers = array();
+    protected $cacheControl = array();
 
     /**
      * Constructor.
      *
      * @param array $headers An array of HTTP headers
+     *
+     * @api
      */
     public function __construct(array $headers = array())
     {
-        $this->cacheControl = array();
-        $this->headers = array();
         foreach ($headers as $key => $values) {
             $this->set($key, $values);
         }
@@ -63,6 +65,8 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * Returns the headers.
      *
      * @return array An array of headers
+     *
+     * @api
      */
     public function all()
     {
@@ -73,6 +77,8 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * Returns the parameter keys.
      *
      * @return array An array of parameter keys
+     *
+     * @api
      */
     public function keys()
     {
@@ -83,6 +89,8 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * Replaces the current HTTP headers by a new set.
      *
      * @param array $headers An array of HTTP headers
+     *
+     * @api
      */
     public function replace(array $headers = array())
     {
@@ -94,6 +102,8 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * Adds new headers the current HTTP headers set.
      *
      * @param array $headers An array of HTTP headers
+     *
+     * @api
      */
     public function add(array $headers)
     {
@@ -105,15 +115,17 @@ class HeaderBag implements \IteratorAggregate, \Countable
     /**
      * Returns a header value by name.
      *
-     * @param string $key     The header name
-     * @param mixed  $default The default value
-     * @param bool   $first   Whether to return the first value or all header values
+     * @param string  $key     The header name
+     * @param mixed   $default The default value
+     * @param bool    $first   Whether to return the first value or all header values
      *
      * @return string|array The first header value if $first is true, an array of values otherwise
+     *
+     * @api
      */
     public function get($key, $default = null, $first = true)
     {
-        $key = str_replace('_', '-', strtolower($key));
+        $key = strtr(strtolower($key), '_', '-');
 
         if (!array_key_exists($key, $this->headers)) {
             if (null === $default) {
@@ -136,10 +148,12 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * @param string       $key     The key
      * @param string|array $values  The value or an array of values
      * @param bool         $replace Whether to replace the actual value or not (true by default)
+     *
+     * @api
      */
     public function set($key, $values, $replace = true)
     {
-        $key = str_replace('_', '-', strtolower($key));
+        $key = strtr(strtolower($key), '_', '-');
 
         $values = array_values((array) $values);
 
@@ -159,11 +173,13 @@ class HeaderBag implements \IteratorAggregate, \Countable
      *
      * @param string $key The HTTP header
      *
-     * @return bool true if the parameter exists, false otherwise
+     * @return bool    true if the parameter exists, false otherwise
+     *
+     * @api
      */
     public function has($key)
     {
-        return array_key_exists(str_replace('_', '-', strtolower($key)), $this->headers);
+        return array_key_exists(strtr(strtolower($key), '_', '-'), $this->headers);
     }
 
     /**
@@ -172,7 +188,9 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * @param string $key   The HTTP header name
      * @param string $value The HTTP value
      *
-     * @return bool true if the value is contained in the header, false otherwise
+     * @return bool    true if the value is contained in the header, false otherwise
+     *
+     * @api
      */
     public function contains($key, $value)
     {
@@ -183,10 +201,12 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * Removes a header.
      *
      * @param string $key The HTTP header name
+     *
+     * @api
      */
     public function remove($key)
     {
-        $key = str_replace('_', '-', strtolower($key));
+        $key = strtr(strtolower($key), '_', '-');
 
         unset($this->headers[$key]);
 
@@ -204,6 +224,8 @@ class HeaderBag implements \IteratorAggregate, \Countable
      * @return null|\DateTime The parsed DateTime or the default value if the header does not exist
      *
      * @throws \RuntimeException When the HTTP header is not parseable
+     *
+     * @api
      */
     public function getDate($key, \DateTime $default = null)
     {

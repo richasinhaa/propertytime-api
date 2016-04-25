@@ -14,7 +14,6 @@ namespace Symfony\Bridge\Monolog\Handler;
 use Monolog\Handler\ChromePHPHandler as BaseChromePhpHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * ChromePhpHandler.
@@ -34,11 +33,11 @@ class ChromePhpHandler extends BaseChromePhpHandler
     private $response;
 
     /**
-     * Adds the headers to the response once it's created.
+     * Adds the headers to the response once it's created
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
@@ -73,7 +72,7 @@ class ChromePhpHandler extends BaseChromePhpHandler
     }
 
     /**
-     * Override default behavior since we check it in onKernelResponse.
+     * Override default behavior since we check it in onKernelResponse
      */
     protected function headersAccepted()
     {

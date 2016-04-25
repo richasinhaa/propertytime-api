@@ -24,7 +24,7 @@ class TransNodeTest extends \PHPUnit_Framework_TestCase
         $vars = new \Twig_Node_Expression_Name('foo', 0);
         $node = new TransNode($body, null, null, $vars);
 
-        $env = new \Twig_Environment($this->getMock('Twig_LoaderInterface'), array('strict_variables' => true));
+        $env = new \Twig_Environment(null, array('strict_variables' => true));
         $compiler = new \Twig_Compiler($env);
 
         $this->assertEquals(
@@ -36,10 +36,9 @@ class TransNodeTest extends \PHPUnit_Framework_TestCase
              trim($compiler->compile($node)->getSource())
         );
     }
-
     protected function getVariableGetterWithoutStrictCheck($name)
     {
-        if (PHP_VERSION_ID >= 50400) {
+        if (version_compare(phpversion(), '5.4.0RC1', '>=')) {
             return sprintf('(isset($context["%s"]) ? $context["%s"] : null)', $name, $name);
         }
 
@@ -48,11 +47,7 @@ class TransNodeTest extends \PHPUnit_Framework_TestCase
 
     protected function getVariableGetterWithStrictCheck($name)
     {
-        if (version_compare(\Twig_Environment::VERSION, '2.0.0-DEV', '>=')) {
-            return sprintf('(isset($context["%s"]) || array_key_exists("%s", $context) ? $context["%s"] : $this->notFound("%s", 0))', $name, $name, $name, $name);
-        }
-
-        if (PHP_VERSION_ID >= 50400) {
+        if (version_compare(phpversion(), '5.4.0RC1', '>=')) {
             return sprintf('(isset($context["%s"]) ? $context["%s"] : $this->getContext($context, "%s"))', $name, $name, $name);
         }
 

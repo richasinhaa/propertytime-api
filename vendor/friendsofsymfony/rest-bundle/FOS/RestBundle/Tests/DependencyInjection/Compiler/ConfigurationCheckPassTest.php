@@ -11,12 +11,10 @@
 
 namespace FOS\RestBundle\Tests\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-
 use FOS\RestBundle\DependencyInjection\Compiler\ConfigurationCheckPass;
 
 /**
- * ConfigurationCheckPass test
+ * ConfigurationCheckPass test.
  *
  * @author Eriksen Costa <eriksencosta@gmail.com>
  */
@@ -27,7 +25,9 @@ class ConfigurationCheckPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testShouldThrowRuntimeExceptionWhenFOSRestBundleAnnotations()
     {
-        $container = $this->getMock('\Symfony\Component\DependencyInjection\ContainerBuilder');
+        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+            ->setMethods(array('has'))
+            ->getMock();
         $container->expects($this->at(0))
             ->method('has')
             ->with($this->equalTo('sensio_framework_extra.view.listener'))
@@ -37,6 +37,29 @@ class ConfigurationCheckPassTest extends \PHPUnit_Framework_TestCase
             ->method('has')
             ->with($this->equalTo('fos_rest.view_response_listener'))
             ->will($this->returnValue(true));
+
+        $compiler = new ConfigurationCheckPass();
+        $compiler->process($container);
+    }
+
+    public function testShouldThrowRuntimeExceptionWhenBodyConverterIsEnabledButParamConvertersAreNotEnabled()
+    {
+        $this->setExpectedException(
+            'RuntimeException',
+            'You need to enable the parameter converter listeners in SensioFrameworkExtraBundle when using the FOSRestBundle RequestBodyParamConverter'
+        );
+        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+            ->setMethods(array('has'))
+            ->getMock();
+        $container->expects($this->at(1))
+            ->method('has')
+            ->with($this->equalTo('fos_rest.converter.request_body'))
+            ->will($this->returnValue(true));
+
+        $container->expects($this->at(2))
+            ->method('has')
+            ->with($this->equalTo('sensio_framework_extra.converter.listener'))
+            ->will($this->returnValue(false));
 
         $compiler = new ConfigurationCheckPass();
         $compiler->process($container);

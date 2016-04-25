@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Security\Http\Firewall;
 
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -66,7 +65,7 @@ class ContextListener implements ListenerInterface
      */
     public function handle(GetResponseEvent $event)
     {
-        if (!$this->registered && null !== $this->dispatcher && HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+        if (!$this->registered && null !== $this->dispatcher && $event->isMasterRequest()) {
             $this->dispatcher->addListener(KernelEvents::RESPONSE, array($this, 'onKernelResponse'));
             $this->registered = true;
         }
@@ -106,16 +105,13 @@ class ContextListener implements ListenerInterface
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
         if (!$event->getRequest()->hasSession()) {
             return;
         }
-
-        $this->dispatcher->removeListener(KernelEvents::RESPONSE, array($this, 'onKernelResponse'));
-        $this->registered = false;
 
         if (null !== $this->logger) {
             $this->logger->debug('Write SecurityContext in the session');
@@ -138,7 +134,7 @@ class ContextListener implements ListenerInterface
     }
 
     /**
-     * Refreshes the user by reloading it from the user provider.
+     * Refreshes the user by reloading it from the user provider
      *
      * @param TokenInterface $token
      *
@@ -167,11 +163,11 @@ class ContextListener implements ListenerInterface
                 }
 
                 return $token;
-            } catch (UnsupportedUserException $e) {
+            } catch (UnsupportedUserException $unsupported) {
                 // let's try the next user provider
-            } catch (UsernameNotFoundException $e) {
+            } catch (UsernameNotFoundException $notFound) {
                 if (null !== $this->logger) {
-                    $this->logger->warning(sprintf('Username "%s" could not be found.', $e->getUsername()));
+                    $this->logger->warning(sprintf('Username "%s" could not be found.', $notFound->getUsername()));
                 }
 
                 return;

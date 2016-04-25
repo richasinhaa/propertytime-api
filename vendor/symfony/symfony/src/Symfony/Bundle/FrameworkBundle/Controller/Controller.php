@@ -22,7 +22,6 @@ use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
 /**
@@ -37,9 +36,9 @@ class Controller extends ContainerAware
     /**
      * Generates a URL from the given parameters.
      *
-     * @param string      $route         The name of the route
-     * @param mixed       $parameters    An array of parameters
-     * @param bool|string $referenceType The type of reference (one of the constants in UrlGeneratorInterface)
+     * @param string         $route         The name of the route
+     * @param mixed          $parameters    An array of parameters
+     * @param bool|string    $referenceType The type of reference (one of the constants in UrlGeneratorInterface)
      *
      * @return string The generated URL
      *
@@ -70,8 +69,8 @@ class Controller extends ContainerAware
     /**
      * Returns a RedirectResponse to the given URL.
      *
-     * @param string $url    The URL to redirect to
-     * @param int    $status The status code to use for the Response
+     * @param string  $url    The URL to redirect to
+     * @param int     $status The status code to use for the Response
      *
      * @return RedirectResponse
      */
@@ -140,7 +139,7 @@ class Controller extends ContainerAware
      *
      *     throw $this->createNotFoundException('Page not found!');
      *
-     * @param string     $message  A message
+     * @param string    $message  A message
      * @param \Exception $previous The previous exception
      *
      * @return NotFoundHttpException
@@ -165,7 +164,7 @@ class Controller extends ContainerAware
     }
 
     /**
-     * Creates and returns a form builder instance.
+     * Creates and returns a form builder instance
      *
      * @param mixed $data    The initial data for the form
      * @param array $options Options for the form
@@ -181,10 +180,14 @@ class Controller extends ContainerAware
      * Shortcut to return the request service.
      *
      * @return Request
+     *
+     * @deprecated Deprecated since version 2.4, to be removed in 3.0. Ask
+     *             Symfony to inject the Request object into your controller
+     *             method instead by type hinting it in the method's signature.
      */
     public function getRequest()
     {
-        return $this->container->get('request');
+        return $this->container->get('request_stack')->getCurrentRequest();
     }
 
     /**
@@ -204,13 +207,13 @@ class Controller extends ContainerAware
     }
 
     /**
-     * Get a user from the Security Context.
+     * Get a user from the Security Context
      *
      * @return mixed
      *
      * @throws \LogicException If SecurityBundle is not available
      *
-     * @see TokenInterface::getUser()
+     * @see Symfony\Component\Security\Core\Authentication\Token\TokenInterface::getUser()
      */
     public function getUser()
     {
@@ -234,7 +237,7 @@ class Controller extends ContainerAware
      *
      * @param string $id The service id
      *
-     * @return bool true if the service id is defined, false otherwise
+     * @return bool    true if the service id is defined, false otherwise
      */
     public function has($id)
     {

@@ -46,9 +46,8 @@ class ExceptionListener
     private $errorPage;
     private $logger;
     private $httpUtils;
-    private $stateless;
 
-    public function __construct(SecurityContextInterface $context, AuthenticationTrustResolverInterface $trustResolver, HttpUtils $httpUtils, $providerKey, AuthenticationEntryPointInterface $authenticationEntryPoint = null, $errorPage = null, AccessDeniedHandlerInterface $accessDeniedHandler = null, LoggerInterface $logger = null, $stateless = false)
+    public function __construct(SecurityContextInterface $context, AuthenticationTrustResolverInterface $trustResolver, HttpUtils $httpUtils, $providerKey, AuthenticationEntryPointInterface $authenticationEntryPoint = null, $errorPage = null, AccessDeniedHandlerInterface $accessDeniedHandler = null, LoggerInterface $logger = null)
     {
         $this->context = $context;
         $this->accessDeniedHandler = $accessDeniedHandler;
@@ -58,7 +57,6 @@ class ExceptionListener
         $this->authenticationTrustResolver = $trustResolver;
         $this->errorPage = $errorPage;
         $this->logger = $logger;
-        $this->stateless = $stateless;
     }
 
     /**
@@ -72,16 +70,22 @@ class ExceptionListener
     }
 
     /**
+     * Unregisters the dispatcher.
+     *
+     * @param EventDispatcherInterface $dispatcher An EventDispatcherInterface instance
+     */
+    public function unregister(EventDispatcherInterface $dispatcher)
+    {
+        $dispatcher->removeListener(KernelEvents::EXCEPTION, array($this, 'onKernelException'));
+    }
+
+    /**
      * Handles security related exceptions.
      *
      * @param GetResponseForExceptionEvent $event An GetResponseForExceptionEvent instance
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        // we need to remove ourselves as the exception listener can be
-        // different depending on the Request
-        $event->getDispatcher()->removeListener(KernelEvents::EXCEPTION, array($this, 'onKernelException'));
-
         $exception = $event->getException();
         do {
             if ($exception instanceof AuthenticationException) {
@@ -89,7 +93,7 @@ class ExceptionListener
             } elseif ($exception instanceof AccessDeniedException) {
                 return $this->handleAccessDeniedException($event, $exception);
             } elseif ($exception instanceof LogoutException) {
-                return $this->handleLogoutException($exception);
+                return $this->handleLogoutException($event, $exception);
             }
         } while (null !== $exception = $exception->getPrevious());
     }
@@ -155,7 +159,7 @@ class ExceptionListener
         }
     }
 
-    private function handleLogoutException(LogoutException $exception)
+    private function handleLogoutException(GetResponseForExceptionEvent $event, LogoutException $exception)
     {
         if (null !== $this->logger) {
             $this->logger->info(sprintf('Logout exception occurred; wrapping with AccessDeniedHttpException (%s)', $exception->getMessage()));
@@ -167,7 +171,6 @@ class ExceptionListener
      * @param AuthenticationException $authException
      *
      * @return Response
-     *
      * @throws AuthenticationException
      */
     private function startAuthentication(Request $request, AuthenticationException $authException)
@@ -180,9 +183,7 @@ class ExceptionListener
             $this->logger->debug('Calling Authentication entry point');
         }
 
-        if (!$this->stateless) {
-            $this->setTargetPath($request);
-        }
+        $this->setTargetPath($request);
 
         if ($authException instanceof AccountStatusException) {
             // remove the security token to prevent infinite redirect loops
@@ -198,7 +199,7 @@ class ExceptionListener
     protected function setTargetPath(Request $request)
     {
         // session isn't required when using HTTP basic authentication mechanism for example
-        if ($request->hasSession() && $request->isMethodSafe() && !$request->isXmlHttpRequest()) {
+        if ($request->hasSession() && $request->isMethodSafe()) {
             $request->getSession()->set('_security.'.$this->providerKey.'.target_path', $request->getUri());
         }
     }

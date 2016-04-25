@@ -1,13 +1,13 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+    /*
+    * This file is part of the Symfony package.
+    *
+    * (c) Fabien Potencier <fabien@symfony.com>
+    *
+    * For the full copyright and license information, please view the LICENSE
+    * file that was distributed with this source code.
+    */
 
 namespace Symfony\Component\Form\Tests;
 
@@ -57,16 +57,17 @@ abstract class AbstractFormTest extends \PHPUnit_Framework_TestCase
      * @param string                   $name
      * @param EventDispatcherInterface $dispatcher
      * @param string                   $dataClass
+     * @param array                    $options
      *
      * @return FormBuilder
      */
-    protected function getBuilder($name = 'name', EventDispatcherInterface $dispatcher = null, $dataClass = null)
+    protected function getBuilder($name = 'name', EventDispatcherInterface $dispatcher = null, $dataClass = null, array $options = array())
     {
-        return new FormBuilder($name, $dataClass, $dispatcher ?: $this->dispatcher, $this->factory);
+        return new FormBuilder($name, $dataClass, $dispatcher ?: $this->dispatcher, $this->factory, $options);
     }
 
     /**
-     * @param string $name
+     * @param  string $name
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */

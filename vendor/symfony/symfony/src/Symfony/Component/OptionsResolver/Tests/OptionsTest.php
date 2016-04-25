@@ -392,6 +392,7 @@ class OptionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Symfony\Component\OptionsResolver\Options::replace
      * @expectedException \Symfony\Component\OptionsResolver\Exception\OptionDefinitionException
      */
     public function testCannotReplaceAfterOptionWasRead()
@@ -405,6 +406,7 @@ class OptionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Symfony\Component\OptionsResolver\Options::overload
      * @expectedException \Symfony\Component\OptionsResolver\Exception\OptionDefinitionException
      */
     public function testCannotOverloadAfterOptionWasRead()
@@ -416,6 +418,7 @@ class OptionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Symfony\Component\OptionsResolver\Options::clear
      * @expectedException \Symfony\Component\OptionsResolver\Exception\OptionDefinitionException
      */
     public function testCannotClearAfterOptionWasRead()

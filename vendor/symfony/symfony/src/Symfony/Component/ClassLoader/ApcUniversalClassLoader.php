@@ -37,8 +37,8 @@ namespace Symfony\Component\ClassLoader;
  *     // register classes with namespaces
  *     $loader->registerNamespaces(array(
  *         'Symfony\Component' => __DIR__.'/component',
- *         'Symfony' => __DIR__.'/framework',
- *         'Sensio' => array(__DIR__.'/src', __DIR__.'/vendor'),
+ *         'Symfony'           => __DIR__.'/framework',
+ *         'Sensio'            => array(__DIR__.'/src', __DIR__.'/vendor'),
  *     ));
  *
  *     // register a library using the PEAR naming convention
@@ -57,6 +57,8 @@ namespace Symfony\Component\ClassLoader;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Kris Wallsmith <kris@symfony.com>
+ *
+ * @api
  */
 class ApcUniversalClassLoader extends UniversalClassLoader
 {
@@ -68,10 +70,12 @@ class ApcUniversalClassLoader extends UniversalClassLoader
      * @param string $prefix A prefix to create a namespace in APC
      *
      * @throws \RuntimeException
+     *
+     * @api
      */
     public function __construct($prefix)
     {
-        if (!function_exists('apcu_fetch')) {
+        if (!extension_loaded('apc')) {
             throw new \RuntimeException('Unable to use ApcUniversalClassLoader as APC is not enabled.');
         }
 
@@ -87,8 +91,8 @@ class ApcUniversalClassLoader extends UniversalClassLoader
      */
     public function findFile($class)
     {
-        if (false === $file = apcu_fetch($this->prefix.$class)) {
-            apcu_store($this->prefix.$class, $file = parent::findFile($class));
+        if (false === $file = apc_fetch($this->prefix.$class)) {
+            apc_store($this->prefix.$class, $file = parent::findFile($class));
         }
 
         return $file;

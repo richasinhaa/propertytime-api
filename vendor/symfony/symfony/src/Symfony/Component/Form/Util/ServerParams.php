@@ -35,7 +35,7 @@ class ServerParams
         } elseif (0 === strpos($max, '0')) {
             $max = intval($max, 8);
         } else {
-            $max = (int) $max;
+            $max = intval($max);
         }
 
         switch (substr($iniMax, -1)) {

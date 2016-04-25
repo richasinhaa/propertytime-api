@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Symfony Config Component",
     "keywords": [],
-    "homepage": "https://symfony.com",
+    "homepage": "http://symfony.com",
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
         },
         {
             "name": "Symfony Community",
-            "homepage": "https://symfony.com/contributors"
+            "homepage": "http://symfony.com/contributors"
         }
     ],
     "require": {
@@ -20,16 +20,13 @@
         "symfony/filesystem": "~2.3"
     },
     "autoload": {
-        "psr-0": { "Symfony\\Component\\Config\\": "" },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
+        "psr-0": { "Symfony\\Component\\Config\\": "" }
     },
     "target-dir": "Symfony/Component/Config",
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.3-dev"
+            "dev-master": "2.4-dev"
         }
     }
 }

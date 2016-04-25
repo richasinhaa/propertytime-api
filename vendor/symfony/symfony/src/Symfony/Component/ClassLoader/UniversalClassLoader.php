@@ -32,8 +32,8 @@ namespace Symfony\Component\ClassLoader;
  *     // register classes with namespaces
  *     $loader->registerNamespaces(array(
  *         'Symfony\Component' => __DIR__.'/component',
- *         'Symfony' => __DIR__.'/framework',
- *         'Sensio' => array(__DIR__.'/src', __DIR__.'/vendor'),
+ *         'Symfony'           => __DIR__.'/framework',
+ *         'Sensio'            => array(__DIR__.'/src', __DIR__.'/vendor'),
  *     ));
  *
  *     // register a library using the PEAR naming convention
@@ -55,6 +55,8 @@ namespace Symfony\Component\ClassLoader;
  * found before giving up.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class UniversalClassLoader
 {
@@ -66,13 +68,13 @@ class UniversalClassLoader
 
     /**
      * Turns on searching the include for class files. Allows easy loading
-     * of installed PEAR packages.
+     * of installed PEAR packages
      *
-     * @param bool $useIncludePath
+     * @param bool    $useIncludePath
      */
     public function useIncludePath($useIncludePath)
     {
-        $this->useIncludePath = (bool) $useIncludePath;
+        $this->useIncludePath = $useIncludePath;
     }
 
     /**
@@ -130,6 +132,8 @@ class UniversalClassLoader
      * Registers the directory to use as a fallback for namespaces.
      *
      * @param array $dirs An array of directories
+     *
+     * @api
      */
     public function registerNamespaceFallbacks(array $dirs)
     {
@@ -150,6 +154,8 @@ class UniversalClassLoader
      * Registers directories to use as a fallback for class prefixes.
      *
      * @param array $dirs An array of directories
+     *
+     * @api
      */
     public function registerPrefixFallbacks(array $dirs)
     {
@@ -167,9 +173,11 @@ class UniversalClassLoader
     }
 
     /**
-     * Registers an array of namespaces.
+     * Registers an array of namespaces
      *
      * @param array $namespaces An array of namespaces (namespaces as keys and locations as values)
+     *
+     * @api
      */
     public function registerNamespaces(array $namespaces)
     {
@@ -183,6 +191,8 @@ class UniversalClassLoader
      *
      * @param string       $namespace The namespace
      * @param array|string $paths     The location(s) of the namespace
+     *
+     * @api
      */
     public function registerNamespace($namespace, $paths)
     {
@@ -193,6 +203,8 @@ class UniversalClassLoader
      * Registers an array of classes using the PEAR naming convention.
      *
      * @param array $classes An array of classes (prefixes as keys and locations as values)
+     *
+     * @api
      */
     public function registerPrefixes(array $classes)
     {
@@ -206,6 +218,8 @@ class UniversalClassLoader
      *
      * @param string       $prefix The classes prefix
      * @param array|string $paths  The location(s) of the classes
+     *
+     * @api
      */
     public function registerPrefix($prefix, $paths)
     {
@@ -215,7 +229,9 @@ class UniversalClassLoader
     /**
      * Registers this instance as an autoloader.
      *
-     * @param bool $prepend Whether to prepend the autoloader or not
+     * @param bool    $prepend Whether to prepend the autoloader or not
+     *
+     * @api
      */
     public function register($prepend = false)
     {
@@ -227,7 +243,7 @@ class UniversalClassLoader
      *
      * @param string $class The name of the class
      *
-     * @return bool|null True, if loaded
+     * @return bool|null    True, if loaded
      */
     public function loadClass($class)
     {

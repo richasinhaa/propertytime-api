@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Allows filtering of a controller callable.
+ * Allows filtering of a controller callable
  *
  * You can call getController() to retrieve the current controller. With
  * setController() you can set a new controller that is used in the processing
@@ -24,11 +24,14 @@ use Symfony\Component\HttpFoundation\Request;
  * Controllers should be callables.
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @api
  */
 class FilterControllerEvent extends KernelEvent
 {
     /**
-     * The current controller.
+     * The current controller
+     * @var callable
      */
     private $controller;
 
@@ -40,9 +43,11 @@ class FilterControllerEvent extends KernelEvent
     }
 
     /**
-     * Returns the current controller.
+     * Returns the current controller
      *
      * @return callable
+     *
+     * @api
      */
     public function getController()
     {
@@ -50,11 +55,13 @@ class FilterControllerEvent extends KernelEvent
     }
 
     /**
-     * Sets a new controller.
+     * Sets a new controller
      *
      * @param callable $controller
      *
      * @throws \LogicException
+     *
+     * @api
      */
     public function setController($controller)
     {
@@ -78,7 +85,7 @@ class FilterControllerEvent extends KernelEvent
                 $a[] = sprintf('%s => %s', $k, $this->varToString($v));
             }
 
-            return sprintf('Array(%s)', implode(', ', $a));
+            return sprintf("Array(%s)", implode(', ', $a));
         }
 
         if (is_resource($var)) {

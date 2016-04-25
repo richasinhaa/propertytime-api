@@ -18,6 +18,8 @@ use Symfony\Component\Translation\Exception\NotFoundResourceException;
  * Translator.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @api
  */
 class Translator implements TranslatorInterface
 {
@@ -58,6 +60,8 @@ class Translator implements TranslatorInterface
      * @param MessageSelector|null $selector The message selector for pluralization
      *
      * @throws \InvalidArgumentException If a locale contains invalid characters
+     *
+     * @api
      */
     public function __construct($locale, MessageSelector $selector = null)
     {
@@ -70,6 +74,8 @@ class Translator implements TranslatorInterface
      *
      * @param string          $format The name of the loader (@see addResource())
      * @param LoaderInterface $loader A LoaderInterface instance
+     *
+     * @api
      */
     public function addLoader($format, LoaderInterface $loader)
     {
@@ -85,6 +91,8 @@ class Translator implements TranslatorInterface
      * @param string $domain   The domain
      *
      * @throws \InvalidArgumentException If the locale contains invalid characters
+     *
+     * @api
      */
     public function addResource($format, $resource, $locale, $domain = null)
     {
@@ -105,6 +113,8 @@ class Translator implements TranslatorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @api
      */
     public function setLocale($locale)
     {
@@ -114,6 +124,8 @@ class Translator implements TranslatorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @api
      */
     public function getLocale()
     {
@@ -128,6 +140,8 @@ class Translator implements TranslatorInterface
      * @throws \InvalidArgumentException If a locale contains invalid characters
      *
      * @deprecated since 2.3, to be removed in 3.0. Use setFallbackLocales() instead.
+     *
+     * @api
      */
     public function setFallbackLocale($locales)
     {
@@ -140,6 +154,8 @@ class Translator implements TranslatorInterface
      * @param array $locales The fallback locales
      *
      * @throws \InvalidArgumentException If a locale contains invalid characters
+     *
+     * @api
      */
     public function setFallbackLocales(array $locales)
     {
@@ -157,6 +173,8 @@ class Translator implements TranslatorInterface
      * Gets the fallback locales.
      *
      * @return array $locales The fallback locales
+     *
+     * @api
      */
     public function getFallbackLocales()
     {
@@ -165,6 +183,8 @@ class Translator implements TranslatorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @api
      */
     public function trans($id, array $parameters = array(), $domain = null, $locale = null)
     {
@@ -187,6 +207,8 @@ class Translator implements TranslatorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @api
      */
     public function transChoice($id, $number, array $parameters = array(), $domain = null, $locale = null)
     {
@@ -217,6 +239,16 @@ class Translator implements TranslatorInterface
         }
 
         return strtr($this->selector->choose($catalogue->get($id, $domain), (int) $number, $locale), $parameters);
+    }
+
+    /**
+     * Gets the loaders.
+     *
+     * @return array LoaderInterface[]
+     */
+    protected function getLoaders()
+    {
+        return $this->loaders;
     }
 
     protected function loadCatalogue($locale)
@@ -254,12 +286,8 @@ class Translator implements TranslatorInterface
                 $this->doLoadCatalogue($fallback);
             }
 
-            $fallbackCatalogue = new MessageCatalogue($fallback, $this->catalogues[$fallback]->all());
-            foreach ($this->catalogues[$fallback]->getResources() as $resource) {
-                $fallbackCatalogue->addResource($resource);
-            }
-            $current->addFallbackCatalogue($fallbackCatalogue);
-            $current = $fallbackCatalogue;
+            $current->addFallbackCatalogue($this->catalogues[$fallback]);
+            $current = $this->catalogues[$fallback];
         }
     }
 

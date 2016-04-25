@@ -14,12 +14,17 @@ namespace Symfony\Bridge\Propel1\Tests\Fixtures;
 class ItemQuery
 {
     private $map = array(
-        'id' => \PropelColumnTypes::INTEGER,
-        'value' => \PropelColumnTypes::VARCHAR,
-        'price' => \PropelColumnTypes::FLOAT,
-        'is_active' => \PropelColumnTypes::BOOLEAN,
-        'enabled' => \PropelColumnTypes::BOOLEAN_EMU,
-        'updated_at' => \PropelColumnTypes::TIMESTAMP,
+        'id'            => \PropelColumnTypes::INTEGER,
+        'value'         => \PropelColumnTypes::VARCHAR,
+        'price'         => \PropelColumnTypes::FLOAT,
+        'is_active'     => \PropelColumnTypes::BOOLEAN,
+        'enabled'       => \PropelColumnTypes::BOOLEAN_EMU,
+        'updated_at'    => \PropelColumnTypes::TIMESTAMP,
+    );
+
+    private $caseInsensitiveMap = array(
+        'isactive'      => 'is_active',
+        'updatedat'     => 'updated_at',
     );
 
     public static $result = array();
@@ -51,7 +56,7 @@ class ItemQuery
     }
 
     /**
-     * Method from the TableMap API.
+     * Method from the TableMap API
      */
     public function hasColumn($column)
     {
@@ -59,7 +64,7 @@ class ItemQuery
     }
 
     /**
-     * Method from the TableMap API.
+     * Method from the TableMap API
      */
     public function getColumn($column)
     {
@@ -69,7 +74,29 @@ class ItemQuery
     }
 
     /**
-     * Method from the TableMap API.
+     * Method from the TableMap API
+     */
+    public function hasColumnByInsensitiveCase($column)
+    {
+        $column = strtolower($column);
+
+        return in_array($column, array_keys($this->caseInsensitiveMap));
+    }
+
+    /**
+     * Method from the TableMap API
+     */
+    public function getColumnByInsensitiveCase($column)
+    {
+        $column = strtolower($column);
+
+        if (isset($this->caseInsensitiveMap[$column])) {
+            return $this->getColumn($this->caseInsensitiveMap[$column]);
+        }
+    }
+
+    /**
+     * Method from the TableMap API
      */
     public function getRelations()
     {

@@ -12,13 +12,13 @@
 namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Form\Test\TypeTestCase as TestCase;
+use Symfony\Component\Intl\Util\IntlTestHelper;
 
-class DateTimeTypeTest extends TestCase
+class DateTimeTypeTest extends TypeTestCase
 {
     protected function setUp()
     {
-        \Locale::setDefault('en');
+        IntlTestHelper::requireIntl($this);
 
         parent::setUp();
     }
@@ -29,7 +29,6 @@ class DateTimeTypeTest extends TestCase
             'model_timezone' => 'UTC',
             'view_timezone' => 'UTC',
             'date_widget' => 'choice',
-            'years' => array(2010),
             'time_widget' => 'choice',
             'input' => 'datetime',
         ));
@@ -58,7 +57,6 @@ class DateTimeTypeTest extends TestCase
             'view_timezone' => 'UTC',
             'input' => 'string',
             'date_widget' => 'choice',
-            'years' => array(2010),
             'time_widget' => 'choice',
         ));
 
@@ -84,7 +82,6 @@ class DateTimeTypeTest extends TestCase
             'view_timezone' => 'UTC',
             'input' => 'timestamp',
             'date_widget' => 'choice',
-            'years' => array(2010),
             'time_widget' => 'choice',
         ));
 
@@ -111,13 +108,12 @@ class DateTimeTypeTest extends TestCase
             'model_timezone' => 'UTC',
             'view_timezone' => 'UTC',
             'date_widget' => 'choice',
-            'years' => array(2010),
             'time_widget' => 'choice',
             'input' => 'datetime',
             'with_minutes' => false,
         ));
 
-        $form->setData(new \DateTime());
+        $form->setData(new \DateTime('2010-06-02 03:04:05 UTC'));
 
         $input = array(
             'date' => array(
@@ -141,13 +137,12 @@ class DateTimeTypeTest extends TestCase
             'model_timezone' => 'UTC',
             'view_timezone' => 'UTC',
             'date_widget' => 'choice',
-            'years' => array(2010),
             'time_widget' => 'choice',
             'input' => 'datetime',
             'with_seconds' => true,
         ));
 
-        $form->setData(new \DateTime());
+        $form->setData(new \DateTime('2010-06-02 03:04:05 UTC'));
 
         $input = array(
             'date' => array(
@@ -173,7 +168,6 @@ class DateTimeTypeTest extends TestCase
             'model_timezone' => 'America/New_York',
             'view_timezone' => 'Pacific/Tahiti',
             'date_widget' => 'choice',
-            'years' => array(2010),
             'time_widget' => 'choice',
             'input' => 'string',
             'with_seconds' => true,
@@ -268,11 +262,22 @@ class DateTimeTypeTest extends TestCase
         $this->assertDateTimeEquals($dateTime, $form->getData());
     }
 
+    // Bug fix
     public function testInitializeWithDateTime()
     {
         // Throws an exception if "data_class" option is not explicitly set
         // to null in the type
         $this->factory->create('datetime', new \DateTime());
+    }
+
+    public function testSingleTextWidgetShouldUseTheRightInputType()
+    {
+        $form = $this->factory->create('datetime', null, array(
+            'widget' => 'single_text',
+        ));
+
+        $view = $form->createView();
+        $this->assertEquals('datetime', $view->vars['type']);
     }
 
     public function testPassDefaultEmptyValueToViewIfNotRequired()

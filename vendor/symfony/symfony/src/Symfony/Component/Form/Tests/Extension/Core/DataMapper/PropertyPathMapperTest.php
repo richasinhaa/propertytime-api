@@ -41,7 +41,6 @@ class PropertyPathMapperTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param $path
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
     private function getPropertyPath($path)
@@ -55,6 +54,7 @@ class PropertyPathMapperTest extends \PHPUnit_Framework_TestCase
     /**
      * @param FormConfigInterface $config
      * @param bool                $synchronized
+     * @param bool                $submitted
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
@@ -74,6 +74,14 @@ class PropertyPathMapperTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($submitted));
 
         return $form;
+    }
+
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getDataMapper()
+    {
+        return $this->getMock('Symfony\Component\Form\DataMapperInterface');
     }
 
     public function testMapDataToFormsPassesObjectRefIfByReference()

@@ -13,17 +13,16 @@ namespace Symfony\Component\HttpFoundation\Tests\Session\Storage\Handler;
 
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 
-/**
- * @requires extension pdo_sqlite
- * @group time-sensitive
- */
 class PdoSessionHandlerTest extends \PHPUnit_Framework_TestCase
 {
     private $pdo;
 
     protected function setUp()
     {
-        parent::setUp();
+        if (!class_exists('PDO') || !in_array('sqlite', \PDO::getAvailableDrivers())) {
+            $this->markTestSkipped('This test requires SQLite support in your environment');
+        }
+
         $this->pdo = new \PDO('sqlite::memory:');
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $sql = 'CREATE TABLE sessions (sess_id VARCHAR(128) PRIMARY KEY, sess_data TEXT, sess_time INTEGER)';
@@ -57,7 +56,7 @@ class PdoSessionHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $storage = new PdoSessionHandler($this->pdo, array('db_table' => 'bad_name'));
         $this->setExpectedException('RuntimeException');
-        $storage->read('foo');
+        $storage->read('foo', 'bar');
     }
 
     public function testWriteRead()
@@ -98,5 +97,15 @@ class PdoSessionHandlerTest extends \PHPUnit_Framework_TestCase
 
         $storage->gc(-1);
         $this->assertCount(0, $this->pdo->query('SELECT * FROM sessions')->fetchAll());
+    }
+
+    public function testGetConnection()
+    {
+        $storage = new PdoSessionHandler($this->pdo, array('db_table' => 'sessions'), array());
+
+        $method = new \ReflectionMethod($storage, 'getConnection');
+        $method->setAccessible(true);
+
+        $this->assertInstanceOf('\PDO', $method->invoke($storage));
     }
 }

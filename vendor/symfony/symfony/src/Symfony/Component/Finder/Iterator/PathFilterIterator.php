@@ -22,14 +22,14 @@ class PathFilterIterator extends MultiplePcreFilterIterator
     /**
      * Filters the iterator values.
      *
-     * @return bool true if the value should be kept, false otherwise
+     * @return bool    true if the value should be kept, false otherwise
      */
     public function accept()
     {
         $filename = $this->current()->getRelativePathname();
 
-        if ('\\' === DIRECTORY_SEPARATOR) {
-            $filename = str_replace('\\', '/', $filename);
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $filename = strtr($filename, '\\', '/');
         }
 
         // should at least not match one rule to exclude
@@ -59,7 +59,7 @@ class PathFilterIterator extends MultiplePcreFilterIterator
      * PCRE patterns are left unchanged.
      *
      * Default conversion:
-     *     'lorem/ipsum/dolor' ==>  'lorem\/ipsum\/dolor/'
+     *     'lorem/ipsum/dolor'  ==>  'lorem\/ipsum\/dolor/'
      *
      * Use only / as directory separator (on Windows also).
      *

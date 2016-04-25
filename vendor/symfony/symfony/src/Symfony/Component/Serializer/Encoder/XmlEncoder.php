@@ -14,7 +14,7 @@ namespace Symfony\Component\Serializer\Encoder;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 /**
- * Encodes XML data.
+ * Encodes XML data
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author John Wards <jwards@whiteoctober.co.uk>
@@ -22,11 +22,9 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
  */
 class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, DecoderInterface, NormalizationAwareInterface
 {
-    /**
-     * @var \DOMDocument
-     */
     private $dom;
     private $format;
+    private $context;
     private $rootNodeName = 'response';
 
     /**
@@ -50,8 +48,9 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
 
         $xmlRootNodeName = $this->resolveXmlRootName($context);
 
-        $this->dom = new \DOMDocument();
+        $this->dom = $this->createDomDocument($context);
         $this->format = $format;
+        $this->context = $context;
 
         if (null !== $data && !is_scalar($data)) {
             $root = $this->dom->createElement($xmlRootNodeName);
@@ -117,32 +116,24 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
         return $this->parseXml($xml);
     }
 
-     /**
-      * Checks whether the serializer can encode to given format.
-      *
-      * @param string $format format name
-      *
-      * @return bool
-      */
+    /**
+     * {@inheritdoc}
+     */
      public function supportsEncoding($format)
      {
          return 'xml' === $format;
      }
 
      /**
-      * Checks whether the serializer can decode from given format.
-      *
-      * @param string $format format name
-      *
-      * @return bool
-      */
+     * {@inheritdoc}
+     */
      public function supportsDecoding($format)
      {
          return 'xml' === $format;
      }
 
     /**
-     * Sets the root node name.
+     * Sets the root node name
      *
      * @param string $name root node name
      */
@@ -152,8 +143,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * Returns the root node name.
-     *
+     * Returns the root node name
      * @return string
      */
     public function getRootNodeName()
@@ -226,7 +216,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * Checks the name is a valid xml element name.
+     * Checks the name is a valid xml element name
      *
      * @param string $name
      *
@@ -246,7 +236,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
      *
      * @return array
      */
-    private function parseXml(\SimpleXMLElement $node)
+    private function parseXml(\SimpleXmlElement $node)
     {
         $data = array();
         if ($node->attributes()) {
@@ -270,14 +260,14 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
             if ($key === 'item') {
                 if (isset($value['@key'])) {
                     if (isset($value['#'])) {
-                        $data[(string) $value['@key']] = $value['#'];
+                        $data[$value['@key']] = $value['#'];
                     } else {
-                        $data[(string) $value['@key']] = $value;
+                        $data[$value['@key']] = $value;
                     }
                 } else {
                     $data['item'][] = $value;
                 }
-            } elseif (array_key_exists($key, $data) || $key == 'entry') {
+            } elseif (array_key_exists($key, $data) || $key == "entry") {
                 if ((false === is_array($data[$key]))  || (false === isset($data[$key][0]))) {
                     $data[$key] = array($data[$key]);
                 }
@@ -291,34 +281,36 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * Parse the data and convert it to DOMElements.
+     * Parse the data and convert it to DOMElements
      *
-     * @param \DOMElement  $parentNode
-     * @param array|object $data            data
-     * @param string       $xmlRootNodeName
+     * @param \DOMNode     $parentNode
+     * @param array|object $data
+     * @param string|null  $xmlRootNodeName
      *
      * @return bool
      *
      * @throws UnexpectedValueException
      */
-    private function buildXml(\DOMElement $parentNode, $data, $xmlRootNodeName = null)
+    private function buildXml(\DOMNode $parentNode, $data, $xmlRootNodeName = null)
     {
         $append = true;
 
         if (is_array($data) || $data instanceof \Traversable) {
             foreach ($data as $key => $data) {
                 //Ah this is the magic @ attribute types.
-                if (0 === strpos($key, '@') && is_scalar($data) && $this->isElementNameValid($attributeName = substr($key, 1))) {
+                if (0 === strpos($key, "@") && is_scalar($data) && $this->isElementNameValid($attributeName = substr($key, 1))) {
                     $parentNode->setAttribute($attributeName, $data);
                 } elseif ($key === '#') {
                     $append = $this->selectNodeType($parentNode, $data);
                 } elseif (is_array($data) && false === is_numeric($key)) {
-                    // Is this array fully numeric keys?
+                    /**
+                     * Is this array fully numeric keys?
+                     */
                     if (ctype_digit(implode('', array_keys($data)))) {
-                        /*
+                        /**
                          * Create nodes to append to $parentNode based on the $key of this array
                          * Produces <xml><item>0</item><item>1</item></xml>
-                         * From array("item" => array(0,1));.
+                         * From array("item" => array(0,1));
                          */
                         foreach ($data as $subData) {
                             $append = $this->appendNode($parentNode, $subData, $key);
@@ -327,7 +319,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
                         $append = $this->appendNode($parentNode, $data, $key);
                     }
                 } elseif (is_numeric($key) || !$this->isElementNameValid($key)) {
-                    $append = $this->appendNode($parentNode, $data, 'item', $key);
+                    $append = $this->appendNode($parentNode, $data, "item", $key);
                 } else {
                     $append = $this->appendNode($parentNode, $data, $key);
                 }
@@ -337,7 +329,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
         }
 
         if (is_object($data)) {
-            $data = $this->serializer->normalize($data, $this->format);
+            $data = $this->serializer->normalize($data, $this->format, $this->context);
             if (null !== $data && !is_scalar($data)) {
                 return $this->buildXml($parentNode, $data, $xmlRootNodeName);
             }
@@ -394,7 +386,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
     }
 
     /**
-     * Tests the value being passed and decide what sort of element to create.
+     * Tests the value being passed and decide what sort of element to create
      *
      * @param \DOMNode $node
      * @param mixed    $val
@@ -411,7 +403,7 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
         } elseif ($val instanceof \Traversable) {
             $this->buildXml($node, $val);
         } elseif (is_object($val)) {
-            return $this->buildXml($node, $this->serializer->normalize($val, $this->format));
+            return $this->buildXml($node, $this->serializer->normalize($val, $this->format, $this->context));
         } elseif (is_numeric($val)) {
             return $this->appendText($node, (string) $val);
         } elseif (is_string($val) && $this->needsCdataWrapping($val)) {
@@ -436,5 +428,34 @@ class XmlEncoder extends SerializerAwareEncoder implements EncoderInterface, Dec
         return isset($context['xml_root_node_name'])
             ? $context['xml_root_node_name']
             : $this->rootNodeName;
+    }
+
+    /**
+     * Create a DOM document, taking serializer options into account.
+     *
+     * @param array $context options that the encoder has access to.
+     *
+     * @return \DOMDocument
+     */
+    private function createDomDocument(array $context)
+    {
+        $document = new \DOMDocument();
+
+        // Set an attribute on the DOM document specifying, as part of the XML declaration,
+        $xmlOptions = array(
+            // the version number of the document
+            'xml_version' => 'xmlVersion',
+            // the encoding of the document
+            'xml_encoding' => 'encoding',
+            // whether the document is standalone
+            'xml_standalone' => 'xmlStandalone',
+        );
+        foreach ($xmlOptions as $xmlOption => $documentProperty) {
+            if (isset($context[$xmlOption])) {
+                $document->$documentProperty = $context[$xmlOption];
+            }
+        }
+
+        return $document;
     }
 }

@@ -20,16 +20,20 @@ use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesser;
  * A file in the file system.
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @api
  */
 class File extends \SplFileInfo
 {
     /**
      * Constructs a new file from the given path.
      *
-     * @param string $path      The path to the file
-     * @param bool   $checkPath Whether to check the path or not
+     * @param string  $path      The path to the file
+     * @param bool    $checkPath Whether to check the path or not
      *
      * @throws FileNotFoundException If the given path is not a file
+     *
+     * @api
      */
     public function __construct($path, $checkPath = true)
     {
@@ -49,6 +53,8 @@ class File extends \SplFileInfo
      * to guess the file extension.
      *
      * @return string|null The guessed extension or null if it cannot be guessed
+     *
+     * @api
      *
      * @see ExtensionGuesser
      * @see getMimeType()
@@ -71,6 +77,8 @@ class File extends \SplFileInfo
      * @return string|null The guessed mime type (i.e. "application/pdf")
      *
      * @see MimeTypeGuesser
+     *
+     * @api
      */
     public function getMimeType()
     {
@@ -85,6 +93,8 @@ class File extends \SplFileInfo
      * \SplFileInfo::getExtension() is not available before PHP 5.3.6
      *
      * @return string The extension
+     *
+     * @api
      */
     public function getExtension()
     {
@@ -100,6 +110,8 @@ class File extends \SplFileInfo
      * @return File A File object representing the new file
      *
      * @throws FileException if the target file could not be created
+     *
+     * @api
      */
     public function move($directory, $name = null)
     {
@@ -118,7 +130,7 @@ class File extends \SplFileInfo
     protected function getTargetFile($directory, $name = null)
     {
         if (!is_dir($directory)) {
-            if (false === @mkdir($directory, 0777, true) && !is_dir($directory)) {
+            if (false === @mkdir($directory, 0777, true)) {
                 throw new FileException(sprintf('Unable to create the "%s" directory', $directory));
             }
         } elseif (!is_writable($directory)) {
@@ -127,7 +139,7 @@ class File extends \SplFileInfo
 
         $target = rtrim($directory, '/\\').DIRECTORY_SEPARATOR.(null === $name ? $this->getBasename() : $this->getName($name));
 
-        return new self($target, false);
+        return new File($target, false);
     }
 
     /**

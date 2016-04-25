@@ -20,7 +20,10 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        \Locale::setDefault('en');
+        // Since we test against "de_AT", we need the full implementation
+        IntlTestHelper::requireFullIntl($this);
+
+        \Locale::setDefault('de_AT');
     }
 
     public function provideTransformations()
@@ -41,9 +44,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testTransform($from, $to, $locale)
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault($locale);
 
         $transformer = new NumberToLocalizedStringTransformer();
@@ -67,9 +67,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testTransformWithGrouping($from, $to, $locale)
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault($locale);
 
         $transformer = new NumberToLocalizedStringTransformer(null, true);
@@ -79,29 +76,116 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testTransformWithPrecision()
     {
-        // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
-        \Locale::setDefault('de_AT');
-
         $transformer = new NumberToLocalizedStringTransformer(2);
 
         $this->assertEquals('1234,50', $transformer->transform(1234.5));
         $this->assertEquals('678,92', $transformer->transform(678.916));
     }
 
-    public function testTransformWithRoundingMode()
+    public function transformWithRoundingProvider()
     {
-        // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
+        return array(
+            // towards positive infinity (1.6 -> 2, -1.6 -> -1)
+            array(0, 1234.5, '1235', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(0, 1234.4, '1235', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(0, -1234.5, '-1234', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(0, -1234.4, '-1234', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, 123.45, '123,5', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, 123.44, '123,5', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, -123.45, '-123,4', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, -123.44, '-123,4', NumberToLocalizedStringTransformer::ROUND_CEILING),
+            // towards negative infinity (1.6 -> 1, -1.6 -> -2)
+            array(0, 1234.5, '1234', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(0, 1234.4, '1234', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(0, -1234.5, '-1235', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(0, -1234.4, '-1235', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, 123.45, '123,4', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, 123.44, '123,4', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, -123.45, '-123,5', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, -123.44, '-123,5', NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            // away from zero (1.6 -> 2, -1.6 -> 2)
+            array(0, 1234.5, '1235', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(0, 1234.4, '1235', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(0, -1234.5, '-1235', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(0, -1234.4, '-1235', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, 123.45, '123,5', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, 123.44, '123,5', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, -123.45, '-123,5', NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, -123.44, '-123,5', NumberToLocalizedStringTransformer::ROUND_UP),
+            // towards zero (1.6 -> 1, -1.6 -> -1)
+            array(0, 1234.5, '1234', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(0, 1234.4, '1234', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(0, -1234.5, '-1234', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(0, -1234.4, '-1234', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, 123.45, '123,4', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, 123.44, '123,4', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, -123.45, '-123,4', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, -123.44, '-123,4', NumberToLocalizedStringTransformer::ROUND_DOWN),
+            // round halves (.5) to the next even number
+            array(0, 1234.6, '1235', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, 1234.5, '1234', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, 1234.4, '1234', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, 1233.5, '1234', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, 1232.5, '1232', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, -1234.6, '-1235', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, -1234.5, '-1234', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, -1234.4, '-1234', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, -1233.5, '-1234', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, -1232.5, '-1232', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, 123.46, '123,5', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, 123.45, '123,4', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, 123.44, '123,4', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, 123.35, '123,4', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, 123.25, '123,2', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, -123.46, '-123,5', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, -123.45, '-123,4', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, -123.44, '-123,4', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, -123.35, '-123,4', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, -123.25, '-123,2', NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            // round halves (.5) away from zero
+            array(0, 1234.6, '1235', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, 1234.5, '1235', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, 1234.4, '1234', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, -1234.6, '-1235', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, -1234.5, '-1235', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, -1234.4, '-1234', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, 123.46, '123,5', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, 123.45, '123,5', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, 123.44, '123,4', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, -123.46, '-123,5', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, -123.45, '-123,5', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, -123.44, '-123,4', NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            // round halves (.5) towards zero
+            array(0, 1234.6, '1235', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, 1234.5, '1234', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, 1234.4, '1234', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, -1234.6, '-1235', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, -1234.5, '-1234', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, -1234.4, '-1234', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, 123.46, '123,5', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, 123.45, '123,4', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, 123.44, '123,4', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, -123.46, '-123,5', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, -123.45, '-123,4', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, -123.44, '-123,4', NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+        );
+    }
 
-        \Locale::setDefault('de_AT');
+    /**
+     * @dataProvider transformWithRoundingProvider
+     */
+    public function testTransformWithRounding($precision, $input, $output, $roundingMode)
+    {
+        $transformer = new NumberToLocalizedStringTransformer($precision, null, $roundingMode);
 
+        $this->assertEquals($output, $transformer->transform($input));
+    }
+
+    public function testTransformDoesNotRoundIfNoPrecision()
+    {
         $transformer = new NumberToLocalizedStringTransformer(null, null, NumberToLocalizedStringTransformer::ROUND_DOWN);
-        $this->assertEquals('1234,547', $transformer->transform(1234.547), '->transform() only applies rounding mode if precision set');
 
-        $transformer = new NumberToLocalizedStringTransformer(2, null, NumberToLocalizedStringTransformer::ROUND_DOWN);
-        $this->assertEquals('1234,54', $transformer->transform(1234.547), '->transform() rounding-mode works');
+        $this->assertEquals('1234,547', $transformer->transform(1234.547));
     }
 
     /**
@@ -109,9 +193,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testReverseTransform($to, $from, $locale)
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault($locale);
 
         $transformer = new NumberToLocalizedStringTransformer();
@@ -124,9 +205,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testReverseTransformWithGrouping($to, $from, $locale)
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault($locale);
 
         $transformer = new NumberToLocalizedStringTransformer(null, true);
@@ -134,15 +212,12 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($to, $transformer->reverseTransform($from));
     }
 
-    /**
-     * @see https://github.com/symfony/symfony/issues/7609
-     *
-     * @requires extension mbstring
-     */
+    // https://github.com/symfony/symfony/issues/7609
     public function testReverseTransformWithGroupingAndFixedSpaces()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
+        if (!function_exists('mb_detect_encoding')) {
+            $this->markTestSkipped('The "mbstring" extension is required for this test.');
+        }
 
         \Locale::setDefault('ru');
 
@@ -153,11 +228,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testReverseTransformWithGroupingButWithoutGroupSeparator()
     {
-        // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
-        \Locale::setDefault('de_AT');
-
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
         // omit group separator
@@ -165,11 +235,114 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(12345.912, $transformer->reverseTransform('12345,912'));
     }
 
+    public function reverseTransformWithRoundingProvider()
+    {
+        return array(
+            // towards positive infinity (1.6 -> 2, -1.6 -> -1)
+            array(0, '1234,5', 1235, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(0, '1234,4', 1235, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(0, '-1234,5', -1234, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(0, '-1234,4', -1234, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, '123,45', 123.5, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, '123,44', 123.5, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, '-123,45', -123.4, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            array(1, '-123,44', -123.4, NumberToLocalizedStringTransformer::ROUND_CEILING),
+            // towards negative infinity (1.6 -> 1, -1.6 -> -2)
+            array(0, '1234,5', 1234, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(0, '1234,4', 1234, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(0, '-1234,5', -1235, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(0, '-1234,4', -1235, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, '123,45', 123.4, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, '123,44', 123.4, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, '-123,45', -123.5, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            array(1, '-123,44', -123.5, NumberToLocalizedStringTransformer::ROUND_FLOOR),
+            // away from zero (1.6 -> 2, -1.6 -> 2)
+            array(0, '1234,5', 1235, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(0, '1234,4', 1235, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(0, '-1234,5', -1235, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(0, '-1234,4', -1235, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, '123,45', 123.5, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, '123,44', 123.5, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, '-123,45', -123.5, NumberToLocalizedStringTransformer::ROUND_UP),
+            array(1, '-123,44', -123.5, NumberToLocalizedStringTransformer::ROUND_UP),
+            // towards zero (1.6 -> 1, -1.6 -> -1)
+            array(0, '1234,5', 1234, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(0, '1234,4', 1234, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(0, '-1234,5', -1234, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(0, '-1234,4', -1234, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, '123,45', 123.4, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, '123,44', 123.4, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, '-123,45', -123.4, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            array(1, '-123,44', -123.4, NumberToLocalizedStringTransformer::ROUND_DOWN),
+            // round halves (.5) to the next even number
+            array(0, '1234,6', 1235, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '1234,5', 1234, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '1234,4', 1234, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '1233,5', 1234, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '1232,5', 1232, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '-1234,6', -1235, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '-1234,5', -1234, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '-1234,4', -1234, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '-1233,5', -1234, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(0, '-1232,5', -1232, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '123,46', 123.5, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '123,45', 123.4, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '123,44', 123.4, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '123,35', 123.4, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '123,25', 123.2, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '-123,46', -123.5, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '-123,45', -123.4, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '-123,44', -123.4, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '-123,35', -123.4, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            array(1, '-123,25', -123.2, NumberToLocalizedStringTransformer::ROUND_HALF_EVEN),
+            // round halves (.5) away from zero
+            array(0, '1234,6', 1235, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, '1234,5', 1235, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, '1234,4', 1234, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, '-1234,6', -1235, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, '-1234,5', -1235, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(0, '-1234,4', -1234, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, '123,46', 123.5, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, '123,45', 123.5, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, '123,44', 123.4, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, '-123,46', -123.5, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, '-123,45', -123.5, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            array(1, '-123,44', -123.4, NumberToLocalizedStringTransformer::ROUND_HALF_UP),
+            // round halves (.5) towards zero
+            array(0, '1234,6', 1235, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, '1234,5', 1234, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, '1234,4', 1234, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, '-1234,6', -1235, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, '-1234,5', -1234, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(0, '-1234,4', -1234, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, '123,46', 123.5, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, '123,45', 123.4, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, '123,44', 123.4, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, '-123,46', -123.5, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, '-123,45', -123.4, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+            array(1, '-123,44', -123.4, NumberToLocalizedStringTransformer::ROUND_HALF_DOWN),
+        );
+    }
+
+    /**
+     * @dataProvider reverseTransformWithRoundingProvider
+     */
+    public function testReverseTransformWithRounding($precision, $input, $output, $roundingMode)
+    {
+        $transformer = new NumberToLocalizedStringTransformer($precision, null, $roundingMode);
+
+        $this->assertEquals($output, $transformer->reverseTransform($input));
+    }
+
+    public function testReverseTransformDoesNotRoundIfNoPrecision()
+    {
+        $transformer = new NumberToLocalizedStringTransformer(null, null, NumberToLocalizedStringTransformer::ROUND_DOWN);
+
+        $this->assertEquals(1234.547, $transformer->reverseTransform('1234,547'));
+    }
+
     public function testDecimalSeparatorMayBeDotIfGroupingSeparatorIsNotDot()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault('fr');
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
@@ -187,11 +360,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDecimalSeparatorMayNotBeDotIfGroupingSeparatorIsDot()
     {
-        // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
-        \Locale::setDefault('de_AT');
-
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
         $transformer->reverseTransform('1.234.5');
@@ -202,11 +370,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDecimalSeparatorMayNotBeDotIfGroupingSeparatorIsDotWithNoGroupSep()
     {
-        // Since we test against "de_AT", we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
-        \Locale::setDefault('de_AT');
-
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
         $transformer->reverseTransform('1234.5');
@@ -214,9 +377,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testDecimalSeparatorMayBeDotIfGroupingSeparatorIsDotButNoGroupingUsed()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault('fr');
         $transformer = new NumberToLocalizedStringTransformer();
 
@@ -226,9 +386,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testDecimalSeparatorMayBeCommaIfGroupingSeparatorIsNotComma()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
-
         \Locale::setDefault('bg');
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
@@ -246,6 +403,7 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDecimalSeparatorMayNotBeCommaIfGroupingSeparatorIsComma()
     {
+        \Locale::setDefault('en');
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
         $transformer->reverseTransform('1,234,5');
@@ -256,6 +414,7 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDecimalSeparatorMayNotBeCommaIfGroupingSeparatorIsCommaWithNoGroupSep()
     {
+        \Locale::setDefault('en');
         $transformer = new NumberToLocalizedStringTransformer(null, true);
 
         $transformer->reverseTransform('1234,5');
@@ -263,6 +422,7 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
 
     public function testDecimalSeparatorMayBeCommaIfGroupingSeparatorIsCommaButNoGroupingUsed()
     {
+        \Locale::setDefault('en');
         $transformer = new NumberToLocalizedStringTransformer();
 
         $this->assertEquals(1234.5, $transformer->reverseTransform('1234,5'));
@@ -301,7 +461,6 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
-     *
      * @link https://github.com/symfony/symfony/issues/3161
      */
     public function testReverseTransformDisallowsNaN()
@@ -375,12 +534,12 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
      * @expectedExceptionMessage The number contains unrecognized characters: "foo8"
-     * @requires extension mbstring
      */
     public function testReverseTransformDisallowsCenteredExtraCharactersMultibyte()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
+        if (!function_exists('mb_detect_encoding')) {
+            $this->markTestSkipped('The "mbstring" extension is required for this test.');
+        }
 
         \Locale::setDefault('ru');
 
@@ -392,12 +551,12 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
      * @expectedExceptionMessage The number contains unrecognized characters: "foo8"
-     * @requires extension mbstring
      */
     public function testReverseTransformIgnoresTrailingSpacesInExceptionMessage()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
+        if (!function_exists('mb_detect_encoding')) {
+            $this->markTestSkipped('The "mbstring" extension is required for this test.');
+        }
 
         \Locale::setDefault('ru');
 
@@ -420,12 +579,12 @@ class NumberToLocalizedStringTransformerTest extends \PHPUnit_Framework_TestCase
     /**
      * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
      * @expectedExceptionMessage The number contains unrecognized characters: "foo"
-     * @requires extension mbstring
      */
     public function testReverseTransformDisallowsTrailingExtraCharactersMultibyte()
     {
-        // Since we test against other locales, we need the full implementation
-        IntlTestHelper::requireFullIntl($this);
+        if (!function_exists('mb_detect_encoding')) {
+            $this->markTestSkipped('The "mbstring" extension is required for this test.');
+        }
 
         \Locale::setDefault('ru');
 

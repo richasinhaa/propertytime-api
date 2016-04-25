@@ -45,7 +45,7 @@ class ReplaceAliasByActualDefinitionPass implements CompilerPassInterface
             try {
                 $definition = $container->getDefinition($aliasId);
             } catch (InvalidArgumentException $e) {
-                throw new InvalidArgumentException(sprintf('Unable to replace alias "%s" with actual definition "%s".', $id, $alias), null, $e);
+                throw new InvalidArgumentException(sprintf('Unable to replace alias "%s" with "%s".', $alias, $id), null, $e);
             }
 
             if ($definition->isPublic()) {
@@ -95,8 +95,6 @@ class ReplaceAliasByActualDefinitionPass implements CompilerPassInterface
             $definition->setProperties(
                 $this->updateArgumentReferences($definition->getProperties(), $currentId, $newId)
             );
-
-            $definition->setFactoryService($this->updateFactoryServiceReference($definition->getFactoryService(), $currentId, $newId));
         }
     }
 
@@ -123,14 +121,5 @@ class ReplaceAliasByActualDefinitionPass implements CompilerPassInterface
         }
 
         return $arguments;
-    }
-
-    private function updateFactoryServiceReference($factoryService, $currentId, $newId)
-    {
-        if (null === $factoryService) {
-            return;
-        }
-
-        return $currentId === $factoryService ? $newId : $factoryService;
     }
 }

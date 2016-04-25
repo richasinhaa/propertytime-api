@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
     /**
      * Generates the configuration tree builder.
      *
-     * @return TreeBuilder The tree builder
+     * @return \Symfony\Component\Config\Definition\Builder\TreeBuilder The tree builder
      */
     public function getConfigTreeBuilder()
     {
@@ -58,7 +58,7 @@ class Configuration implements ConfigurationInterface
                             ->prototype('scalar')->defaultValue('form_div_layout.html.twig')->end()
                             ->example(array('MyBundle::form.html.twig'))
                             ->validate()
-                                ->ifTrue(function ($v) {return !in_array('form_div_layout.html.twig', $v); })
+                                ->ifTrue(function ($v) { return !in_array('form_div_layout.html.twig', $v); })
                                 ->then(function ($v) {
                                     return array_merge(array('form_div_layout.html.twig'), $v);
                                 })
@@ -124,18 +124,16 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->fixXmlConfig('path')
             ->children()
-                ->variableNode('autoescape')
-                    ->defaultValue(array('Symfony\Bundle\TwigBundle\TwigDefaultEscapingStrategy', 'guess'))
-                ->end()
+                ->scalarNode('autoescape')->end()
                 ->scalarNode('autoescape_service')->defaultNull()->end()
                 ->scalarNode('autoescape_service_method')->defaultNull()->end()
-                ->scalarNode('base_template_class')->example('Twig_Template')->cannotBeEmpty()->end()
+                ->scalarNode('base_template_class')->example('Twig_Template')->end()
                 ->scalarNode('cache')->defaultValue('%kernel.cache_dir%/twig')->end()
                 ->scalarNode('charset')->defaultValue('%kernel.charset%')->end()
-                ->booleanNode('debug')->defaultValue('%kernel.debug%')->end()
-                ->booleanNode('strict_variables')->end()
+                ->scalarNode('debug')->defaultValue('%kernel.debug%')->end()
+                ->scalarNode('strict_variables')->end()
                 ->scalarNode('auto_reload')->end()
-                ->integerNode('optimizations')->min(-1)->end()
+                ->scalarNode('optimizations')->end()
                 ->arrayNode('paths')
                     ->normalizeKeys(false)
                     ->useAttributeAsKey('paths')

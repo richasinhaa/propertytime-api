@@ -27,7 +27,7 @@ class ArrayNodeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException        \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage Unrecognized option "foo" under "root"
+     * @expectedExceptionMessage Unrecognized options "foo" under "root"
      */
     public function testExceptionThrownOnUnrecognizedChild()
     {
@@ -75,10 +75,6 @@ class ArrayNodeTest extends \PHPUnit_Framework_TestCase
                 array('foo-bar_moo' => 'foo'),
             ),
             array(
-                array('anything-with-dash-and-no-underscore' => 'first', 'no_dash' => 'second'),
-                array('anything_with_dash_and_no_underscore' => 'first', 'no_dash' => 'second'),
-            ),
-            array(
                 array('foo-bar' => null, 'foo_bar' => 'foo'),
                 array('foo-bar' => null, 'foo_bar' => 'foo'),
             ),
@@ -111,19 +107,19 @@ class ArrayNodeTest extends \PHPUnit_Framework_TestCase
             array(
                 array(
                     0 => array(
-                        'name' => 'something',
+                        'name'    => 'something',
                     ),
                     5 => array(
-                        0 => 'this won\'t work too',
+                        0         => 'this won\'t work too',
                         'new_key' => 'some other value',
                     ),
-                    'string_key' => 'just value',
+                    'string_key'  => 'just value',
                 ),
                 array(
-                    0 => array(
+                    0 => array (
                         'name' => 'something',
                     ),
-                    5 => array(
+                    5 => array (
                         0 => 'this won\'t work too',
                         'new_key' => 'some other value',
                     ),

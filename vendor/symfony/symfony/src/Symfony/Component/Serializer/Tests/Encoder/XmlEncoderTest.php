@@ -32,7 +32,7 @@ class XmlEncoderTest extends \PHPUnit_Framework_TestCase
     public function testEncodeScalar()
     {
         $obj = new ScalarDummy();
-        $obj->xmlFoo = 'foo';
+        $obj->xmlFoo = "foo";
 
         $expected = '<?xml version="1.0"?>'."\n".
             '<response>foo</response>'."\n";
@@ -43,7 +43,7 @@ class XmlEncoderTest extends \PHPUnit_Framework_TestCase
     public function testSetRootNodeName()
     {
         $obj = new ScalarDummy();
-        $obj->xmlFoo = 'foo';
+        $obj->xmlFoo = "foo";
 
         $this->encoder->setRootNodeName('test');
         $expected = '<?xml version="1.0"?>'."\n".
@@ -70,11 +70,11 @@ class XmlEncoderTest extends \PHPUnit_Framework_TestCase
                 '@name' => 'Bar',
             ),
             'Foo' => array(
-                'Bar' => 'Test',
+                'Bar' => "Test",
                 '@Type' => 'test',
             ),
             'föo_bär' => 'a',
-            'Bar' => array(1, 2, 3),
+            "Bar" => array(1,2,3),
             'a' => 'b',
         );
         $expected = '<?xml version="1.0"?>'."\n".
@@ -118,6 +118,23 @@ class XmlEncoderTest extends \PHPUnit_Framework_TestCase
             '<response><person><firstname>Peter</firstname></person></response>'."\n";
 
         $this->assertEquals($expected, $this->encoder->encode($array, 'xml'));
+    }
+
+    public function testEncodeXmlAttributes()
+    {
+        $xml = simplexml_load_string('<firstname>Peter</firstname>');
+        $array = array('person' => $xml);
+
+        $expected = '<?xml version="1.1" encoding="utf-8" standalone="yes"?>'."\n".
+            '<response><person><firstname>Peter</firstname></person></response>'."\n";
+
+        $context = array(
+            'xml_version' => '1.1',
+            'xml_encoding' => 'utf-8',
+            'xml_standalone' => true,
+        );
+
+        $this->assertSame($expected, $this->encoder->encode($array, 'xml', $context));
     }
 
     public function testEncodeScalarRootAttributes()
@@ -275,28 +292,28 @@ class XmlEncoderTest extends \PHPUnit_Framework_TestCase
         $obj = new ScalarDummy();
         $obj->xmlFoo = array(
             'foo-bar' => array(
-                '@key' => 'value',
-                'item' => array('@key' => 'key', 'key-val' => 'val'),
+                '@key' => "value",
+                'item' => array("@key" => 'key', "key-val" => 'val'),
             ),
             'Foo' => array(
-                'Bar' => 'Test',
+                'Bar' => "Test",
                 '@Type' => 'test',
             ),
             'föo_bär' => 'a',
-            'Bar' => array(1, 2, 3),
+            "Bar" => array(1,2,3),
             'a' => 'b',
         );
         $expected = array(
             'foo-bar' => array(
-                '@key' => 'value',
-                'key' => array('@key' => 'key', 'key-val' => 'val'),
+                '@key' => "value",
+                'key' => array('@key' => 'key', "key-val" => 'val'),
             ),
             'Foo' => array(
-                'Bar' => 'Test',
+                'Bar' => "Test",
                 '@Type' => 'test',
             ),
             'föo_bär' => 'a',
-            'Bar' => array(1, 2, 3),
+            "Bar" => array(1,2,3),
             'a' => 'b',
         );
         $xml = $this->encoder->encode($obj, 'xml');
@@ -355,7 +372,7 @@ class XmlEncoderTest extends \PHPUnit_Framework_TestCase
         $obj->foo = 'foo';
         $obj->bar = array('a', 'b');
         $obj->baz = array('key' => 'val', 'key2' => 'val', 'A B' => 'bar', 'item' => array(array('title' => 'title1'), array('title' => 'title2')), 'Barry' => array('FooBar' => array('Baz' => 'Ed', '@id' => 1)));
-        $obj->qux = '1';
+        $obj->qux = "1";
 
         return $obj;
     }

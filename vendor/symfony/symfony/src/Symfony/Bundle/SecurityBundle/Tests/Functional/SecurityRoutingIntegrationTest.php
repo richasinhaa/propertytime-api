@@ -19,6 +19,7 @@ class SecurityRoutingIntegrationTest extends WebTestCase
     public function testRoutingErrorIsNotExposedForProtectedResourceWhenAnonymous($config)
     {
         $client = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config));
+        $client->insulate();
         $client->request('GET', '/protected_resource');
 
         $this->assertRedirect($client->getResponse(), '/login');
@@ -29,11 +30,12 @@ class SecurityRoutingIntegrationTest extends WebTestCase
      */
     public function testRoutingErrorIsExposedWhenNotProtected($config)
     {
-        if ('\\' === DIRECTORY_SEPARATOR && PHP_VERSION_ID < 50309) {
+        if (strpos(PHP_OS, "WIN") === 0 && version_compare(phpversion(), "5.3.9", "<")) {
             $this->markTestSkipped('Test hangs on Windows & PHP due to https://bugs.php.net/bug.php?id=60120 fixed in http://svn.php.net/viewvc?view=revision&revision=318366');
         }
 
         $client = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config));
+        $client->insulate();
         $client->request('GET', '/unprotected_resource');
 
         $this->assertEquals(404, $client->getResponse()->getStatusCode(), (string) $client->getResponse());
@@ -44,11 +46,12 @@ class SecurityRoutingIntegrationTest extends WebTestCase
      */
     public function testRoutingErrorIsNotExposedForProtectedResourceWhenLoggedInWithInsufficientRights($config)
     {
-        if ('\\' === DIRECTORY_SEPARATOR && PHP_VERSION_ID < 50309) {
+        if (strpos(PHP_OS, "WIN") === 0 && version_compare(phpversion(), "5.3.9", "<")) {
             $this->markTestSkipped('Test hangs on Windows & PHP due to https://bugs.php.net/bug.php?id=60120 fixed in http://svn.php.net/viewvc?view=revision&revision=318366');
         }
 
         $client = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config));
+        $client->insulate();
 
         $form = $client->request('GET', '/login')->selectButton('login')->form();
         $form['_username'] = 'johannes';
@@ -62,11 +65,12 @@ class SecurityRoutingIntegrationTest extends WebTestCase
 
     /**
      * @dataProvider getConfigs
+     * @group ip_whitelist
      */
     public function testSecurityConfigurationForSingleIPAddress($config)
     {
-        $allowedClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array('REMOTE_ADDR' => '10.10.10.10'));
-        $barredClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array('REMOTE_ADDR' => '10.10.20.10'));
+        $allowedClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array("REMOTE_ADDR" => "10.10.10.10"));
+        $barredClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array("REMOTE_ADDR" => "10.10.20.10"));
 
         $this->assertAllowed($allowedClient, '/secured-by-one-ip');
         $this->assertRestricted($barredClient, '/secured-by-one-ip');
@@ -74,17 +78,40 @@ class SecurityRoutingIntegrationTest extends WebTestCase
 
     /**
      * @dataProvider getConfigs
+     * @group ip_whitelist
      */
     public function testSecurityConfigurationForMultipleIPAddresses($config)
     {
-        $allowedClientA = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array('REMOTE_ADDR' => '1.1.1.1'));
-        $allowedClientB = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array('REMOTE_ADDR' => '2.2.2.2'));
-        $barredClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array('REMOTE_ADDR' => '192.168.1.1'));
+        $allowedClientA = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array("REMOTE_ADDR" => "1.1.1.1"));
+        $allowedClientB = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array("REMOTE_ADDR" => "2.2.2.2"));
+        $barredClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array("REMOTE_ADDR" => "192.168.1.1"));
 
         $this->assertAllowed($allowedClientA, '/secured-by-two-ips');
         $this->assertAllowed($allowedClientB, '/secured-by-two-ips');
         $this->assertRestricted($barredClient, '/secured-by-two-ips');
     }
+
+   /**
+    * @dataProvider getConfigs
+    */
+   public function testSecurityConfigurationForExpression($config)
+   {
+       $allowedClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array('HTTP_USER_AGENT' => 'Firefox 1.0'));
+       $this->assertAllowed($allowedClient, '/protected-via-expression');
+
+       $barredClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array());
+       $this->assertRestricted($barredClient, '/protected-via-expression');
+
+       $allowedClient = $this->createClient(array('test_case' => 'StandardFormLogin', 'root_config' => $config), array());
+
+       $allowedClient->request('GET', '/protected-via-expression');
+       $form = $allowedClient->followRedirect()->selectButton('login')->form();
+       $form['_username'] = 'johannes';
+       $form['_password'] = 'test';
+       $allowedClient->submit($form);
+       $this->assertRedirect($allowedClient->getResponse(), '/protected-via-expression');
+       $this->assertAllowed($allowedClient, '/protected-via-expression');
+   }
 
     private function assertAllowed($client, $path)
     {
@@ -103,13 +130,17 @@ class SecurityRoutingIntegrationTest extends WebTestCase
         return array(array('config.yml'), array('routes_as_path.yml'));
     }
 
-    public static function setUpBeforeClass()
+    protected function setUp()
     {
-        parent::deleteTmpDir('StandardFormLogin');
+        parent::setUp();
+
+        $this->deleteTmpDir('StandardFormLogin');
     }
 
-    public static function tearDownAfterClass()
+    protected function tearDown()
     {
-        parent::deleteTmpDir('StandardFormLogin');
+        parent::tearDown();
+
+        $this->deleteTmpDir('StandardFormLogin');
     }
 }

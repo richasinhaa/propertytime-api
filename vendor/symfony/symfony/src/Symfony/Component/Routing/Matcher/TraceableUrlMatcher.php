@@ -24,7 +24,7 @@ class TraceableUrlMatcher extends UrlMatcher
 {
     const ROUTE_DOES_NOT_MATCH = 0;
     const ROUTE_ALMOST_MATCHES = 1;
-    const ROUTE_MATCHES = 2;
+    const ROUTE_MATCHES        = 2;
 
     protected $traces;
 
@@ -93,6 +93,15 @@ class TraceableUrlMatcher extends UrlMatcher
                 }
             }
 
+            // check condition
+            if ($condition = $route->getCondition()) {
+                if (!$this->getExpressionLanguage()->evaluate($condition, array('context' => $this->context, 'request' => $this->request))) {
+                    $this->addTrace(sprintf('Condition "%s" does not evaluate to "true"', $condition), self::ROUTE_ALMOST_MATCHES, $name, $route);
+
+                    continue;
+                }
+            }
+
             // check HTTP scheme requirement
             if ($scheme = $route->getRequirement('_scheme')) {
                 if ($this->context->getScheme() !== $scheme) {
@@ -111,10 +120,10 @@ class TraceableUrlMatcher extends UrlMatcher
     private function addTrace($log, $level = self::ROUTE_DOES_NOT_MATCH, $name = null, $route = null)
     {
         $this->traces[] = array(
-            'log' => $log,
-            'name' => $name,
+            'log'   => $log,
+            'name'  => $name,
             'level' => $level,
-            'path' => null !== $route ? $route->getPath() : null,
+            'path'  => null !== $route ? $route->getPath() : null,
         );
     }
 }

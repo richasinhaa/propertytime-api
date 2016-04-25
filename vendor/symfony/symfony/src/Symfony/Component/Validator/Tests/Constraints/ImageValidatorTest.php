@@ -14,17 +14,20 @@ namespace Symfony\Component\Validator\Tests\Constraints;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\ImageValidator;
 
-/**
- * @requires extension fileinfo
- */
 class ImageValidatorTest extends AbstractConstraintValidatorTest
 {
     protected $context;
+
+    /**
+     * @var ImageValidator
+     */
     protected $validator;
+
     protected $path;
     protected $image;
     protected $imageLandscape;
     protected $imagePortrait;
+    protected $image4By3;
 
     protected function createValidator()
     {
@@ -38,6 +41,7 @@ class ImageValidatorTest extends AbstractConstraintValidatorTest
         $this->image = __DIR__.'/Fixtures/test.gif';
         $this->imageLandscape = __DIR__.'/Fixtures/test_landscape.gif';
         $this->imagePortrait = __DIR__.'/Fixtures/test_portrait.gif';
+        $this->image4By3 = __DIR__.'/Fixtures/test_4by3.gif';
     }
 
     public function testNullIsValid()
@@ -181,5 +185,115 @@ class ImageValidatorTest extends AbstractConstraintValidatorTest
         ));
 
         $this->validator->validate($this->image, $constraint);
+    }
+
+    public function testRatioTooSmall()
+    {
+        $constraint = new Image(array(
+            'minRatio' => 2,
+            'minRatioMessage' => 'myMessage',
+        ));
+
+        $this->validator->validate($this->image, $constraint);
+
+        $this->assertViolation('myMessage', array(
+            '{{ ratio }}' => 1,
+            '{{ min_ratio }}' => 2,
+        ));
+    }
+
+    public function testRatioTooBig()
+    {
+        $constraint = new Image(array(
+            'maxRatio' => 0.5,
+            'maxRatioMessage' => 'myMessage',
+        ));
+
+        $this->validator->validate($this->image, $constraint);
+
+        $this->assertViolation('myMessage', array(
+            '{{ ratio }}' => 1,
+            '{{ max_ratio }}' => 0.5,
+        ));
+    }
+
+    public function testMaxRatioUsesTwoDecimalsOnly()
+    {
+        $constraint = new Image(array(
+            'maxRatio' => 1.33,
+        ));
+
+        $this->validator->validate($this->image4By3, $constraint);
+
+        $this->assertNoViolation();
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
+    public function testInvalidMinRatio()
+    {
+        $constraint = new Image(array(
+            'minRatio' => '1abc',
+        ));
+
+        $this->validator->validate($this->image, $constraint);
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
+    public function testInvalidMaxRatio()
+    {
+        $constraint = new Image(array(
+            'maxRatio' => '1abc',
+        ));
+
+        $this->validator->validate($this->image, $constraint);
+    }
+
+    public function testSquareNotAllowed()
+    {
+        $constraint = new Image(array(
+            'allowSquare' => false,
+            'allowSquareMessage' => 'myMessage',
+        ));
+
+        $this->validator->validate($this->image, $constraint);
+
+        $this->assertViolation('myMessage', array(
+            '{{ width }}' => 2,
+            '{{ height }}' => 2,
+        ));
+    }
+
+    public function testLandscapeNotAllowed()
+    {
+        $constraint = new Image(array(
+            'allowLandscape' => false,
+            'allowLandscapeMessage' => 'myMessage',
+        ));
+
+        $this->validator->validate($this->imageLandscape, $constraint);
+
+        $this->assertViolation('myMessage', array(
+            '{{ width }}' => 2,
+            '{{ height }}' => 1,
+        ));
+    }
+
+    public function testPortraitNotAllowed()
+    {
+        $constraint = new Image(array(
+            'allowPortrait' => false,
+            'allowPortraitMessage' => 'myMessage',
+        ));
+
+        $this->validator->validate($this->imagePortrait, $constraint);
+
+        $this->assertViolation('myMessage', array(
+            '{{ width }}' => 1,
+            '{{ height }}' => 2,
+        ));
     }
 }

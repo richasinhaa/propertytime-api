@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 /**
- * AccessDeniedListenerTest
+ * AccessDeniedListenerTest.
  *
  * @author Boris Guéry <guery.b@gmail.com>
  */
@@ -40,7 +40,8 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getFormatsDataProvider
      *
-     * @param array $formats
+     * @param array  $formats
+     * @param string $format
      */
     public function testAccessDeniedExceptionIsConvertedToAnAccessDeniedHttpExceptionForFormat(array $formats, $format)
     {
@@ -52,7 +53,9 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getContentTypesDataProvider
-     * @param array $contentTypes
+     *
+     * @param array  $formats
+     * @param string $contentType
      */
     public function testAccessDeniedExceptionIsConvertedToAnAccessDeniedHttpExceptionForContentType(array $formats, $contentType)
     {
@@ -64,13 +67,13 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param Request $request
-     * @param array $formats
+     * @param array   $formats
      */
     private function doTestAccessDeniedExceptionIsConvertedToAnAccessDeniedHttpExceptionForRequest(Request $request, array $formats)
     {
         $exception = new AccessDeniedException();
         $event = new GetResponseForExceptionEvent(new TestKernel(), $request, 'foo', $exception);
-        $listener = new AccessDeniedListener($formats, 'foo');
+        $listener = new AccessDeniedListener($formats, null, 'foo');
         // store the current error_log, and disable it temporarily
         $errorLog = ini_set('error_log', file_exists('/dev/null') ? '/dev/null' : 'nul');
         $listener->onKernelException($event);
@@ -81,6 +84,7 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getFormatsDataProvider
+     *
      * @param array $formats
      */
     public function testCommonExceptionsAreBypassed($formats)
@@ -90,15 +94,16 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
         $exception = new \Exception('foo');
         $event = new GetResponseForExceptionEvent(new TestKernel(), $request, 'foo', $exception);
 
-        $listener = new AccessDeniedListener($formats, 'foo');
+        $listener = new AccessDeniedListener($formats, null, 'foo');
         $listener->onKernelException($event);
         $this->assertSame($exception, $event->getException());
     }
 
     /**
      * @dataProvider getFormatsDataProvider
-     * @param array $formats
-     * @param $format
+     *
+     * @param array  $formats
+     * @param string $format
      */
     public function testAuthenticationExceptionIsConvertedToAnAccessDeniedHttpExceptionForFormat(array $formats, $format)
     {
@@ -110,8 +115,9 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getContentTypesDataProvider
-     * @param array $formats
-     * @param $contentType
+     *
+     * @param array  $formats
+     * @param string $contentType
      */
     public function testAuthenticationExceptionIsConvertedToAnAccessDeniedHttpExceptionForContentType(array $formats, $contentType)
     {
@@ -123,13 +129,13 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param Request $request
-     * @param array $formats
+     * @param array   $formats
      */
     private function doTestAuthenticationExceptionIsConvertedToAnHttpExceptionForRequest(Request $request, array $formats)
     {
         $exception = new AuthenticationException();
         $event = new GetResponseForExceptionEvent(new TestKernel(), $request, 'foo', $exception);
-        $listener = new AccessDeniedListener($formats, 'foo');
+        $listener = new AccessDeniedListener($formats, null, 'foo');
         // store the current error_log, and disable it temporarily
         $errorLog = ini_set('error_log', file_exists('/dev/null') ? '/dev/null' : 'nul');
         $listener->onKernelException($event);
@@ -138,19 +144,41 @@ class AccessDeniedListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Symfony\Component\HttpKernel\Exception\HttpException', $event->getException());
         $this->assertEquals(401, $event->getException()->getStatusCode());
         $this->assertEquals('You are not authenticated', $event->getException()->getMessage());
+        $this->assertArrayNotHasKey('WWW-Authenticate', $event->getException()->getHeaders());
+    }
+
+    /**
+     * @param Request $request
+     * @param array   $formats
+     */
+    private function doTestUnauthorizedHttpExceptionHasCorrectChallenge(Request $request, array $formats)
+    {
+        $exception = new AuthenticationException();
+        $event = new GetResponseForExceptionEvent(new TestKernel(), $request, 'foo', $exception);
+        $listener = new AccessDeniedListener($formats, 'Basic realm="Restricted Area"', 'foo');
+        // store the current error_log, and disable it temporarily
+        $errorLog = ini_set('error_log', file_exists('/dev/null') ? '/dev/null' : 'nul');
+        $listener->onKernelException($event);
+        // restore the old error_log
+        ini_set('error_log', $errorLog);
+        $this->assertInstanceOf('Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException', $event->getException());
+        $this->assertEquals(401, $event->getException()->getStatusCode());
+        $this->assertEquals('You are not authenticated', $event->getException()->getMessage());
+        $headers = $event->getException()->getHeaders();
+        $this->assertEquals('Basic realm="Restricted Area"', $headers['WWW-Authenticate']);
     }
 
     public static function getFormatsDataProvider()
     {
         return array(
-            array(array('json'  => true), 'json'),
+            array(array('json' => true), 'json'),
         );
     }
 
     public static function getContentTypesDataProvider()
     {
         return array(
-            array(array('json'  => true), 'application/json'),
+            array(array('json' => true), 'application/json'),
         );
     }
 }

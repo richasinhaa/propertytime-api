@@ -22,6 +22,8 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Florian Eckerstorfer <florian@eckerstorfer.org>
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @api
  */
 class ChoiceValidator extends ConstraintValidator
 {
@@ -30,7 +32,7 @@ class ChoiceValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        if (!is_array($constraint->choices) && !$constraint->callback) {
+        if (!$constraint->choices && !$constraint->callback) {
             throw new ConstraintDefinitionException('Either "choices" or "callback" must be specified on constraint Choice');
         }
 
@@ -43,12 +45,13 @@ class ChoiceValidator extends ConstraintValidator
         }
 
         if ($constraint->callback) {
-            if (!is_callable($choices = array($this->context->getClassName(), $constraint->callback))
-                && !is_callable($choices = $constraint->callback)
-            ) {
+            if (is_callable(array($this->context->getClassName(), $constraint->callback))) {
+                $choices = call_user_func(array($this->context->getClassName(), $constraint->callback));
+            } elseif (is_callable($constraint->callback)) {
+                $choices = call_user_func($constraint->callback);
+            } else {
                 throw new ConstraintDefinitionException('The Choice constraint expects a valid callback');
             }
-            $choices = call_user_func($choices);
         } else {
             $choices = $constraint->choices;
         }

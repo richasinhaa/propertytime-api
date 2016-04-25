@@ -61,11 +61,6 @@ class PhpExtractor implements ExtractorInterface
         $files = $finder->files()->name('*.php')->in($directory);
         foreach ($files as $file) {
             $this->parseTokens(token_get_all(file_get_contents($file)), $catalog);
-
-            if (PHP_VERSION_ID >= 70000) {
-                // PHP 7 memory manager will not release after token_get_all(), see https://bugs.php.net/70098
-                gc_mem_caches();
-            }
         }
     }
 
@@ -86,7 +81,7 @@ class PhpExtractor implements ExtractorInterface
      */
     protected function normalizeToken($token)
     {
-        if (isset($token[1]) && 'b"' !== $token) {
+        if (is_array($token)) {
             return $token[1];
         }
 
@@ -96,11 +91,11 @@ class PhpExtractor implements ExtractorInterface
     /**
      * Seeks to a non-whitespace token.
      */
-    private function seekToNextRelevantToken(\Iterator $tokenIterator)
+    private function seekToNextReleventToken(\Iterator $tokenIterator)
     {
         for (; $tokenIterator->valid(); $tokenIterator->next()) {
             $t = $tokenIterator->current();
-            if (T_WHITESPACE !== $t[0]) {
+            if (!is_array($t) || ($t[0] !== T_WHITESPACE)) {
                 break;
             }
         }
@@ -108,7 +103,7 @@ class PhpExtractor implements ExtractorInterface
 
     /**
      * Extracts the message from the iterator while the tokens
-     * match allowed message tokens.
+     * match allowed message tokens
      */
     private function getMessage(\Iterator $tokenIterator)
     {
@@ -117,7 +112,7 @@ class PhpExtractor implements ExtractorInterface
 
         for (; $tokenIterator->valid(); $tokenIterator->next()) {
             $t = $tokenIterator->current();
-            if (!isset($t[1])) {
+            if (!is_array($t)) {
                 break;
             }
 
@@ -153,13 +148,13 @@ class PhpExtractor implements ExtractorInterface
     {
         $tokenIterator = new \ArrayIterator($tokens);
 
-        for ($key = 0; $key < $tokenIterator->count(); ++$key) {
+        for ($key = 0; $key < $tokenIterator->count(); $key++) {
             foreach ($this->sequences as $sequence) {
                 $message = '';
                 $tokenIterator->seek($key);
 
                 foreach ($sequence as $item) {
-                    $this->seekToNextRelevantToken($tokenIterator);
+                    $this->seekToNextReleventToken($tokenIterator);
 
                     if ($this->normalizeToken($tokenIterator->current()) == $item) {
                         $tokenIterator->next();

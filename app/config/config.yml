@@ -101,9 +101,8 @@ fos_rest:
             xml: false
             pdf: true
     format_listener:
-        default_priorities: ['json', 'pdf', 'html']
-        fallback_format: json
-        prefer_extension: true
+        rules:
+         - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: true }
     routing_loader:
         default_format: json
     exception:

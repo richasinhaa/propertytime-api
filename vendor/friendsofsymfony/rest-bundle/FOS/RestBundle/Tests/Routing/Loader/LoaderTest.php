@@ -12,9 +12,7 @@
 namespace FOS\RestBundle\Tests\Routing\Loader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-
 use Symfony\Component\Yaml\Yaml;
-
 use FOS\RestBundle\Routing\Loader\RestRouteLoader;
 use FOS\RestBundle\Routing\Loader\Reader\RestControllerReader;
 use FOS\RestBundle\Routing\Loader\Reader\RestActionReader;
@@ -29,13 +27,20 @@ use FOS\RestBundle\Util\Inflector\DoctrineInflector;
 abstract class LoaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+     */
+    protected $containerMock;
+
+    /**
      * Load routes etalon from yml fixture file under Tests\Fixtures directory.
      *
      * @param string $etalonName name of the YML fixture
+     *
+     * @return array
      */
     protected function loadEtalonRoutesInfo($etalonName)
     {
-        return Yaml::parse(__DIR__ . '/../../Fixtures/Etalon/' . $etalonName);
+        return Yaml::parse(file_get_contents(__DIR__.'/../../Fixtures/Etalon/'.$etalonName));
     }
 
     private function getAnnotationReader()
@@ -43,11 +48,22 @@ abstract class LoaderTest extends \PHPUnit_Framework_TestCase
         return new AnnotationReader();
     }
 
-    protected function getControllerLoader()
+    /**
+     * Builds a RestRouteLoader.
+     *
+     * @param array $formats available resource formats
+     *
+     * @return RestRouteLoader
+     */
+    protected function getControllerLoader(array $formats = array())
     {
-        $c = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
-            ->disableOriginalConstructor()
-            ->getMock();
+        // This check allows to override the container
+        if ($this->containerMock === null) {
+            $this->containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+                ->disableOriginalConstructor()
+                ->setMethods(array('get', 'has'))
+                ->getMock();
+        }
         $l = $this->getMockBuilder('Symfony\Component\Config\FileLocator')
             ->disableOriginalConstructor()
             ->getMock();
@@ -59,9 +75,9 @@ abstract class LoaderTest extends \PHPUnit_Framework_TestCase
         $paramReader = new ParamReader($annotationReader);
         $inflector = new DoctrineInflector();
 
-        $ar = new RestActionReader($annotationReader, $paramReader, $inflector, true);
+        $ar = new RestActionReader($annotationReader, $paramReader, $inflector, true, $formats);
         $cr = new RestControllerReader($ar, $annotationReader);
 
-        return new RestRouteLoader($c, $l, $p, $cr, 'html');
+        return new RestRouteLoader($this->containerMock, $l, $p, $cr, 'html');
     }
 }

@@ -11,9 +11,9 @@
 
 namespace FOS\RestBundle\View;
 
+use FOS\RestBundle\Util\Codes;
 use Symfony\Bundle\FrameworkBundle\Templating\TemplateReference;
 use Symfony\Component\HttpFoundation\Response;
-
 use JMS\Serializer\SerializationContext;
 
 /**
@@ -24,40 +24,15 @@ use JMS\Serializer\SerializationContext;
  */
 class View
 {
-    /**
-     * @var mixed
-     */
     private $data;
-
-    /**
-     * @var string|TemplateReference
-     */
+    private $templateData = array();
     private $template;
-
-    /**
-     * @var string
-     */
     private $templateVar;
-
-    /**
-     * @var string
-     */
     private $engine;
-
-    /**
-     * @var string
-     */
     private $format;
-
-    /**
-     * @var string
-     */
     private $location;
-
-    /**
-     * @var string
-     */
     private $route;
+    private $routeParameters;
 
     /**
      * @var SerializationContext
@@ -72,9 +47,10 @@ class View
     /**
      * Convenience method to allow for a fluent interface.
      *
-     * @param mixed   $data
-     * @param integer $statusCode
-     * @param array   $headers
+     * @param mixed $data
+     * @param int   $statusCode
+     * @param array $headers
+     *
      * @return \FOS\RestBundle\View\View
      */
     public static function create($data = null, $statusCode = null, array $headers = array())
@@ -83,24 +59,67 @@ class View
     }
 
     /**
-     * Constructor
+     * Convenience method to allow for a fluent interface while creating a redirect to a
+     * given url.
      *
-     * @param mixed   $data
-     * @param integer $statusCode
-     * @param array   $headers
+     * @param string $url
+     * @param int    $statusCode
+     * @param array  $headers
+     *
+     * @return View
+     */
+    public static function createRedirect($url, $statusCode = Codes::HTTP_FOUND, array $headers = array())
+    {
+        $view = static::create(null, $statusCode, $headers);
+        $view->setLocation($url);
+
+        return $view;
+    }
+
+    /**
+     * Convenience method to allow for a fluent interface while creating a redirect to a
+     * given route.
+     *
+     * @param string $route
+     * @param array  $parameters
+     * @param int    $statusCode
+     * @param array  $headers
+     *
+     * @return View
+     */
+    public static function createRouteRedirect(
+        $route,
+        array $parameters = array(),
+        $statusCode = Codes::HTTP_FOUND,
+        array $headers = array()
+    ) {
+        $view = static::create(null, $statusCode, $headers);
+        $view->setRoute($route);
+        $view->setRouteParameters($parameters);
+
+        return $view;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param mixed $data
+     * @param int   $statusCode
+     * @param array $headers
      */
     public function __construct($data = null, $statusCode = null, array $headers = array())
     {
         $this->setData($data);
         $this->setStatusCode($statusCode ?: 200);
         $this->setTemplateVar('data');
+
         if (!empty($headers)) {
             $this->getResponse()->headers->replace($headers);
         }
     }
 
     /**
-     * set the data
+     * Sets the data.
      *
      * @param mixed $data
      *
@@ -114,10 +133,25 @@ class View
     }
 
     /**
-     * set a header
+     * Set template variable.
      *
-     * @param  string $name
-     * @param  string $value
+     * @param array|callable $data
+     *
+     * @return View
+     */
+    public function setTemplateData($data = array())
+    {
+        $this->templateData = $data;
+
+        return $this;
+    }
+
+    /**
+     * Sets a header.
+     *
+     * @param string $name
+     * @param string $value
+     *
      * @return View
      */
     public function setHeader($name, $value)
@@ -128,9 +162,10 @@ class View
     }
 
     /**
-     * set the headers
+     * Sets the headers.
      *
-     * @param  array $headers
+     * @param array $headers
+     *
      * @return View
      */
     public function setHeaders(array $headers)
@@ -141,9 +176,10 @@ class View
     }
 
     /**
-     * set the HTTP status code
+     * Sets the HTTP status code.
      *
-     * @param  int  $code
+     * @param int $code
+     *
      * @return View
      */
     public function setStatusCode($code)
@@ -154,8 +190,10 @@ class View
     }
 
     /**
-     * set the serialization context
-     * @param  SerializationContext $serializationContext
+     * Sets the serialization context.
+     *
+     * @param SerializationContext $serializationContext
+     *
      * @return View
      */
     public function setSerializationContext(SerializationContext $serializationContext)
@@ -166,9 +204,11 @@ class View
     }
 
     /**
-     * Sets template to use for the encoding
+     * Sets template to use for the encoding.
      *
-     * @param string|TemplateReference $template template to be used in the encoding
+     * @param string|TemplateReference $template
+     *
+     * @return View
      *
      * @throws \InvalidArgumentException if the template is neither a string nor an instance of TemplateReference
      */
@@ -183,9 +223,11 @@ class View
     }
 
     /**
-     * Sets template variable name to be used in templating formats
+     * Sets template variable name to be used in templating formats.
      *
-     * @param string
+     * @param string $templateVar
+     *
+     * @return View
      */
     public function setTemplateVar($templateVar)
     {
@@ -195,9 +237,10 @@ class View
     }
 
     /**
-     * set the engine
+     * Sets the engine.
      *
-     * @param $engine
+     * @param string $engine
+     *
      * @return View
      */
     public function setEngine($engine)
@@ -208,9 +251,10 @@ class View
     }
 
     /**
-     * set the format
+     * Sets the format.
      *
-     * @param $format
+     * @param string $format
+     *
      * @return View
      */
     public function setFormat($format)
@@ -221,9 +265,10 @@ class View
     }
 
     /**
-     * set the location (implicitly removes the route)
+     * Sets the location (implicitly removes the route).
      *
-     * @param $location
+     * @param string $location
+     *
      * @return View
      */
     public function setLocation($location)
@@ -235,9 +280,10 @@ class View
     }
 
     /**
-     * set the route (implicitly removes the location)
+     * Sets the route (implicitly removes the location).
      *
-     * @param $route
+     * @param string $route
+     *
      * @return View
      */
     public function setRoute($route)
@@ -249,9 +295,24 @@ class View
     }
 
     /**
-     * set the response
+     * Sets route data.
      *
-     * @param  Response $response
+     * @param array $parameters
+     *
+     * @return View
+     */
+    public function setRouteParameters($parameters)
+    {
+        $this->routeParameters = $parameters;
+
+        return $this;
+    }
+
+    /**
+     * Sets the response.
+     *
+     * @param Response $response
+     *
      * @return View
      */
     public function setResponse(Response $response)
@@ -262,9 +323,9 @@ class View
     }
 
     /**
-     * get the data
+     * Gets the data.
      *
-     * @return mixed|null data
+     * @return mixed|null
      */
     public function getData()
     {
@@ -272,9 +333,19 @@ class View
     }
 
     /**
-     * get the HTTP status code
+     * Gets the template data.
      *
-     * @return int|null HTTP status code
+     * @return mixed|null
+     */
+    public function getTemplateData()
+    {
+        return $this->templateData;
+    }
+
+    /**
+     * Gets the HTTP status code.
+     *
+     * @return int|null
      */
     public function getStatusCode()
     {
@@ -282,9 +353,9 @@ class View
     }
 
     /**
-     * get the headers
+     * Gets the headers.
      *
-     * @return array|null headers
+     * @return array
      */
     public function getHeaders()
     {
@@ -292,9 +363,9 @@ class View
     }
 
     /**
-     * get the template
+     * Gets the template.
      *
-     * @return TemplateReference|string|null template
+     * @return TemplateReference|string|null
      */
     public function getTemplate()
     {
@@ -302,9 +373,9 @@ class View
     }
 
     /**
-     * Get the template variable name.
+     * Gets the template variable name.
      *
-     * @param string|null
+     * @return string|null
      */
     public function getTemplateVar()
     {
@@ -312,9 +383,9 @@ class View
     }
 
     /**
-     * get the engine
+     * Gets the engine.
      *
-     * @return string|null engine
+     * @return string|null
      */
     public function getEngine()
     {
@@ -322,9 +393,9 @@ class View
     }
 
     /**
-     * get the format
+     * Gets the format.
      *
-     * @return string|null format
+     * @return string|null
      */
     public function getFormat()
     {
@@ -332,9 +403,9 @@ class View
     }
 
     /**
-     * get the location
+     * Gets the location.
      *
-     * @return string|null url
+     * @return string|null
      */
     public function getLocation()
     {
@@ -342,9 +413,9 @@ class View
     }
 
     /**
-     * get the route
+     * Gets the route.
      *
-     * @return string|null route
+     * @return string|null
      */
     public function getRoute()
     {
@@ -352,9 +423,19 @@ class View
     }
 
     /**
-     * get the response
+     * Gets route parameters.
      *
-     * @return Response response
+     * @return array|null
+     */
+    public function getRouteParameters()
+    {
+        return $this->routeParameters;
+    }
+
+    /**
+     * Gets the response.
+     *
+     * @return Response
      */
     public function getResponse()
     {
@@ -366,12 +447,16 @@ class View
     }
 
     /**
-     * get the serialization context
+     * Gets the serialization context.
      *
-     * @return SerializationContext|null serialization context
+     * @return SerializationContext
      */
     public function getSerializationContext()
     {
+        if (null === $this->serializationContext) {
+            $this->serializationContext = new SerializationContext();
+        }
+
         return $this->serializationContext;
     }
 }

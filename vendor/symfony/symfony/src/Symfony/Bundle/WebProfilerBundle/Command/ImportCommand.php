@@ -53,14 +53,14 @@ class ImportCommand extends Command
             ->setDefinition(array(
                 new InputArgument('filename', InputArgument::OPTIONAL, 'The profile path'),
             ))
-            ->setHelp(<<<'EOF'
+            ->setHelp(<<<EOF
 The <info>%command.name%</info> command imports a profile:
 
-  <info>php %command.full_name% profile_filepath</info>
+<info>php %command.full_name% profile_filepath</info>
 
 You can also pipe the profile via STDIN:
 
-  <info>cat profile_file | php %command.full_name%</info>
+<info>cat profile_file | php %command.full_name%</info>
 EOF
             )
         ;

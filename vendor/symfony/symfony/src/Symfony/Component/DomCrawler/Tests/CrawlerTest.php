@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\DomCrawler\Tests;
 
+use Symfony\Component\CssSelector\CssSelector;
 use Symfony\Component\DomCrawler\Crawler;
 
 class CrawlerTest extends \PHPUnit_Framework_TestCase
@@ -24,6 +25,9 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $crawler, '__construct() takes a node as a first argument');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::add
+     */
     public function testAdd()
     {
         $crawler = new Crawler();
@@ -59,6 +63,9 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
         $crawler->add(1);
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addHtmlContent
+     */
     public function testAddHtmlContent()
     {
         $crawler = new Crawler();
@@ -73,7 +80,7 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @requires extension mbstring
+     * @covers Symfony\Component\DomCrawler\Crawler::addHtmlContent
      */
     public function testAddHtmlContentCharset()
     {
@@ -83,6 +90,9 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Tiếng Việt', $crawler->filterXPath('//div')->text());
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addHtmlContent
+     */
     public function testAddHtmlContentInvalidBaseTag()
     {
         $crawler = new Crawler(null, 'http://symfony.com');
@@ -92,6 +102,9 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://symfony.com/contact', current($crawler->filterXPath('//a')->links())->getUri(), '->addHtmlContent() correctly handles a non-existent base tag href attribute');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addHtmlContent
+     */
     public function testAddHtmlContentUnsupportedCharset()
     {
         $crawler = new Crawler();
@@ -101,7 +114,7 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @requires extension mbstring
+     * @covers Symfony\Component\DomCrawler\Crawler::addHtmlContent
      */
     public function testAddHtmlContentCharsetGbk()
     {
@@ -112,12 +125,15 @@ class CrawlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('中文', $crawler->filterXPath('//p')->text());
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addHtmlContent
+     */
     public function testAddHtmlContentWithErrors()
     {
         $internalErrors = libxml_use_internal_errors(true);
 
         $crawler = new Crawler();
-        $crawler->addHtmlContent(<<<'EOF'
+        $crawler->addHtmlContent(<<<EOF
 <!DOCTYPE html>
 <html>
     <head>
@@ -137,6 +153,9 @@ EOF
         libxml_use_internal_errors($internalErrors);
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addXmlContent
+     */
     public function testAddXmlContent()
     {
         $crawler = new Crawler();
@@ -145,6 +164,9 @@ EOF
         $this->assertEquals('foo', $crawler->filterXPath('//div')->attr('class'), '->addXmlContent() adds nodes from an XML string');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addXmlContent
+     */
     public function testAddXmlContentCharset()
     {
         $crawler = new Crawler();
@@ -153,12 +175,15 @@ EOF
         $this->assertEquals('Tiếng Việt', $crawler->filterXPath('//div')->text());
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addXmlContent
+     */
     public function testAddXmlContentWithErrors()
     {
         $internalErrors = libxml_use_internal_errors(true);
 
         $crawler = new Crawler();
-        $crawler->addXmlContent(<<<'EOF'
+        $crawler->addXmlContent(<<<EOF
 <!DOCTYPE html>
 <html>
     <head>
@@ -176,6 +201,9 @@ EOF
         libxml_use_internal_errors($internalErrors);
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addContent
+     */
     public function testAddContent()
     {
         $crawler = new Crawler();
@@ -207,10 +235,13 @@ EOF
         $this->assertEquals('中文', $crawler->filterXPath('//span')->text(), '->addContent() guess wrong charset');
 
         $crawler = new Crawler();
-        $crawler->addContent(iconv('UTF-8', 'SJIS', '<html><head><meta charset="Shift_JIS"></head><body>日本語</body></html>'));
+        $crawler->addContent(mb_convert_encoding('<html><head><meta charset="Shift_JIS"></head><body>日本語</body></html>', 'SJIS', 'UTF-8'));
         $this->assertEquals('日本語', $crawler->filterXPath('//body')->text(), '->addContent() can recognize "Shift_JIS" in html5 meta charset tag');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addDocument
+     */
     public function testAddDocument()
     {
         $crawler = new Crawler();
@@ -219,6 +250,9 @@ EOF
         $this->assertEquals('foo', $crawler->filterXPath('//div')->attr('class'), '->addDocument() adds nodes from a \DOMDocument');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addNodeList
+     */
     public function testAddNodeList()
     {
         $crawler = new Crawler();
@@ -227,6 +261,9 @@ EOF
         $this->assertEquals('foo', $crawler->filterXPath('//div')->attr('class'), '->addNodeList() adds nodes from a \DOMNodeList');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addNodes
+     */
     public function testAddNodes()
     {
         foreach ($this->createNodeList() as $node) {
@@ -239,6 +276,9 @@ EOF
         $this->assertEquals('foo', $crawler->filterXPath('//div')->attr('class'), '->addNodes() adds nodes from an array of nodes');
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::addNode
+     */
     public function testAddNode()
     {
         $crawler = new Crawler();
@@ -277,7 +317,7 @@ EOF
     {
         $crawler = $this->createTestCrawler()->filterXPath('//ul[1]/li');
         $nodes = $crawler->reduce(function ($node, $i) {
-            return $i !== 1;
+            return $i == 1 ? false : true;
         });
         $this->assertNotSame($nodes, $crawler, '->reduce() returns a new instance of a crawler');
         $this->assertInstanceOf('Symfony\\Component\\DomCrawler\\Crawler', $nodes, '->reduce() returns a new instance of a crawler');
@@ -297,6 +337,17 @@ EOF
         }
     }
 
+    public function testMissingAttrValueIsNull()
+    {
+        $crawler = new Crawler();
+        $crawler->addContent('<html><div non-empty-attr="sample value" empty-attr=""></div></html>', 'text/html; charset=UTF-8');
+        $div = $crawler->filterXPath('//div');
+
+        $this->assertEquals('sample value', $div->attr('non-empty-attr'), '->attr() reads non-empty attributes correctly');
+        $this->assertEquals('', $div->attr('empty-attr'), '->attr() reads empty attributes correctly');
+        $this->assertNull($div->attr('missing-attr'), '->attr() reads missing attributes correctly');
+    }
+
     public function testText()
     {
         $this->assertEquals('One', $this->createTestCrawler()->filterXPath('//li')->text(), '->text() returns the node value of the first element of the node list');
@@ -312,7 +363,8 @@ EOF
     public function testHtml()
     {
         $this->assertEquals('<img alt="Bar">', $this->createTestCrawler()->filterXPath('//a[5]')->html());
-        $this->assertEquals('<input type="text" value="TextValue" name="TextName"><input type="submit" value="FooValue" name="FooName" id="FooId"><input type="button" value="BarValue" name="BarName" id="BarId"><button value="ButtonValue" name="ButtonName" id="ButtonId"></button>', trim($this->createTestCrawler()->filterXPath('//form[@id="FooFormId"]')->html()));
+        $this->assertEquals('<input type="text" value="TextValue" name="TextName"><input type="submit" value="FooValue" name="FooName" id="FooId"><input type="button" value="BarValue" name="BarName" id="BarId"><button value="ButtonValue" name="ButtonName" id="ButtonId"></button>'
+            , trim($this->createTestCrawler()->filterXPath('//form[@id="FooFormId"]')->html()));
 
         try {
             $this->createTestCrawler()->filterXPath('//ol')->html();
@@ -355,6 +407,9 @@ EOF
         $this->assertCount(7, $crawler->filterXPath('( ( //a | //div )//img | //ul )'));
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::filterXPath
+     */
     public function testFilterXPath()
     {
         $crawler = $this->createTestCrawler();
@@ -366,6 +421,55 @@ EOF
 
         $crawler = $this->createTestCrawler();
         $this->assertCount(3, $crawler->filterXPath('//body')->filterXPath('//button')->parents(), '->filterXpath() preserves parents when chained');
+    }
+
+    public function testFilterXPathWithDefaultNamespace()
+    {
+        $crawler = $this->createTestXmlCrawler()->filterXPath('//default:entry/default:id');
+        $this->assertCount(1, $crawler, '->filterXPath() automatically registers a namespace');
+        $this->assertSame('tag:youtube.com,2008:video:kgZRZmEc9j4', $crawler->text());
+    }
+
+    public function testFilterXPathWithCustomDefaultNamespace()
+    {
+        $crawler = $this->createTestXmlCrawler();
+        $crawler->setDefaultNamespacePrefix('x');
+        $crawler = $crawler->filterXPath('//x:entry/x:id');
+
+        $this->assertCount(1, $crawler, '->filterXPath() lets to override the default namespace prefix');
+        $this->assertSame('tag:youtube.com,2008:video:kgZRZmEc9j4', $crawler->text());
+    }
+
+    public function testFilterXPathWithNamespace()
+    {
+        $crawler = $this->createTestXmlCrawler()->filterXPath('//yt:accessControl');
+        $this->assertCount(2, $crawler, '->filterXPath() automatically registers a namespace');
+    }
+
+    public function testFilterXPathWithMultipleNamespaces()
+    {
+        $crawler = $this->createTestXmlCrawler()->filterXPath('//media:group/yt:aspectRatio');
+        $this->assertCount(1, $crawler, '->filterXPath() automatically registers multiple namespaces');
+        $this->assertSame('widescreen', $crawler->text());
+    }
+
+    public function testFilterXPathWithManuallyRegisteredNamespace()
+    {
+        $crawler = $this->createTestXmlCrawler();
+        $crawler->registerNamespace('m', 'http://search.yahoo.com/mrss/');
+
+        $crawler = $crawler->filterXPath('//m:group/yt:aspectRatio');
+        $this->assertCount(1, $crawler, '->filterXPath() uses manually registered namespace');
+        $this->assertSame('widescreen', $crawler->text());
+    }
+
+    public function testFilterXPathWithAnUrl()
+    {
+        $crawler = $this->createTestXmlCrawler();
+
+        $crawler = $crawler->filterXPath('//media:category[@scheme="http://gdata.youtube.com/schemas/2007/categories.cat"]');
+        $this->assertCount(1, $crawler);
+        $this->assertSame('Music', $crawler->text());
     }
 
     public function testFilterXPathWithFakeRoot()
@@ -468,6 +572,9 @@ EOF
         $this->assertCount(9, $crawler->filterXPath('self::*/a'));
     }
 
+    /**
+     * @covers Symfony\Component\DomCrawler\Crawler::filter
+     */
     public function testFilter()
     {
         $crawler = $this->createTestCrawler();
@@ -477,6 +584,52 @@ EOF
         $crawler = $this->createTestCrawler()->filter('ul');
 
         $this->assertCount(6, $crawler->filter('li'), '->filter() filters the node list with the CSS selector');
+    }
+
+    public function testFilterWithDefaultNamespace()
+    {
+        $crawler = $this->createTestXmlCrawler()->filter('default|entry default|id');
+        $this->assertCount(1, $crawler, '->filter() automatically registers namespaces');
+        $this->assertSame('tag:youtube.com,2008:video:kgZRZmEc9j4', $crawler->text());
+    }
+
+    public function testFilterWithNamespace()
+    {
+        CssSelector::disableHtmlExtension();
+
+        $crawler = $this->createTestXmlCrawler()->filter('yt|accessControl');
+        $this->assertCount(2, $crawler, '->filter() automatically registers namespaces');
+    }
+
+    public function testFilterWithMultipleNamespaces()
+    {
+        CssSelector::disableHtmlExtension();
+
+        $crawler = $this->createTestXmlCrawler()->filter('media|group yt|aspectRatio');
+        $this->assertCount(1, $crawler, '->filter() automatically registers namespaces');
+        $this->assertSame('widescreen', $crawler->text());
+    }
+
+    public function testFilterWithDefaultNamespaceOnly()
+    {
+        $crawler = new Crawler('<?xml version="1.0" encoding="UTF-8"?>
+            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                <url>
+                    <loc>http://localhost/foo</loc>
+                    <changefreq>weekly</changefreq>
+                    <priority>0.5</priority>
+                    <lastmod>2012-11-16</lastmod>
+               </url>
+               <url>
+                    <loc>http://localhost/bar</loc>
+                    <changefreq>weekly</changefreq>
+                    <priority>0.5</priority>
+                    <lastmod>2012-11-16</lastmod>
+                </url>
+            </urlset>
+        ');
+
+        $this->assertEquals(2, $crawler->filter('url')->count());
     }
 
     public function testSelectLink()
@@ -518,7 +671,7 @@ EOF
 
     public function testSelectButtonWithSingleQuotesInNameAttribute()
     {
-        $html = <<<'HTML'
+        $html = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -539,7 +692,7 @@ HTML;
 
     public function testSelectButtonWithDoubleQuotesInNameAttribute()
     {
-        $html = <<<'HTML'
+        $html = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -578,7 +731,7 @@ HTML;
 
     public function testSelectLinkAndLinkFiltered()
     {
-        $html = <<<'HTML'
+        $html = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -774,45 +927,16 @@ HTML;
         }
     }
 
-    /**
-     * @dataProvider getBaseTagData
-     */
-    public function testBaseTag($baseValue, $linkValue, $expectedUri, $currentUri = null, $description = null)
+    public function testBaseTag()
     {
-        $crawler = new Crawler('<html><base href="'.$baseValue.'"><a href="'.$linkValue.'"></a></html>', $currentUri);
-        $this->assertEquals($expectedUri, $crawler->filterXPath('//a')->link()->getUri(), $description);
-    }
+        $crawler = new Crawler('<html><base href="http://base.com"><a href="link"></a></html>');
+        $this->assertEquals('http://base.com/link', $crawler->filterXPath('//a')->link()->getUri());
 
-    public function getBaseTagData()
-    {
-        return array(
-            array('http://base.com', 'link', 'http://base.com/link'),
-            array('//base.com', 'link', 'https://base.com/link', 'https://domain.com', '<base> tag can use a schema-less URL'),
-            array('path/', 'link', 'https://domain.com/path/link', 'https://domain.com', '<base> tag can set a path'),
-            array('http://base.com', '#', 'http://base.com#', 'http://domain.com/path/link', '<base> tag does work with links to an anchor'),
-            array('http://base.com', '', 'http://base.com', 'http://domain.com/path/link', '<base> tag does work with empty links'),
-        );
-    }
+        $crawler = new Crawler('<html><base href="//base.com"><a href="link"></a></html>', 'https://domain.com');
+        $this->assertEquals('https://base.com/link', $crawler->filterXPath('//a')->link()->getUri(), '<base> tag can use a schema-less URL');
 
-    /**
-     * @dataProvider getBaseTagWithFormData
-     */
-    public function testBaseTagWithForm($baseValue, $actionValue, $expectedUri, $currentUri = null, $description = null)
-    {
-        $crawler = new Crawler('<html><base href="'.$baseValue.'"><form method="post" action="'.$actionValue.'"><button type="submit" name="submit"/></form></html>', $currentUri);
-        $this->assertEquals($expectedUri, $crawler->filterXPath('//button')->form()->getUri(), $description);
-    }
-
-    public function getBaseTagWithFormData()
-    {
-        return array(
-            array('https://base.com/', 'link/', 'https://base.com/link/', 'https://base.com/link/', '<base> tag does work with a path and relative form action'),
-            array('/basepath', '/registration', 'http://domain.com/registration', 'http://domain.com/registration', '<base> tag does work with a path and form action'),
-            array('/basepath', '', 'http://domain.com/registration', 'http://domain.com/registration', '<base> tag does work with a path and empty form action'),
-            array('http://base.com/', '/registration', 'http://base.com/registration', 'http://domain.com/registration', '<base> tag does work with a URL and form action'),
-            array('http://base.com', '', 'http://domain.com/path/form', 'http://domain.com/path/form', '<base> tag does work with a URL and an empty form action'),
-            array('http://base.com/path', '/registration', 'http://base.com/registration', 'http://domain.com/path/form', '<base> tag does work with a URL and form action'),
-        );
+        $crawler = new Crawler('<html><base href="path/"><a href="link"></a></html>', 'https://domain.com');
+        $this->assertEquals('https://domain.com/path/link', $crawler->filterXPath('//a')->link()->getUri(), '<base> tag can set a path');
     }
 
     public function createTestCrawler($uri = null)
@@ -863,6 +987,23 @@ HTML;
         ');
 
         return new Crawler($dom, $uri);
+    }
+
+    protected function createTestXmlCrawler($uri = null)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>
+            <entry xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:yt="http://gdata.youtube.com/schemas/2007">
+                <id>tag:youtube.com,2008:video:kgZRZmEc9j4</id>
+                <yt:accessControl action="comment" permission="allowed"/>
+                <yt:accessControl action="videoRespond" permission="moderated"/>
+                <media:group>
+                    <media:title type="plain">Chordates - CrashCourse Biology #24</media:title>
+                    <yt:aspectRatio>widescreen</yt:aspectRatio>
+                </media:group>
+                <media:category label="Music" scheme="http://gdata.youtube.com/schemas/2007/categories.cat">Music</media:category>
+            </entry>';
+
+        return new Crawler($xml, $uri);
     }
 
     protected function createDomDocument()

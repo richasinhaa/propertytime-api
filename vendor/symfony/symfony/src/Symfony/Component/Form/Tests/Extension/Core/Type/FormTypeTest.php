@@ -12,6 +12,7 @@
 namespace Symfony\Component\Form\Tests\Extension\Core\Type;
 
 use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Tests\Fixtures\Author;
 use Symfony\Component\Form\Tests\Fixtures\FixedDataTransformer;
@@ -287,7 +288,6 @@ class FormTypeTest extends BaseTypeTest
 
     /**
      * @dataProvider provideZeros
-     *
      * @see https://github.com/symfony/symfony/issues/1986
      */
     public function testSetDataThroughParamsWithZero($data, $dataAsString)
@@ -532,6 +532,21 @@ class FormTypeTest extends BaseTypeTest
         $form->addError(new FormError('An error'));
         $view = $form->createView();
         $this->assertFalse($view->vars['valid']);
+    }
+
+    public function testViewSubmittedNotSubmitted()
+    {
+        $form = $this->factory->create('form');
+        $view = $form->createView();
+        $this->assertFalse($view->vars['submitted']);
+    }
+
+    public function testViewSubmittedSubmitted()
+    {
+        $form = $this->factory->create('form');
+        $form->submit(array());
+        $view = $form->createView();
+        $this->assertTrue($view->vars['submitted']);
     }
 
     public function testDataOptionSupersedesSetDataCalls()

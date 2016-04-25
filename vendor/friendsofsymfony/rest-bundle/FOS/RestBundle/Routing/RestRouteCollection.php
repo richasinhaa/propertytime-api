@@ -23,7 +23,7 @@ class RestRouteCollection extends RouteCollection
     private $singularName;
 
     /**
-     * Set collection singular name.
+     * Sets collection singular name.
      *
      * @param string $name Singular name
      */
@@ -62,34 +62,29 @@ class RestRouteCollection extends RouteCollection
     public function setDefaultFormat($format)
     {
         foreach (parent::all() as $route) {
-            $route->setDefault('_format', $format);
+            // Set default format only if not set already (could be defined in annotation)
+            if (!$route->getDefault('_format')) {
+                $route->setDefault('_format', $format);
+            }
         }
     }
 
     /**
-     * Returns routes sorted by HTTP method.
+     * Returns routes sorted by custom HTTP methods first.
      *
      * @return array
      */
     public function all()
     {
         $routes = parent::all();
-
-        // sort routes by names - move custom actions at the beginning,
-        // default at the end
-        uksort($routes, function($route1, $route2) {
-            $route1Match = preg_match('/(_|^)(get|post|put|delete|patch|head|options)_/', $route1);
-            $route2Match = preg_match('/(_|^)(get|post|put|delete|patch|head|options)_/', $route2);
-
-            if ($route1Match && !$route2Match) {
-                return 1;
+        $customMethodRoutes = array();
+        foreach ($routes as $routeName => $route) {
+            if (!preg_match('/(_|^)(get|post|put|delete|patch|head|options)_/', $routeName)) {
+                $customMethodRoutes[$routeName] = $route;
+                unset($routes[$routeName]);
             }
-            if (!$route1Match && $route2Match) {
-                return -1;
-            }
-            return strcmp($route1, $route2);
-        });
+        }
 
-        return $routes;
+        return $customMethodRoutes + $routes;
     }
 }

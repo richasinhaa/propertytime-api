@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the FOSRestBundle package.
  *
@@ -16,33 +17,26 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 /**
  * AllowedMethodsRouterLoader implementation using RouterInterface to fetch
- * allowed http methods
+ * allowed http methods.
  *
  * @author Boris Guéry <guery.b@gmail.com>
  */
 class AllowedMethodsRouterLoader implements AllowedMethodsLoaderInterface, CacheWarmerInterface
 {
-    /**
-     * @var RouterInterface
-     */
     private $router;
-
-    /**
-     * @var ConfigCache
-     */
     private $cache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param RouterInterface $router
      * @param string          $cacheDir
-     * @param boolean         $isDebug Kernel debug flag
+     * @param bool            $isDebug  Kernel debug flag
      */
     public function __construct(RouterInterface $router, $cacheDir, $isDebug)
     {
         $this->router = $router;
-        $this->cache  = new ConfigCache(sprintf('%s/allowed_methods.cache.php', $cacheDir), $isDebug);
+        $this->cache = new ConfigCache(sprintf('%s/allowed_methods.cache.php', $cacheDir), $isDebug);
     }
 
     /**
@@ -54,7 +48,9 @@ class AllowedMethodsRouterLoader implements AllowedMethodsLoaderInterface, Cache
             $this->warmUp(null);
         }
 
-        return require $this->cache;
+        $path = method_exists($this->cache, 'getPath') ? $this->cache->getPath() : $this->cache;
+
+        return require $path;
     }
 
     /**
@@ -75,21 +71,20 @@ class AllowedMethodsRouterLoader implements AllowedMethodsLoaderInterface, Cache
         $routeCollection = $this->router->getRouteCollection();
 
         foreach ($routeCollection->all() as $name => $route) {
-
-            if (!isset($processedRoutes[$route->getPattern()])) {
-                $processedRoutes[$route->getPattern()] = array(
+            if (!isset($processedRoutes[$route->getPath()])) {
+                $processedRoutes[$route->getPath()] = array(
                     'methods' => array(),
-                    'names'   => array(),
+                    'names' => array(),
                 );
             }
 
-            $processedRoutes[$route->getPattern()]['names'][] = $name;
+            $processedRoutes[$route->getPath()]['names'][] = $name;
 
             $requirements = $route->getRequirements();
             if (isset($requirements['_method'])) {
                 $methods = explode('|', $requirements['_method']);
-                $processedRoutes[$route->getPattern()]['methods'] = array_merge(
-                    $processedRoutes[$route->getPattern()]['methods'],
+                $processedRoutes[$route->getPath()]['methods'] = array_merge(
+                    $processedRoutes[$route->getPath()]['methods'],
                     $methods
                 );
             }

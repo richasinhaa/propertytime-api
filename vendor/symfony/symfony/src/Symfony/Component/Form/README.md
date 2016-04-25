@@ -10,11 +10,11 @@ Resources
 
 Silex integration:
 
-https://github.com/silexphp/Silex/blob/master/src/Silex/Provider/FormServiceProvider.php
+https://github.com/fabpot/Silex/blob/master/src/Silex/Provider/FormServiceProvider.php
 
 Documentation:
 
-https://symfony.com/doc/2.3/book/forms.html
+http://symfony.com/doc/2.4/book/forms.html
 
 Resources
 ---------
@@ -22,5 +22,5 @@ Resources
 You can run the unit tests with the following command:
 
     $ cd path/to/Symfony/Component/Form/
-    $ composer install
+    $ composer.phar install
     $ phpunit

@@ -19,7 +19,7 @@ namespace Symfony\Component\PropertyAccess;
 class StringUtil
 {
     /**
-     * Map english plural to singular suffixes.
+     * Map english plural to singular suffixes
      *
      * @var array
      *
@@ -38,9 +38,6 @@ class StringUtil
 
         // nebulae (nebula)
         array('ea', 2, true, true, 'a'),
-
-        // services (service)
-        array('secivres', 8, true, true, 'service'),
 
         // mice (mouse), lice (louse)
         array('eci', 3, false, true, 'ouse'),
@@ -62,18 +59,6 @@ class StringUtil
 
         // indices (index), appendices (appendix), prices (price)
         array('seci', 4, false, true, array('ex', 'ix', 'ice')),
-
-        // selfies (selfie)
-        array('seifles', 7, true, true, 'selfie'),
-
-        // movies (movie)
-        array('seivom', 6, true, true, 'movie'),
-
-        // news (news)
-        array('swen', 4, true, true, 'news'),
-
-        // series (series)
-        array('seires', 6, true, true, 'series'),
 
         // babies (baby)
         array('sei', 3, false, true, 'y'),
@@ -127,20 +112,19 @@ class StringUtil
     );
 
     /**
-     * This class should not be instantiated.
+     * This class should not be instantiated
      */
     private function __construct()
     {
     }
 
     /**
-     * Returns the singular form of a word.
+     * Returns the singular form of a word
      *
      * If the method can't determine the form with certainty, an array of the
      * possible singulars is returned.
      *
      * @param string $plural A word in plural form
-     *
      * @return string|array The singular form or an array of possible singular
      *                      forms
      */
@@ -201,7 +185,7 @@ class StringUtil
                         return $singulars;
                     }
 
-                    return $newBase.($firstUpper ? ucfirst($newSuffix) : $newSuffix);
+                    return $newBase.($firstUpper ? ucFirst($newSuffix) : $newSuffix);
                 }
 
                 // Suffix is longer than word
@@ -212,7 +196,7 @@ class StringUtil
         }
 
         // Convert teeth to tooth, feet to foot
-        if (false !== ($pos = strpos($plural, 'ee')) && strlen($plural) > 3 && 'feedback' !== $plural) {
+        if (false !== ($pos = strpos($plural, 'ee')) && strlen($plural) > 3) {
             return substr_replace($plural, 'oo', $pos, 2);
         }
 

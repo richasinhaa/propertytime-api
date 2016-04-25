@@ -27,7 +27,25 @@ class LocationManager
         $this->legacyConnection = $legacyConnection;
     }
 
-    public function load()
+    public function load($search=null) {
+        $allLocations = $this->fetchAllLocations();
+
+        if (is_null($search)) {
+            return $allLocations;
+        }
+        
+        $searchResult = array();
+        
+        foreach ($allLocations as $location) {
+            if((substr(strtolower($location), 0, 1) === $search)) {
+                $searchResult[] = $location;
+            }
+        }
+        
+        return $searchResult;
+    }
+
+    public function fetchAllLocations()
     {
         $query = $this->legacyConnection->executeQuery("
             SELECT DISTINCT comm

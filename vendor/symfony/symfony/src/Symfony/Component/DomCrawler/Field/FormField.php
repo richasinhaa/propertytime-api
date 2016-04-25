@@ -81,6 +81,8 @@ abstract class FormField
      * Sets the value of the field.
      *
      * @param string $value The value of the field
+     *
+     * @api
      */
     public function setValue($value)
     {
@@ -90,7 +92,7 @@ abstract class FormField
     /**
      * Returns true if the field should be included in the submitted values.
      *
-     * @return bool true if the field should be included in the submitted values, false otherwise
+     * @return bool    true if the field should be included in the submitted values, false otherwise
      */
     public function hasValue()
     {
@@ -98,7 +100,7 @@ abstract class FormField
     }
 
     /**
-     * Check if the current field is disabled.
+     * Check if the current field is disabled
      *
      * @return bool
      */

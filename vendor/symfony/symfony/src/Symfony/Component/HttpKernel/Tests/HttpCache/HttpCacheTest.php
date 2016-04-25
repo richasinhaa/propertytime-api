@@ -12,12 +12,11 @@
 namespace Symfony\Component\HttpKernel\Tests\HttpCache;
 
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @group time-sensitive
- */
 class HttpCacheTest extends HttpCacheTestCase
 {
     public function testTerminateDelegatesTerminationOnlyForTerminableInterface()
@@ -128,7 +127,7 @@ class HttpCacheTest extends HttpCacheTestCase
 
     public function testRespondsWith304WhenIfModifiedSinceMatchesLastModified()
     {
-        $time = \DateTime::createFromFormat('U', time());
+        $time = new \DateTime();
 
         $this->setNextResponse(200, array('Cache-Control' => 'public', 'Last-Modified' => $time->format(DATE_RFC2822), 'Content-Type' => 'text/plain'), 'Hello World');
         $this->request('GET', '/', array('HTTP_IF_MODIFIED_SINCE' => $time->format(DATE_RFC2822)));
@@ -157,7 +156,7 @@ class HttpCacheTest extends HttpCacheTestCase
 
     public function testRespondsWith304OnlyIfIfNoneMatchAndIfModifiedSinceBothMatch()
     {
-        $time = \DateTime::createFromFormat('U', time());
+        $time = new \DateTime();
 
         $this->setNextResponse(200, array(), '', function ($request, $response) use ($time) {
             $response->setStatusCode(200);
@@ -596,7 +595,7 @@ class HttpCacheTest extends HttpCacheTestCase
         $this->assertTraceContains('miss');
         $this->assertTraceContains('store');
         $this->assertEquals('Hello World', $this->response->getContent());
-        $this->assertRegExp('/s-maxage=2/', $this->response->headers->get('Cache-Control'));
+        $this->assertRegExp('/s-maxage=(?:2|3)/', $this->response->headers->get('Cache-Control'));
 
         $this->request('GET', '/');
         $this->assertHttpKernelIsNotCalled();
@@ -610,12 +609,11 @@ class HttpCacheTest extends HttpCacheTestCase
         $values = $this->getMetaStorageValues();
         $this->assertCount(1, $values);
         $tmp = unserialize($values[0]);
-        $time = \DateTime::createFromFormat('U', time() - 5);
-        $tmp[0][1]['date'] = $time->format(DATE_RFC2822);
+        $tmp[0][1]['date'] = \DateTime::createFromFormat('U', time() - 5)->format(DATE_RFC2822);
         $r = new \ReflectionObject($this->store);
         $m = $r->getMethod('save');
         $m->setAccessible(true);
-        $m->invoke($this->store, 'md'.sha1('http://localhost/'), serialize($tmp));
+        $m->invoke($this->store, 'md'.hash('sha256', 'http://localhost/'), serialize($tmp));
 
         $this->request('GET', '/');
         $this->assertHttpKernelIsCalled();
@@ -660,12 +658,11 @@ class HttpCacheTest extends HttpCacheTestCase
         $values = $this->getMetaStorageValues();
         $this->assertCount(1, $values);
         $tmp = unserialize($values[0]);
-        $time = \DateTime::createFromFormat('U', time() - 5);
-        $tmp[0][1]['date'] = $time->format(DATE_RFC2822);
+        $tmp[0][1]['date'] = \DateTime::createFromFormat('U', time() - 5)->format(DATE_RFC2822);
         $r = new \ReflectionObject($this->store);
         $m = $r->getMethod('save');
         $m->setAccessible(true);
-        $m->invoke($this->store, 'md'.sha1('http://localhost/'), serialize($tmp));
+        $m->invoke($this->store, 'md'.hash('sha256', 'http://localhost/'), serialize($tmp));
 
         $this->request('GET', '/');
         $this->assertHttpKernelIsCalled();
@@ -716,7 +713,7 @@ class HttpCacheTest extends HttpCacheTestCase
         $this->assertTraceContains('store');
         $this->assertEquals('Hello World', $this->response->getContent());
 
-        // go in and play around with the cached metadata directly ...
+        # go in and play around with the cached metadata directly ...
         $values = $this->getMetaStorageValues();
         $this->assertCount(1, $values);
         $tmp = unserialize($values[0]);
@@ -725,7 +722,7 @@ class HttpCacheTest extends HttpCacheTestCase
         $r = new \ReflectionObject($this->store);
         $m = $r->getMethod('save');
         $m->setAccessible(true);
-        $m->invoke($this->store, 'md'.sha1('http://localhost/'), serialize($tmp));
+        $m->invoke($this->store, 'md'.hash('sha256', 'http://localhost/'), serialize($tmp));
 
         // build subsequent request; should be found but miss due to freshness
         $this->request('GET', '/');
@@ -1050,21 +1047,21 @@ class HttpCacheTest extends HttpCacheTestCase
     {
         $responses = array(
             array(
-                'status' => 200,
-                'body' => '<esi:include src="/foo" /> <esi:include src="/bar" />',
+                'status'  => 200,
+                'body'    => '<esi:include src="/foo" /> <esi:include src="/bar" />',
                 'headers' => array(
-                    'Cache-Control' => 's-maxage=300',
+                    'Cache-Control'     => 's-maxage=300',
                     'Surrogate-Control' => 'content="ESI/1.0"',
                 ),
             ),
             array(
-                'status' => 200,
-                'body' => 'Hello World!',
+                'status'  => 200,
+                'body'    => 'Hello World!',
                 'headers' => array('Cache-Control' => 's-maxage=300'),
             ),
             array(
-                'status' => 200,
-                'body' => 'My name is Bobby.',
+                'status'  => 200,
+                'body'    => 'My name is Bobby.',
                 'headers' => array('Cache-Control' => 's-maxage=100'),
             ),
         );
@@ -1072,7 +1069,7 @@ class HttpCacheTest extends HttpCacheTestCase
         $this->setNextResponses($responses);
 
         $this->request('GET', '/', array(), array(), true);
-        $this->assertEquals('Hello World! My name is Bobby.', $this->response->getContent());
+        $this->assertEquals("Hello World! My name is Bobby.", $this->response->getContent());
 
         // check for 100 or 99 as the test can be executed after a second change
         $this->assertTrue(in_array($this->response->getTtl(), array(99, 100)));
@@ -1082,21 +1079,21 @@ class HttpCacheTest extends HttpCacheTestCase
     {
         $responses = array(
             array(
-                'status' => 200,
-                'body' => '<esi:include src="/foo" /> <esi:include src="/bar" />',
+                'status'  => 200,
+                'body'    => '<esi:include src="/foo" /> <esi:include src="/bar" />',
                 'headers' => array(
-                    'Cache-Control' => 's-maxage=300',
+                    'Cache-Control'     => 's-maxage=300',
                     'Surrogate-Control' => 'content="ESI/1.0"',
                 ),
             ),
             array(
-                'status' => 200,
-                'body' => 'Hello World!',
+                'status'  => 200,
+                'body'    => 'Hello World!',
                 'headers' => array('ETag' => 'foobar'),
             ),
             array(
-                'status' => 200,
-                'body' => 'My name is Bobby.',
+                'status'  => 200,
+                'body'    => 'My name is Bobby.',
                 'headers' => array('Cache-Control' => 's-maxage=100'),
             ),
         );
@@ -1115,17 +1112,17 @@ class HttpCacheTest extends HttpCacheTestCase
     {
         $responses = array(
             array(
-                'status' => 200,
-                'body' => '<esi:include src="/foo" />',
+                'status'  => 200,
+                'body'    => '<esi:include src="/foo" />',
                 'headers' => array(
-                    'Content-Length' => 26,
-                    'Cache-Control' => 's-maxage=300',
+                    'Content-Length'    => 26,
+                    'Cache-Control'     => 's-maxage=300',
                     'Surrogate-Control' => 'content="ESI/1.0"',
                 ),
             ),
             array(
-                'status' => 200,
-                'body' => 'Hello World!',
+                'status'  => 200,
+                'body'    => 'Hello World!',
                 'headers' => array(),
             ),
         );
@@ -1202,12 +1199,12 @@ class HttpCacheTest extends HttpCacheTestCase
 
     public function testEsiCacheRemoveValidationHeadersIfEmbeddedResponses()
     {
-        $time = \DateTime::createFromFormat('U', time());
+        $time = new \DateTime();
 
         $responses = array(
             array(
-                'status' => 200,
-                'body' => '<esi:include src="/hey" />',
+                'status'  => 200,
+                'body'    => '<esi:include src="/hey" />',
                 'headers' => array(
                     'Surrogate-Control' => 'content="ESI/1.0"',
                     'ETag' => 'hey',
@@ -1215,8 +1212,8 @@ class HttpCacheTest extends HttpCacheTestCase
                 ),
             ),
             array(
-                'status' => 200,
-                'body' => 'Hey!',
+                'status'  => 200,
+                'body'    => 'Hey!',
                 'headers' => array(),
             ),
         );

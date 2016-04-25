@@ -11,7 +11,7 @@
 
 namespace FOS\RestBundle\View;
 
-use FOS\Rest\Util\Codes;
+use FOS\RestBundle\Util\Codes;
 
 /**
  * Url based redirect implementation.
@@ -24,12 +24,16 @@ class RedirectView
     /**
      * Convenience method to allow for a fluent interface.
      *
-     * @param string  $url
-     * @param integer $statusCode
-     * @param array   $headers
+     * @param string $url
+     * @param int    $statusCode
+     * @param array  $headers
+     *
+     * @return View
+     *
+     * @deprecated To be removed in FOSRestBundle 2.0.0. Use View::createRedirect instead.
      */
     public static function create($url, $statusCode = Codes::HTTP_FOUND, array $headers = array())
     {
-        return View::create(null, $statusCode, $headers)->setLocation($url);
+        return View::createRedirect($url, $statusCode, $headers);
     }
 }

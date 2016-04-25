@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\Locale\Tests;
 
+use Symfony\Component\Intl\Intl;
+use Symfony\Component\Intl\Util\IntlTestHelper;
 use Symfony\Component\Locale\Locale;
 
 /**
@@ -22,7 +24,8 @@ class LocaleTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        \Locale::setDefault('en');
+        // Locale extends \Locale, so intl must be present
+        IntlTestHelper::requireIntl($this);
     }
 
     public function testGetDisplayCountries()

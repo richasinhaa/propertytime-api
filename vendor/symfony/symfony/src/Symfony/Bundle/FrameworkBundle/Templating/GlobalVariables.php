@@ -14,6 +14,7 @@ namespace Symfony\Bundle\FrameworkBundle\Templating;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -77,8 +78,8 @@ class GlobalVariables
      */
     public function getRequest()
     {
-        if ($this->container->has('request') && $request = $this->container->get('request')) {
-            return $request;
+        if ($this->container->has('request_stack')) {
+            return $this->container->get('request_stack')->getCurrentRequest();
         }
     }
 
@@ -107,7 +108,7 @@ class GlobalVariables
     /**
      * Returns the current app debug mode.
      *
-     * @return bool The current debug mode
+     * @return bool    The current debug mode
      */
     public function getDebug()
     {

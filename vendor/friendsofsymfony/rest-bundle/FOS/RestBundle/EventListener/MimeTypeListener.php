@@ -11,6 +11,7 @@
 
 namespace FOS\RestBundle\EventListener;
 
+use FOS\RestBundle\Util\FormatNegotiator;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -21,23 +22,24 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
  */
 class MimeTypeListener
 {
-    /**
-     * @var array
-     */
     private $mimeTypes;
+    private $formatNegotiator;
 
     /**
      * Constructor.
      *
-     * @param array $mimeTypes key format, value mime type
+     * @param array            $mimeTypes        An array with the format as key and
+     *                                           the corresponding mime type as value
+     * @param FormatNegotiator $formatNegotiator
      */
-    public function __construct(array $mimeTypes)
+    public function __construct(array $mimeTypes, FormatNegotiator $formatNegotiator)
     {
         $this->mimeTypes = $mimeTypes;
+        $this->formatNegotiator = $formatNegotiator;
     }
 
     /**
-     * Core request handler
+     * Core request handler.
      *
      * @param GetResponseEvent $event The event
      */
@@ -46,8 +48,9 @@ class MimeTypeListener
         $request = $event->getRequest();
 
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
-            foreach ($this->mimeTypes as $format => $mimeType) {
+            foreach ($this->mimeTypes['formats'] as $format => $mimeType) {
                 $request->setFormat($format, $mimeType);
+                $this->formatNegotiator->registerFormat($format, (array) $mimeType, true);
             }
         }
     }

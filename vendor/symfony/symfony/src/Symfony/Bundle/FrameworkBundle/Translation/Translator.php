@@ -24,7 +24,10 @@ use Symfony\Component\Config\ConfigCache;
 class Translator extends BaseTranslator
 {
     protected $container;
-    protected $options;
+    protected $options = array(
+        'cache_dir' => null,
+        'debug'     => false,
+    );
     protected $loaderIds;
 
     /**
@@ -46,11 +49,6 @@ class Translator extends BaseTranslator
     {
         $this->container = $container;
         $this->loaderIds = $loaderIds;
-
-        $this->options = array(
-            'cache_dir' => null,
-            'debug' => false,
-        );
 
         // check option names
         if ($diff = array_diff(array_keys($options), array_keys($this->options))) {
@@ -95,7 +93,7 @@ class Translator extends BaseTranslator
 
         $this->assertValidLocale($locale);
 
-        $cache = new ConfigCache($this->getCatalogueCachePath($locale), $this->options['debug']);
+        $cache = new ConfigCache($this->options['cache_dir'].'/catalogue.'.$locale.'.php', $this->options['debug']);
         if (!$cache->isFresh()) {
             $this->initialize();
 
@@ -108,9 +106,9 @@ class Translator extends BaseTranslator
                 $fallbackSuffix = ucfirst(preg_replace($replacementPattern, '_', $fallback));
                 $currentSuffix = ucfirst(preg_replace($replacementPattern, '_', $current));
 
-                $fallbackContent .= sprintf(<<<'EOF'
-$catalogue%s = new MessageCatalogue('%s', %s);
-$catalogue%s->addFallbackCatalogue($catalogue%s);
+                $fallbackContent .= sprintf(<<<EOF
+\$catalogue%s = new MessageCatalogue('%s', %s);
+\$catalogue%s->addFallbackCatalogue(\$catalogue%s);
 
 
 EOF
@@ -156,10 +154,5 @@ EOF
                 $this->addLoader($alias, $this->container->get($id));
             }
         }
-    }
-
-    private function getCatalogueCachePath($locale)
-    {
-        return $this->options['cache_dir'].'/catalogue.'.$locale.'.'.sha1(serialize($this->getFallbackLocales())).'.php';
     }
 }

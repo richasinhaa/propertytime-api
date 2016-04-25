@@ -40,7 +40,7 @@ class UserLoginFormType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @see Symfony\Component\Form\AbstractType::buildForm()
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -75,7 +75,7 @@ class UserLoginFormType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @see Symfony\Component\Form\AbstractType::setDefaultOptions()
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
@@ -89,7 +89,7 @@ class UserLoginFormType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @see Symfony\Component\Form\FormTypeInterface::getName()
      */
     public function getName()
     {

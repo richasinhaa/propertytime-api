@@ -45,7 +45,7 @@ class FormValidator extends ConstraintValidator
 
             // Validate the data against the constraints defined
             // in the form
-            $constraints = $config->getOption('constraints', array());
+            $constraints = $config->getOption('constraints');
             foreach ($constraints as $constraint) {
                 foreach ($groups as $group) {
                     if (in_array($group, $constraint->groups)) {
@@ -101,9 +101,9 @@ class FormValidator extends ConstraintValidator
     /**
      * Returns whether the data of a form may be walked.
      *
-     * @param FormInterface $form The form to test.
+     * @param  FormInterface $form The form to test.
      *
-     * @return bool Whether the graph walker may walk the data.
+     * @return bool    Whether the graph walker may walk the data.
      */
     private static function allowDataWalking(FormInterface $form)
     {
@@ -133,7 +133,7 @@ class FormValidator extends ConstraintValidator
     /**
      * Returns the validation groups of the given form.
      *
-     * @param FormInterface $form The form.
+     * @param  FormInterface $form The form.
      *
      * @return array The validation groups.
      */

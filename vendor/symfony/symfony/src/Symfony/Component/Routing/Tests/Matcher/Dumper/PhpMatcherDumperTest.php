@@ -167,6 +167,8 @@ class PhpMatcherDumperTest extends \PHPUnit_Framework_TestCase
         $route1 = new Route('/route1', array(), array(), array(), 'a.example.com');
         $collection1->add('route1', $route1);
 
+        $collection2 = new RouteCollection();
+
         $route2 = new Route('/c2/route2', array(), array(), array(), 'a.example.com');
         $collection1->add('route2', $route2);
 
@@ -249,6 +251,9 @@ class PhpMatcherDumperTest extends \PHPUnit_Framework_TestCase
         $rootprefixCollection->add('static', new Route('/test'));
         $rootprefixCollection->add('dynamic', new Route('/{var}'));
         $rootprefixCollection->addPrefix('rootprefix');
+        $route = new Route('/with-condition');
+        $route->setCondition('context.getMethod() == "GET"');
+        $rootprefixCollection->add('with-condition', $route);
 
         return array(
            array($collection, 'url_matcher1.php', array()),

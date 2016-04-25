@@ -28,7 +28,7 @@ class ParamReader implements ParamReaderInterface
     /**
      * Initializes controller reader.
      *
-     * @param Reader $annotationReader annotation reader
+     * @param Reader $annotationReader
      */
     public function __construct(Reader $annotationReader)
     {
@@ -36,7 +36,7 @@ class ParamReader implements ParamReaderInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function read(\ReflectionClass $reflection, $method)
     {
@@ -44,16 +44,21 @@ class ParamReader implements ParamReaderInterface
             throw new \InvalidArgumentException(sprintf("Class '%s' has no method '%s' method.", $reflection->getName(), $method));
         }
 
-        return $this->getParamsFromMethod($reflection->getMethod($method));
+        $methodParams = $this->getParamsFromMethod($reflection->getMethod($method));
+        $classParams = $this->getParamsFromClass($reflection);
+
+        return array_merge($methodParams, $classParams);
     }
 
     /**
-     * {@inheritDoc}
+     * Fetches parameters from provided annotation array (fetched from annotationReader).
+     *
+     * @param array $annotations
+     *
+     * @return Param[]
      */
-    public function getParamsFromMethod(\ReflectionMethod $method)
+    private function getParamsFromAnnotationArray(array $annotations)
     {
-        $annotations = $this->annotationReader->getMethodAnnotations($method);
-
         $params = array();
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Param) {
@@ -62,5 +67,25 @@ class ParamReader implements ParamReaderInterface
         }
 
         return $params;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParamsFromMethod(\ReflectionMethod $method)
+    {
+        $annotations = $this->annotationReader->getMethodAnnotations($method);
+
+        return $this->getParamsFromAnnotationArray($annotations);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParamsFromClass(\ReflectionClass $class)
+    {
+        $annotations = $this->annotationReader->getClassAnnotations($class);
+
+        return $this->getParamsFromAnnotationArray($annotations);
     }
 }

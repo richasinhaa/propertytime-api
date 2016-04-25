@@ -40,7 +40,11 @@ class IntlTestHelper
         //   * the intl extension is not loaded
 
         if (IcuVersion::compare(Intl::getIcuVersion(), Intl::getIcuStubVersion(), '!=', 1)) {
-            $testCase->markTestSkipped('ICU version '.Intl::getIcuStubVersion().' is required.');
+            $testCase->markTestSkipped('Please change ICU version to '.Intl::getIcuStubVersion());
+        }
+
+        if (IcuVersion::compare(Intl::getIcuDataVersion(), Intl::getIcuStubVersion(), '!=', 1)) {
+            $testCase->markTestSkipped('Please change the Icu component to version 1.0.x or 1.'.IcuVersion::normalize(Intl::getIcuStubVersion(), 1).'.x');
         }
 
         // Normalize the default locale in case this is not done explicitly
@@ -67,12 +71,17 @@ class IntlTestHelper
     {
         // We only run tests if the intl extension is loaded...
         if (!Intl::isExtensionLoaded()) {
-            $testCase->markTestSkipped('Extension intl is required.');
+            $testCase->markTestSkipped('The intl extension is not available.');
         }
 
-        // ... and only if the version is *one specific version*
+        // ... and only if the version is *one specific version* ...
         if (IcuVersion::compare(Intl::getIcuVersion(), Intl::getIcuStubVersion(), '!=', 1)) {
-            $testCase->markTestSkipped('ICU version '.Intl::getIcuStubVersion().' is required.');
+            $testCase->markTestSkipped('Please change ICU version to '.Intl::getIcuStubVersion());
+        }
+
+        // ... and only if the data in the Icu component matches that version.
+        if (IcuVersion::compare(Intl::getIcuDataVersion(), Intl::getIcuStubVersion(), '!=', 1)) {
+            $testCase->markTestSkipped('Please change the Icu component to version 1.0.x or 1.'.IcuVersion::normalize(Intl::getIcuStubVersion(), 1).'.x');
         }
 
         // Normalize the default locale in case this is not done explicitly
@@ -85,6 +94,7 @@ class IntlTestHelper
         //     there is no need to add control structures to your tests that
         //     change the test depending on the ICU version.
         //   * always use the C intl classes
+        //   * always use the binary resource bundles (any locale is allowed)
     }
 
     /**
@@ -95,7 +105,7 @@ class IntlTestHelper
     public static function require32Bit(\PhpUnit_Framework_TestCase $testCase)
     {
         if (4 !== PHP_INT_SIZE) {
-            $testCase->markTestSkipped('PHP 32 bit is required.');
+            $testCase->markTestSkipped('PHP must be compiled in 32 bit mode to run this test');
         }
     }
 
@@ -107,7 +117,7 @@ class IntlTestHelper
     public static function require64Bit(\PhpUnit_Framework_TestCase $testCase)
     {
         if (8 !== PHP_INT_SIZE) {
-            $testCase->markTestSkipped('PHP 64 bit is required.');
+            $testCase->markTestSkipped('PHP must be compiled in 64 bit mode to run this test');
         }
     }
 

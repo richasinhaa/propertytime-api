@@ -23,12 +23,13 @@ class Route
 {
     private $path;
     private $name;
-    private $requirements;
-    private $options;
-    private $defaults;
+    private $requirements = array();
+    private $options = array();
+    private $defaults = array();
     private $host;
-    private $methods;
-    private $schemes;
+    private $methods = array();
+    private $schemes = array();
+    private $condition;
 
     /**
      * Constructor.
@@ -39,12 +40,6 @@ class Route
      */
     public function __construct(array $data)
     {
-        $this->requirements = array();
-        $this->options = array();
-        $this->defaults = array();
-        $this->methods = array();
-        $this->schemes = array();
-
         if (isset($data['value'])) {
             $data['path'] = $data['value'];
             unset($data['value']);
@@ -53,7 +48,7 @@ class Route
         foreach ($data as $key => $value) {
             $method = 'set'.str_replace('_', '', $key);
             if (!method_exists($this, $method)) {
-                throw new \BadMethodCallException(sprintf('Unknown property "%s" on annotation "%s".', $key, get_class($this)));
+                throw new \BadMethodCallException(sprintf("Unknown property '%s' on annotation '%s'.", $key, get_class($this)));
             }
             $this->$method($value);
         }
@@ -153,5 +148,15 @@ class Route
     public function getMethods()
     {
         return $this->methods;
+    }
+
+    public function setCondition($condition)
+    {
+        $this->condition = $condition;
+    }
+
+    public function getCondition()
+    {
+        return $this->condition;
     }
 }

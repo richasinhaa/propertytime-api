@@ -22,18 +22,18 @@ use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
  */
 class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinitionInterface
 {
-    protected $performDeepMerging;
-    protected $ignoreExtraKeys;
-    protected $children;
+    protected $performDeepMerging = true;
+    protected $ignoreExtraKeys = false;
+    protected $children = array();
     protected $prototype;
-    protected $atLeastOne;
-    protected $allowNewKeys;
+    protected $atLeastOne = false;
+    protected $allowNewKeys = true;
     protected $key;
     protected $removeKeyItem;
-    protected $addDefaults;
-    protected $addDefaultChildren;
+    protected $addDefaults = false;
+    protected $addDefaultChildren = false;
     protected $nodeBuilder;
-    protected $normalizeKeys;
+    protected $normalizeKeys = true;
 
     /**
      * {@inheritdoc}
@@ -42,16 +42,8 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
     {
         parent::__construct($name, $parent);
 
-        $this->children = array();
-        $this->addDefaults = false;
-        $this->addDefaultChildren = false;
-        $this->allowNewKeys = true;
-        $this->atLeastOne = false;
-        $this->allowEmptyValue = true;
-        $this->performDeepMerging = true;
         $this->nullEquivalent = array();
         $this->trueEquivalent = array();
-        $this->normalizeKeys = true;
     }
 
     /**
@@ -105,7 +97,7 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
     /**
      * Adds children with a default value when none are defined.
      *
-     * @param int|string|array|null $children The number of children|The child name|The children names to be added
+     * @param int|string|array|null     $children The number of children|The child name|The children names to be added
      *
      * This method is applicable to prototype nodes only.
      *
@@ -184,8 +176,8 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
      *
      * This method is applicable to prototype nodes only.
      *
-     * @param string $name          The name of the key
-     * @param bool   $removeKeyItem Whether or not the key item should be removed.
+     * @param string  $name          The name of the key
+     * @param bool    $removeKeyItem Whether or not the key item should be removed.
      *
      * @return ArrayNodeDefinition
      */
@@ -200,7 +192,7 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
     /**
      * Sets whether the node can be unset.
      *
-     * @param bool $allow
+     * @param bool    $allow
      *
      * @return ArrayNodeDefinition
      */
@@ -287,10 +279,9 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
      * Allows extra config keys to be specified under an array without
      * throwing an exception.
      *
-     * Those config values are simply ignored and removed from the
-     * resulting array. This should be used only in special cases where
-     * you want to send an entire configuration array through a special
-     * tree that processes only part of the array.
+     * Those config values are simply ignored. This should be used only
+     * in special cases where you want to send an entire configuration
+     * array through a special tree that processes only part of the array.
      *
      * @return ArrayNodeDefinition
      */
@@ -304,7 +295,7 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
     /**
      * Sets key normalization.
      *
-     * @param bool $bool Whether to enable key normalization
+     * @param bool    $bool Whether to enable key normalization
      *
      * @return ArrayNodeDefinition
      */
@@ -338,7 +329,7 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
     }
 
     /**
-     * Returns a node builder to be used to add children and prototype.
+     * Returns a node builder to be used to add children and prototype
      *
      * @return NodeBuilder The node builder
      */
@@ -481,7 +472,7 @@ class ArrayNodeDefinition extends NodeDefinition implements ParentNodeDefinition
                 );
             }
 
-            if (null !== $this->key && (null === $this->addDefaultChildren || is_int($this->addDefaultChildren) && $this->addDefaultChildren > 0)) {
+            if (null !== $this->key && (null === $this->addDefaultChildren || is_integer($this->addDefaultChildren) && $this->addDefaultChildren > 0)) {
                 throw new InvalidDefinitionException(
                     sprintf('->addDefaultChildrenIfNoneSet() should set default children names as ->useAttributeAsKey() is used at path "%s"', $path)
                 );

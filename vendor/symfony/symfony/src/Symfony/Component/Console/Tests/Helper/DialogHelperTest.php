@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Console\Tests\Helper;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\FormatterHelper;
@@ -99,7 +100,7 @@ class DialogHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testAskHiddenResponse()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
             $this->markTestSkipped('This test is not supported on Windows');
         }
 
@@ -156,10 +157,22 @@ class DialogHelperTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testNoInteraction()
+    {
+        $dialog = new DialogHelper();
+
+        $input = new ArrayInput(array());
+        $input->setInteractive(false);
+
+        $dialog->setInput($input);
+
+        $this->assertEquals('not yet', $dialog->ask($this->getOutputStream(), 'Do you have a job?', 'not yet'));
+    }
+
     protected function getInputStream($input)
     {
         $stream = fopen('php://memory', 'r+', false);
-        fwrite($stream, $input);
+        fputs($stream, $input);
         rewind($stream);
 
         return $stream;

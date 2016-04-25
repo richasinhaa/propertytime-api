@@ -21,6 +21,8 @@ use Symfony\Component\Console\Formatter\OutputFormatterInterface;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Tobias Schultze <http://tobion.de>
+ *
+ * @api
  */
 class NullOutput implements OutputInterface
 {
@@ -71,6 +73,26 @@ class NullOutput implements OutputInterface
     public function getVerbosity()
     {
         return self::VERBOSITY_QUIET;
+    }
+
+    public function isQuiet()
+    {
+        return true;
+    }
+
+    public function isVerbose()
+    {
+        return false;
+    }
+
+    public function isVeryVerbose()
+    {
+        return false;
+    }
+
+    public function isDebug()
+    {
+        return false;
     }
 
     /**

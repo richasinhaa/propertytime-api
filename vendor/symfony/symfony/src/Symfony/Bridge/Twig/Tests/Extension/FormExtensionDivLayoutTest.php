@@ -42,7 +42,7 @@ class FormExtensionDivLayoutTest extends AbstractDivLayoutTest
 
         $loader = new StubFilesystemLoader(array(
             __DIR__.'/../../Resources/views/Form',
-            __DIR__.'/Fixtures/templates/form',
+            __DIR__,
         ));
 
         $environment = new \Twig_Environment($loader, array('strict_variables' => true));

@@ -9,7 +9,7 @@
 /app/logs/*
 /build/
 /uploads/
-/vendor/
+/vendor/*
 /bin/
 /composer.phar
 .DS_Store

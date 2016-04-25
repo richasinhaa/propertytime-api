@@ -146,7 +146,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
         $collection2->add('bar', $bar = new Route('/bar'));
         $collection->addCollection($collection2);
         $collection->addPrefix(' / ');
-        $this->assertSame('/foo', $collection->get('foo')->getPath(), '->addPrefix() trims the prefix and a single slash has no effect');
+        $this->assertSame('/foo', $collection->get('foo')->getPattern(), '->addPrefix() trims the prefix and a single slash has no effect');
         $collection->addPrefix('/{admin}', array('admin' => 'admin'), array('admin' => '\d+'));
         $this->assertEquals('/{admin}/foo', $collection->get('foo')->getPath(), '->addPrefix() adds a prefix to all routes');
         $this->assertEquals('/{admin}/bar', $collection->get('bar')->getPath(), '->addPrefix() adds a prefix to all routes');
@@ -155,7 +155,7 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('admin' => '\d+'), $collection->get('foo')->getRequirements(), '->addPrefix() adds requirements to all routes');
         $this->assertEquals(array('admin' => '\d+'), $collection->get('bar')->getRequirements(), '->addPrefix() adds requirements to all routes');
         $collection->addPrefix('0');
-        $this->assertEquals('/0/{admin}/foo', $collection->get('foo')->getPath(), '->addPrefix() ensures a prefix must start with a slash and must not end with a slash');
+        $this->assertEquals('/0/{admin}/foo', $collection->get('foo')->getPattern(), '->addPrefix() ensures a prefix must start with a slash and must not end with a slash');
         $collection->addPrefix('/ /');
         $this->assertSame('/ /0/{admin}/foo', $collection->get('foo')->getPath(), '->addPrefix() can handle spaces if desired');
         $this->assertSame('/ /0/{admin}/bar', $collection->get('bar')->getPath(), 'the route pattern of an added collection is in synch with the added prefix');
@@ -243,6 +243,20 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('{locale}.example.com', $routea->getHost());
         $this->assertEquals('{locale}.example.com', $routeb->getHost());
+    }
+
+    public function testSetCondition()
+    {
+        $collection = new RouteCollection();
+        $routea = new Route('/a');
+        $routeb = new Route('/b', array(), array(), array(), '{locale}.example.net', array(), array(), 'context.getMethod() == "GET"');
+        $collection->add('a', $routea);
+        $collection->add('b', $routeb);
+
+        $collection->setCondition('context.getMethod() == "POST"');
+
+        $this->assertEquals('context.getMethod() == "POST"', $routea->getCondition());
+        $this->assertEquals('context.getMethod() == "POST"', $routeb->getCondition());
     }
 
     public function testClone()

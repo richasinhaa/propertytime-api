@@ -91,7 +91,9 @@ abstract class Extension implements ExtensionInterface, ConfigurationExtensionIn
             $container->addResource(new FileResource($r->getFileName()));
 
             if (!method_exists($class, '__construct')) {
-                return new $class();
+                $configuration = new $class();
+
+                return $configuration;
             }
         }
     }
@@ -107,7 +109,7 @@ abstract class Extension implements ExtensionInterface, ConfigurationExtensionIn
      * @param ContainerBuilder $container
      * @param array            $config
      *
-     * @return bool Whether the configuration is enabled
+     * @return bool    Whether the configuration is enabled
      *
      * @throws InvalidArgumentException When the config is not enableable
      */

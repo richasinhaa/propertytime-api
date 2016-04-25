@@ -16,6 +16,8 @@ namespace Symfony\Component\Routing\Generator\Dumper;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Tobias Schultze <http://tobion.de>
+ *
+ * @api
  */
 class PhpGeneratorDumper extends GeneratorDumper
 {
@@ -30,11 +32,13 @@ class PhpGeneratorDumper extends GeneratorDumper
      * @param array $options An array of options
      *
      * @return string A PHP class representing the generator class
+     *
+     * @api
      */
     public function dump(array $options = array())
     {
         $options = array_merge(array(
-            'class' => 'ProjectUrlGenerator',
+            'class'      => 'ProjectUrlGenerator',
             'base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
         ), $options);
 
@@ -53,7 +57,7 @@ use Psr\Log\LoggerInterface;
  */
 class {$options['class']} extends {$options['base_class']}
 {
-    private static \$declaredRoutes;
+    private static \$declaredRoutes = {$this->generateDeclaredRoutes()};
 
     /**
      * Constructor.
@@ -62,9 +66,6 @@ class {$options['class']} extends {$options['base_class']}
     {
         \$this->context = \$context;
         \$this->logger = \$logger;
-        if (null === self::\$declaredRoutes) {
-            self::\$declaredRoutes = {$this->generateDeclaredRoutes()};
-        }
     }
 
 {$this->generateGenerateMethod()}
@@ -106,16 +107,16 @@ EOF;
      */
     private function generateGenerateMethod()
     {
-        return <<<'EOF'
-    public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
+        return <<<EOF
+    public function generate(\$name, \$parameters = array(), \$referenceType = self::ABSOLUTE_PATH)
     {
-        if (!isset(self::$declaredRoutes[$name])) {
-            throw new RouteNotFoundException(sprintf('Unable to generate a URL for the named route "%s" as such route does not exist.', $name));
+        if (!isset(self::\$declaredRoutes[\$name])) {
+            throw new RouteNotFoundException(sprintf('Unable to generate a URL for the named route "%s" as such route does not exist.', \$name));
         }
 
-        list($variables, $defaults, $requirements, $tokens, $hostTokens) = self::$declaredRoutes[$name];
+        list(\$variables, \$defaults, \$requirements, \$tokens, \$hostTokens) = self::\$declaredRoutes[\$name];
 
-        return $this->doGenerate($variables, $defaults, $requirements, $tokens, $parameters, $name, $referenceType, $hostTokens);
+        return \$this->doGenerate(\$variables, \$defaults, \$requirements, \$tokens, \$parameters, \$name, \$referenceType, \$hostTokens);
     }
 EOF;
     }

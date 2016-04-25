@@ -21,11 +21,15 @@ use Symfony\Component\Config\Resource\FileResource;
  * QtFileLoader loads translations from QT Translations XML files.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
+ *
+ * @api
  */
 class QtFileLoader implements LoaderInterface
 {
     /**
      * {@inheritdoc}
+     *
+     * @api
      */
     public function load($resource, $locale, $domain = 'messages')
     {
@@ -64,10 +68,7 @@ class QtFileLoader implements LoaderInterface
                 }
                 $translation = $translation->nextSibling;
             }
-
-            if (class_exists('Symfony\Component\Config\Resource\FileResource')) {
-                $catalogue->addResource(new FileResource($resource));
-            }
+            $catalogue->addResource(new FileResource($resource));
         }
 
         libxml_use_internal_errors($internalErrors);

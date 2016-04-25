@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+2.4.0
+-----
+
+ * moved CSRF implementation to the new Security CSRF sub-component
+ * deprecated CsrfProviderInterface and its implementations
+ * deprecated options "csrf_provider" and "intention" in favor of the new options "csrf_token_generator" and "csrf_token_id"
+
 2.3.0
 -----
 

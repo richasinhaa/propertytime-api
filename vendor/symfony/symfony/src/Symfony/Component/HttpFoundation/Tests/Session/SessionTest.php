@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
- * SessionTest.
+ * SessionTest
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Robert Schönthal <seroscho@googlemail.com>
@@ -136,7 +136,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         return array(
             array('foo', 'bar', array('foo' => 'bar')),
             array('foo.bar', 'too much beer', array('foo.bar' => 'too much beer')),
-            array('great', 'symfony is great', array('great' => 'symfony is great')),
+            array('great', 'symfony2 is great', array('great' => 'symfony2 is great')),
         );
     }
 
@@ -190,9 +190,12 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Symfony\\Component\\HttpFoundation\\Session\\Flash\\FlashBagInterface', $this->session->getFlashBag());
     }
 
+    /**
+     * @covers Symfony\Component\HttpFoundation\Session\Session::getIterator
+     */
     public function testGetIterator()
     {
-        $attributes = array('hello' => 'world', 'symfony' => 'rocks');
+        $attributes = array('hello' => 'world', 'symfony2' => 'rocks');
         foreach ($attributes as $key => $val) {
             $this->session->set($key, $val);
         }
@@ -200,16 +203,19 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $i = 0;
         foreach ($this->session as $key => $val) {
             $this->assertEquals($attributes[$key], $val);
-            ++$i;
+            $i++;
         }
 
         $this->assertEquals(count($attributes), $i);
     }
 
+    /**
+     * @covers \Symfony\Component\HttpFoundation\Session\Session::count
+     */
     public function testGetCount()
     {
         $this->session->set('hello', 'world');
-        $this->session->set('symfony', 'rocks');
+        $this->session->set('symfony2', 'rocks');
 
         $this->assertCount(2, $this->session);
     }

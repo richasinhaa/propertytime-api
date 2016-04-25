@@ -12,6 +12,7 @@
 namespace Symfony\Component\Console\Helper;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use InvalidArgumentException;
 
 /**
  * Provides helpers to display table output.
@@ -22,6 +23,7 @@ class TableHelper extends Helper
 {
     const LAYOUT_DEFAULT = 0;
     const LAYOUT_BORDERLESS = 1;
+    const LAYOUT_COMPACT = 2;
 
     /**
      * Table headers.
@@ -44,6 +46,7 @@ class TableHelper extends Helper
     private $crossingChar;
     private $cellHeaderFormat;
     private $cellRowFormat;
+    private $cellRowContentFormat;
     private $borderFormat;
     private $padType;
 
@@ -78,7 +81,7 @@ class TableHelper extends Helper
      *
      * @return TableHelper
      *
-     * @throws \InvalidArgumentException when the table layout is not known
+     * @throws InvalidArgumentException when the table layout is not known
      */
     public function setLayout($layout)
     {
@@ -90,7 +93,22 @@ class TableHelper extends Helper
                     ->setVerticalBorderChar(' ')
                     ->setCrossingChar(' ')
                     ->setCellHeaderFormat('<info>%s</info>')
-                    ->setCellRowFormat('<comment>%s</comment>')
+                    ->setCellRowFormat('%s')
+                    ->setCellRowContentFormat(' %s ')
+                    ->setBorderFormat('%s')
+                    ->setPadType(STR_PAD_RIGHT)
+                ;
+                break;
+
+            case self::LAYOUT_COMPACT:
+                $this
+                    ->setPaddingChar(' ')
+                    ->setHorizontalBorderChar('')
+                    ->setVerticalBorderChar(' ')
+                    ->setCrossingChar('')
+                    ->setCellHeaderFormat('<info>%s</info>')
+                    ->setCellRowFormat('%s')
+                    ->setCellRowContentFormat('%s')
                     ->setBorderFormat('%s')
                     ->setPadType(STR_PAD_RIGHT)
                 ;
@@ -103,15 +121,17 @@ class TableHelper extends Helper
                     ->setVerticalBorderChar('|')
                     ->setCrossingChar('+')
                     ->setCellHeaderFormat('<info>%s</info>')
-                    ->setCellRowFormat('<comment>%s</comment>')
+                    ->setCellRowFormat('%s')
+                    ->setCellRowContentFormat(' %s ')
                     ->setBorderFormat('%s')
                     ->setPadType(STR_PAD_RIGHT)
                 ;
                 break;
 
             default:
-                throw new \InvalidArgumentException(sprintf('Invalid table layout "%s".', $layout));
-        }
+                throw new InvalidArgumentException(sprintf('Invalid table layout "%s".', $layout));
+                break;
+        };
 
         return $this;
     }
@@ -143,12 +163,11 @@ class TableHelper extends Helper
     {
         $this->rows[] = array_values($row);
 
-        end($this->rows);
-        $rowKey = key($this->rows);
-        reset($this->rows);
+        $keys = array_keys($this->rows);
+        $rowKey = array_pop($keys);
 
         foreach ($row as $key => $cellValue) {
-            if (false === strpos($cellValue, "\n")) {
+            if (!strstr($cellValue, "\n")) {
                 continue;
             }
 
@@ -186,6 +205,10 @@ class TableHelper extends Helper
      */
     public function setPaddingChar($paddingChar)
     {
+        if (!$paddingChar) {
+            throw new \LogicException('The padding char must not be empty');
+        }
+
         $this->paddingChar = $paddingChar;
 
         return $this;
@@ -262,6 +285,20 @@ class TableHelper extends Helper
     }
 
     /**
+     * Sets row cell content format.
+     *
+     * @param string $cellRowContentFormat
+     *
+     * @return TableHelper
+     */
+    public function setCellRowContentFormat($cellRowContentFormat)
+    {
+        $this->cellRowContentFormat = $cellRowContentFormat;
+
+        return $this;
+    }
+
+    /**
      * Sets table border format.
      *
      * @param string $borderFormat
@@ -278,7 +315,7 @@ class TableHelper extends Helper
     /**
      * Sets cell padding type.
      *
-     * @param int $padType STR_PAD_*
+     * @param int     $padType STR_PAD_*
      *
      * @return TableHelper
      */
@@ -333,11 +370,13 @@ class TableHelper extends Helper
             return;
         }
 
+        if (!$this->horizontalBorderChar && !$this->crossingChar) {
+            return;
+        }
+
         $markup = $this->crossingChar;
-        for ($column = 0; $column < $count; ++$column) {
-            $markup .= str_repeat($this->horizontalBorderChar, $this->getColumnWidth($column))
-                    .$this->crossingChar
-            ;
+        for ($column = 0; $column < $count; $column++) {
+            $markup .= str_repeat($this->horizontalBorderChar, $this->getColumnWidth($column)).$this->crossingChar;
         }
 
         $this->output->writeln(sprintf($this->borderFormat, $markup));
@@ -366,7 +405,7 @@ class TableHelper extends Helper
         }
 
         $this->renderColumnSeparator();
-        for ($column = 0, $count = $this->getNumberOfColumns(); $column < $count; ++$column) {
+        for ($column = 0, $count = $this->getNumberOfColumns(); $column < $count; $column++) {
             $this->renderCell($row, $column, $cellFormat);
             $this->renderColumnSeparator();
         }
@@ -376,9 +415,9 @@ class TableHelper extends Helper
     /**
      * Renders table cell with padding.
      *
-     * @param array  $row
-     * @param int    $column
-     * @param string $cellFormat
+     * @param array   $row
+     * @param int     $column
+     * @param string  $cellFormat
      */
     private function renderCell(array $row, $column, $cellFormat)
     {
@@ -386,21 +425,15 @@ class TableHelper extends Helper
         $width = $this->getColumnWidth($column);
 
         // str_pad won't work properly with multi-byte strings, we need to fix the padding
-        if (function_exists('mb_strwidth') && false !== $encoding = mb_detect_encoding($cell, null, true)) {
-            $width += strlen($cell) - mb_strwidth($cell, $encoding);
+        if (function_exists('mb_strlen') && false !== $encoding = mb_detect_encoding($cell)) {
+            $width += strlen($cell) - mb_strlen($cell, $encoding);
         }
 
         $width += $this->strlen($cell) - $this->computeLengthWithoutDecoration($cell);
 
-        $this->output->write(sprintf(
-            $cellFormat,
-            str_pad(
-                $this->paddingChar.$cell.$this->paddingChar,
-                $width,
-                $this->paddingChar,
-                $this->padType
-            )
-        ));
+        $content = sprintf($this->cellRowContentFormat, $cell);
+
+        $this->output->write(sprintf($cellFormat, str_pad($content, $width, $this->paddingChar, $this->padType)));
     }
 
     /**
@@ -426,7 +459,7 @@ class TableHelper extends Helper
     /**
      * Gets column width.
      *
-     * @param int $column
+     * @param int     $column
      *
      * @return int
      */
@@ -442,14 +475,14 @@ class TableHelper extends Helper
             $lengths[] = $this->getCellWidth($row, $column);
         }
 
-        return $this->columnWidths[$column] = max($lengths) + 2;
+        return $this->columnWidths[$column] = max($lengths) + strlen($this->cellRowContentFormat) - 2;
     }
 
     /**
      * Gets cell width.
      *
-     * @param array $row
-     * @param int   $column
+     * @param array   $row
+     * @param int     $column
      *
      * @return int
      */

@@ -11,10 +11,9 @@
 
 namespace Symfony\Bridge\Twig\Tests\Node;
 
-use Symfony\Bridge\Twig\Tests\TestCase;
 use Symfony\Bridge\Twig\Node\FormThemeNode;
 
-class FormThemeTest extends TestCase
+class FormThemeTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
@@ -42,7 +41,7 @@ class FormThemeTest extends TestCase
 
         $node = new FormThemeNode($form, $resources, 0);
 
-        $compiler = new \Twig_Compiler(new \Twig_Environment($this->getMock('Twig_LoaderInterface')));
+        $compiler = new \Twig_Compiler(new \Twig_Environment());
 
         $this->assertEquals(
             sprintf(
@@ -67,7 +66,7 @@ class FormThemeTest extends TestCase
 
     protected function getVariableGetter($name)
     {
-        if (PHP_VERSION_ID >= 50400) {
+        if (version_compare(phpversion(), '5.4.0RC1', '>=')) {
             return sprintf('(isset($context["%s"]) ? $context["%s"] : null)', $name, $name);
         }
 

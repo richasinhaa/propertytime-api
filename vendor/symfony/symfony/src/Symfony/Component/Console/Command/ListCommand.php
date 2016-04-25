@@ -34,7 +34,7 @@ class ListCommand extends Command
             ->setName('list')
             ->setDefinition($this->createDefinition())
             ->setDescription('Lists commands')
-            ->setHelp(<<<'EOF'
+            ->setHelp(<<<EOF
 The <info>%command.name%</info> command lists all commands:
 
   <info>php %command.full_name%</info>
@@ -73,7 +73,11 @@ EOF
         }
 
         $helper = new DescriptorHelper();
-        $helper->describe($output, $this->getApplication(), $input->getOption('format'), $input->getOption('raw'), $input->getArgument('namespace'));
+        $helper->describe($output, $this->getApplication(), array(
+            'format'    => $input->getOption('format'),
+            'raw_text'  => $input->getOption('raw'),
+            'namespace' => $input->getArgument('namespace'),
+        ));
     }
 
     /**
@@ -85,7 +89,7 @@ EOF
             new InputArgument('namespace', InputArgument::OPTIONAL, 'The namespace name'),
             new InputOption('xml', null, InputOption::VALUE_NONE, 'To output list as XML'),
             new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command list'),
-            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'To output list in other formats'),
+            new InputOption('format', null, InputOption::VALUE_REQUIRED, 'To output list in other formats', 'txt'),
         ));
     }
 }
