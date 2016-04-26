@@ -38,7 +38,7 @@ class LocationManager
         $searchResult = array();
         
         foreach ($allLocations['Commercial'] as $commercialDetail) {
-            if(strpos(strtolower($commercialDetail), $search) !== false) {
+            if(strpos(strtolower($commercialDetail), strtolower($search)) !== false) {
                 $searchResult['Commercial'][] = $commercialDetail;
             }
         }
@@ -48,7 +48,7 @@ class LocationManager
         }
 
         foreach ($allLocations['Residential']as $residentialDetail) {
-            if(strpos(strtolower($residentialDetail), $search) !== false) {
+            if(strpos(strtolower($residentialDetail), strtolower($search)) !== false) {
                 $searchResult['Residential'][] = $residentialDetail;
             }
         }
