@@ -33,10 +33,11 @@ class ListingManager
         $limit       = $requestParams['limit'] ? $requestParams['limit'] : self::LIMIT;
         $offset      = $requestParams['offset'] ? $requestParams['offset'] : self::OFFSET;
         $withDeleted = $requestParams['with_deleted'] ? $requestParams['with_deleted'] : false;
+        $search      = $requestParams['search'] ? $requestParams['search'] : null;
         $city        = $requestParams['city'] ? $requestParams['city'] : null;
         $community   = $requestParams['community'] ? $requestParams['community'] : null;
         $category    = $requestParams['category'] ? $requestParams['category'] : null;
-        $category    = $requestParams['sub_category'] ? $requestParams['sub_category'] : null;
+        $subcategory    = $requestParams['sub_category'] ? $requestParams['sub_category'] : null;
         $type        = $requestParams['type'] ? $requestParams['type'] : null;
         $agencyId    = $requestParams['agency_id'] ? $requestParams['agency_id'] : null;
         $minBed      = $requestParams['min_bed'] ? $requestParams['min_bed'] : null;
@@ -55,6 +56,7 @@ class ListingManager
             $limit,
             $offset,
             $withDeleted,
+            $search,
             $city,
             $community,
             $category,

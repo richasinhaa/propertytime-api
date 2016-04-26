@@ -30,19 +30,33 @@ class LocationManager
 
     public function load($search=null) {
         $allLocations = $this->fetchAllLocations();
-
+        
         if (is_null($search)) {
             return $allLocations;
         }
         
         $searchResult = array();
         
-        foreach ($allLocations as $location) {
-            if(strpos(strtolower($location), $search) !== false) {
-                $searchResult[] = $location;
+        foreach ($allLocations['Commercial'] as $commercialDetail) {
+            if(strpos(strtolower($commercialDetail), $search) !== false) {
+                $searchResult['Commercial'][] = $commercialDetail;
+            }
+        }
+
+        if (!is_null($searchResult['Commercial'])) {
+            $searchResult['Commercial'] = $this->rank($searchResult['Commercial'], $search);
+        }
+
+        foreach ($allLocations['Residential']as $residentialDetail) {
+            if(strpos(strtolower($residentialDetail), $search) !== false) {
+                $searchResult['Residential'][] = $residentialDetail;
             }
         }
         
+        if (!is_null($searchResult['Residential'])) {
+            $searchResult['Residential'] = $this->rank($searchResult['Residential'], $search);
+        }
+
         return $searchResult;
     }
 
@@ -54,19 +68,22 @@ class LocationManager
         
         if (file_exists($cache)) {
             $fh = fopen($cache, 'rb');
-            $locations = json_decode(fread($fh, filesize($cache)));
+            $locations = json_decode(fread($fh, filesize($cache)), true);
             fclose($fh);
         } else {
             $query = $this->legacyConnection->executeQuery("
-                SELECT derived.location from
-                    (SELECT city as location FROM bf_listing
-                    UNION
-                    SELECT community  as location from bf_listing 
-                    UNION
-                    SELECT sub_community as location from bf_listing
-                    UNION
-                    select tower as location from bf_listing) derived
-                where derived.location is not null");
+                SELECT derived.location, derived.listing_category from
+                      (SELECT city as location, listing_category FROM bf_listing 
+                      UNION
+                      SELECT community  as location, listing_category from bf_listing
+                      UNION
+                      SELECT sub_community as location, listing_category from bf_listing
+                      UNION
+                      select tower as location, listing_category from bf_listing) derived
+                WHERE derived.location is not null
+                AND derived.listing_category is not null
+                ORDER BY derived.listing_category, derived.location"
+            );
 
             $data = $query->fetchAll();
             $locations = $this->hydrate($data);
@@ -81,13 +98,34 @@ class LocationManager
     }
 
     public function hydrate($data) {
-        $locations = array();
+        $location = array();
         
-        foreach ($data as $value) {
-            $locations[] = $value['location'];
-        }
+        $commercial = array();
+        $residential = array();
 
-        return $locations;
+        foreach ($data as $detail) {
+            if ($detail['listing_category'] == 'Commercial') {
+                $commercial[] = $detail['location'];
+            }
+            if ($detail['listing_category'] == 'Residential') {
+                $residential[] = $detail['location'];
+            }
+        }
+         $location = array('Commercial' => $commercial, 'Residential' => $residential);
+        
+        
+        return $location;
+    }
+
+    public function rank($locationArray, $search) {
+        $rank = null;
+        foreach ($locationArray as $location) {
+            $position = strpos(strtolower($location), $search);
+            $rank[$location][] = $position;
+        }
+        asort($rank);
+        
+        return array_keys($rank);
     }
 
 }

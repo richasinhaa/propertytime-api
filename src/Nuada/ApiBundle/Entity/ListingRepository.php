@@ -35,10 +35,10 @@ class ListingRepository extends EntityRepository
      *
      * @return array
      */
-    public function retrieveAll($id = null, $limit = null, $offset = null, $withDeleted = false, $city = null, 
-        $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, $minBed = null, 
-        $maxBed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, $furnishing = null, 
-        $agentId = null, $sortOn = null, $reverse = false)
+    public function retrieveAll($id = null, $limit = null, $offset = null, $withDeleted = false, $search = null,
+        $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
+        $minBed = null, $maxBed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
+        $furnishing = null, $agentId = null, $sortOn = null, $reverse = false)
     {
     	if (!is_null($id)) {
         	return $this->find($id);
@@ -47,10 +47,16 @@ class ListingRepository extends EntityRepository
         $qb = $this->createQueryBuilder('e');
 
 
-        if (!$withDeleted) {
-            $qb = $qb->andWhere('e.deleted = false');
-        }
         
+
+        if (!is_null($search)) {
+            $qb = $qb->orWhere('e.city = :search')
+                     ->orWhere('e.community = :search')
+                     ->orWhere('e.subCommunity = :search')
+                     ->orWhere('e.tower = :search')
+                     ->setParameter('search', $search);
+        }
+
         if (!is_null($city)) {
             $qb = $qb->andWhere('e.city = :city')
                      ->setParameter('city', $city);

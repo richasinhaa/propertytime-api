@@ -29,10 +29,7 @@ class ListingsController extends Controller
         $requestParams = $this->getRequest()->request->all();
 
         $listingManager = $this->get('nuada_api.listing_manager');
-        $properties = $listingManager->load(
-            $requestParams,
-            $sortOn,
-            $reverse);
+        $properties = $listingManager->load($requestParams);
 
         if (null === $properties) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
