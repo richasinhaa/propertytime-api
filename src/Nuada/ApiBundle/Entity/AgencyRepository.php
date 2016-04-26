@@ -40,6 +40,10 @@ class AgencyRepository extends EntityRepository
 
         $qb = $this->createQueryBuilder('e');
 
+        if (!is_null($id)) {
+            $qb = $qb->andWhere('e.id = :id')
+                ->setParameter('id', $id);
+        }
 
         if (!$withDeleted) {
             $qb = $qb->andWhere('e.deleted = false');

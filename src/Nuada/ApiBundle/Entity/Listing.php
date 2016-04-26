@@ -53,14 +53,7 @@ class Listing
      *
      * @ORM\Column(name="company_id", type="integer")
      */
-    protected $companyId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="company_name", type="text")
-     */
-    protected $companyName;
+    protected $agencyId;
 
     /**
      * @var string
@@ -368,6 +361,8 @@ class Listing
      */
     protected $deleted;
 
+    protected $agency;
+
 
     /**
      * Get id
@@ -460,43 +455,23 @@ class Listing
     }
 
     /**
-     * Set companyId
+     * Set agencyId
      *
-     * @param integer $companyId
+     * @param integer $agencyId
      */
-    public function setCompanyId($companyId)
+    public function setAgencyId($agencyId)
     {
-        $this->companyId = $companyId;
+        $this->agencyId = $agencyId;
     }
 
     /**
-     * Get companyId
+     * Get agencyId
      *
      * @return string 
      */
-    public function getCompanyId()
+    public function getAgencyId()
     {
-        return $this->companyId;
-    }
-
-    /**
-     * Set companyName
-     *
-     * @param string $companyName
-     */
-    public function setCompanyName($companyName)
-    {
-        $this->companyName = $companyName;
-    }
-
-    /**
-     * Get companyName
-     *
-     * @return string 
-     */
-    public function getCompanyName()
-    {
-        return $this->companyName;
+        return $this->agencyId;
     }
 
     /**
@@ -1380,6 +1355,26 @@ class Listing
     }
 
     /**
+     * Set agency
+     *
+     * @param Agency $agency
+     */
+    public function setAgency($agency)
+    {
+        $this->agency = $agency;
+    }
+
+    /**
+     * Get agency
+     *
+     * @return Agency 
+     */
+    public function getAgency()
+    {
+        return $this->agency;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1392,8 +1387,8 @@ class Listing
             'agent_name'           => $this->getAgentName(),
             'agent_email'          => $this->getAgentEmail(),
             'agent_phone'          => $this->getAgentPhone(),
-            'company_id'           => $this->getCompanyId(),
-            'comapny_name'         => $this->getCompanyName(),
+            'agency_id'            => $this->getAgencyId(),
+            'agency'               => $this->getAgency(),
             'reference'            => $this->getReference(),
             'city'                 => $this->getCity(),
             'community'            => $this->getCommunity(),
@@ -1437,7 +1432,7 @@ class Listing
             'created_by'           => $this->getCreatedBy(),
             'modified_by'          => $this->getModifiedBy(),
             'deleted_by'           => $this->getDeletedBy(),
-            'deleted'              => $this->getDeleted(),
+            'deleted'              => $this->getDeleted()
         );
 
         return $data;
