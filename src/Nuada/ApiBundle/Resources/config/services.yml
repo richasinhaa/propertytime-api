@@ -15,6 +15,7 @@ services:
         - @security.context
         - @validator
         - @nuada_api.photo_manager
+        - @nuada_api.agent_manager
 
       nuada_api.location_manager:
         class: Nuada\ApiBundle\Manager\LocationManager
@@ -27,6 +28,13 @@ services:
 
       nuada_api.photo_manager:
         class: Nuada\ApiBundle\Manager\PhotoManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
+
+      nuada_api.agent_manager:
+        class: Nuada\ApiBundle\Manager\AgentManager
         arguments:
         - @doctrine
         - @security.context

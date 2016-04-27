@@ -10,21 +10,21 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 
 /**
- * Agencies Controller
+ * Agents Controller
  *
- * @Route("/agencies")
+ * @Route("/agents")
  */
-class AgenciesController extends Controller
+class AgentsController extends Controller
 {
 
     /**
-     * Get agencies
+     * Get agents
      *
      * @Method({"GET"})
      *
      * @return array
      */
-    public function getAgenciesAction()
+    public function getAgentsAction()
     {
         $request = $this->get('request');
         $id = $request->query->get('id', null);
@@ -33,37 +33,33 @@ class AgenciesController extends Controller
         $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
         $name = $request->query->get('name', null);
         $userId = $request->query->get('user_id', null);
-        $userName = $request->query->get('user_name', null);
+        $agencyId = $request->query->get('agency_id', null);
         $sortOn = $request->query->get('sort_on', null);
         $reverse = $request->query->get('reverse', false);
-        $withPhotos = strtolower($request->get('with_deleted', 'true')) == 'true';
-        $withAgents = strtolower($request->get('with_agents', 'false')) == 'true';
 
-        $agencyManager = $this->get('nuada_api.agency_manager');
-        $agencies = $agencyManager->load(
+        $agentManager = $this->get('nuada_api.agent_manager');
+        $agents = $agentManager->load(
             $id,
             $limit,
             $offset,
             $withDeleted,
             $name,
             $userId,
-            $userName,
+            $agencyId,
             $sortOn,
-            $reverse,
-            $withPhotos,
-            $withAgents);
+            $reverse);
 
-        $agencyCount = $agencyManager->getCount(
+        $agentCount = $agentManager->getCount(
             $id,
             $withDeleted,
             $name,
             $userId,
-            $userName);
+            $agencyId);
 
-        if (null === $agencies) {
+        if (null === $agents) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } else {
-            return View::create(array('agencies' => $agencies, 'count' => $agencyCount), Codes::HTTP_OK);
+            return View::create(array('agents' => $agents, 'count' => $agentCount), Codes::HTTP_OK);
         }
     }
 }

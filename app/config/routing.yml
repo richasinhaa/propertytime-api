@@ -18,3 +18,8 @@ photos:
     prefix: /api
     type:  rest
 
+agents:
+    resource: Nuada\ApiBundle\Controller\AgentsController
+    prefix: /api
+    type:  rest
+

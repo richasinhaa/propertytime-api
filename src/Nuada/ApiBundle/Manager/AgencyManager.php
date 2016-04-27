@@ -19,12 +19,14 @@ class AgencyManager
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
                                 ValidatorInterface $validator,
-                                PhotoManager $photoManager)
+                                PhotoManager $photoManager,
+                                AgentManager $agentManager)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
         $this->photoManager = $photoManager;
+        $this->agentManager = $agentManager;
     }
 
     public function load($id = null,
@@ -36,7 +38,8 @@ class AgencyManager
             $userName = null,
             $sortOn = null,
             $reverse = false,
-            $withPhotos=true)
+            $withPhotos=true,
+            $withAgents=false)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
 
@@ -54,8 +57,9 @@ class AgencyManager
             $sortOn,
             $reverse);
 
-        //with photos
+        
         if (!is_null($agencies)) {
+            //with photos
             if ($withPhotos) {
                 if (is_array($agencies)) {
                     foreach ($agencies as $agency) {
@@ -75,6 +79,38 @@ class AgencyManager
                         $agencyId
                     );
                     $agencies->setPhotos($photos);
+
+                }
+            }
+
+            //with agents
+            if ($withAgents) {
+                if (is_array($agencies)) {
+                    foreach ($agencies as $agency) {
+                        $agencyId = $agency->getId();
+                        $agents = $this->agentManager->load(
+                            null, //$id
+                            null, //$limit
+                            null, //$offset
+                            null, //$withDeleted
+                            null, //$name
+                            null, //$userId
+                            $agencyId
+                        );
+                        $agency->setAgents($agents);
+                    }
+                } else {
+                    $agencyId = $agencies->getId();
+                    $agents = $this->agentManager->load(
+                            null, //$id
+                            null, //$limit
+                            null, //$offset
+                            null, //$withDeleted
+                            null, //$name
+                            null, //$userId
+                            $agencyId
+                    );
+                    $agencies->setAgents($agents);
 
                 }
             }
