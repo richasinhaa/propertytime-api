@@ -14,13 +14,6 @@ services:
         - @security.context
         - @validator
 
-      nuada_api.listing_detail_manager:
-        class: Nuada\ApiBundle\Manager\AgencyManager
-        arguments:
-        - @doctrine
-        - @security.context
-        - @validator
-
       nuada_api.location_manager:
         class: Nuada\ApiBundle\Manager\LocationManager
         arguments:

@@ -8,11 +8,6 @@ agencies:
     prefix: /api
     type:  rest
 
-listing_details:
-    resource: Nuada\ApiBundle\Controller\ListingdetailsController
-    prefix: /api
-    type:  rest
-
 locations:
     resource: Nuada\ApiBundle\Controller\LocationsController
     prefix: /api
