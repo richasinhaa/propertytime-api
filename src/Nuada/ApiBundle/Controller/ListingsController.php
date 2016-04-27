@@ -54,7 +54,8 @@ class ListingsController extends Controller
         
 
         $listingManager = $this->get('nuada_api.listing_manager');
-        $properties = $listingManager->load($id,
+        $properties = $listingManager->load(
+            $id,
             $limit,
             $offset,
             $withDeleted,
@@ -76,7 +77,8 @@ class ListingsController extends Controller
             $sortOn,
             $reverse);
 
-        $propertyCount = $listingManager->getCount($id,
+        $propertyCount = $listingManager->getCount(
+            $id,
             $withDeleted,
             $search,
             $city,

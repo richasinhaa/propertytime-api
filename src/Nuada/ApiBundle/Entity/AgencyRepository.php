@@ -18,26 +18,25 @@ class AgencyRepository extends EntityRepository
      * @param integer $limit       - Limit
      * @param integer $offset      - Offset
      * @param boolean $withDeleted - With deleted listing
-     * @param integer $name        - Name
+     * @param string $name         - Name
      * @param integer $userId      - User Id
-     * @param integer $userName    - User name
+     * @param string $userName     - User name
+     * @param string sortOn        - Sort On
+     * @param boolean $reverse     - Reverse
      *
      * @return array
      */
-    public function retrieveAll($id = null,
+    public function retrieveAll(
+            $id = null,
             $limit = null,
             $offset = null,
-            $withDeleted = null,
+            $withDeleted = false,
             $name = null,
             $userId = null,
             $userName = null,
             $sortOn = null,
             $reverse = false)
     {
-    	if (!is_null($id)) {
-        	return $this->find($id);
-        }
-
         $qb = $this->createQueryBuilder('e');
 
         if (!is_null($id)) {
@@ -59,7 +58,7 @@ class AgencyRepository extends EntityRepository
                      ->setParameter('userId', $userId);
         }
 
-        if (!is_null($category)) {
+        if (!is_null($userName)) {
             $qb = $qb->andWhere('e.userName = :userName')
                      ->setParameter('userName', $userName);
         }
@@ -103,5 +102,55 @@ class AgencyRepository extends EntityRepository
         }
 
         return $sort;
+    }
+
+    /**
+     * Retrieve All
+     *
+     * @param integer $id          - Listing Id
+     * @param boolean $withDeleted - With deleted listing
+     * @param string $name         - Name
+     * @param integer $userId      - User Id
+     * @param string $userName     - User name
+     *
+     * @return array
+     */
+    public function fetchCount(
+        $id = null,
+        $withDeleted = false,
+        $name = null,
+        $userId = null,
+        $userName = null)
+    {
+        $qb = $this->createQueryBuilder('e')
+                    ->select('count(e)');
+
+        if (!is_null($id)) {
+            $qb = $qb->andWhere('e.id = :id')
+                ->setParameter('id', $id);
+        }
+
+        if (!$withDeleted) {
+            $qb = $qb->andWhere('e.deleted = false');
+        }
+
+        if (!is_null($name)) {
+            $qb = $qb->andWhere('e.name = :name')
+                ->setParameter('name', $name);
+        }
+
+        if (!is_null($userId)) {
+            $qb = $qb->andWhere('e.userId = :userId')
+                ->setParameter('userId', $userId);
+        }
+
+        if (!is_null($userName)) {
+            $qb = $qb->andWhere('e.userName = :userName')
+                ->setParameter('userName', $userName);
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
     }
 }

@@ -54,4 +54,24 @@ class AgencyManager
 
     }
 
+    public function getCount(
+                         $id = null,
+                         $withDeleted = false,
+                         $name = null,
+                         $userId = null,
+                         $userName = null)
+    {
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
+
+        $count = $er->fetchCount(
+            $id,
+            $withDeleted,
+            $name,
+            $userId,
+            $userName);
+
+        return $count;
+
+    }
+
 }

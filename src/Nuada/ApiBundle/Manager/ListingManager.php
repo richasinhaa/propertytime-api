@@ -31,7 +31,7 @@ class ListingManager
             $id = null,
             $limit = null,
             $offset = null,
-            $withDeleted = null,
+            $withDeleted = false,
             $search = null,
             $city = null,
             $community = null,
@@ -101,7 +101,7 @@ class ListingManager
 
     public function getCount(
             $id = null,
-            $withDeleted = null,
+            $withDeleted = false,
             $search = null,
             $city = null,
             $community = null,

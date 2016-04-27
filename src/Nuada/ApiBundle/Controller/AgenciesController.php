@@ -49,10 +49,17 @@ class AgenciesController extends Controller
             $sortOn,
             $reverse);
 
+        $agencyCount = $agencyManager->getCount(
+            $id,
+            $withDeleted,
+            $name,
+            $userId,
+            $userName);
+
         if (null === $agencies) {
             return View::create(null, Codes::HTTP_NOT_FOUND);
         } else {
-            return View::create(array('agencies' => $agencies), Codes::HTTP_OK);
+            return View::create(array('agencies' => $agencies, 'count' => $agencyCount), Codes::HTTP_OK);
         }
     }
 }
