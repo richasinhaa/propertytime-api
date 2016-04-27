@@ -29,3 +29,10 @@ services:
         - @validator
         - @doctrine.dbal.default_connection
         - @service_container
+
+      nuada_api.photo_manager:
+        class: Nuada\ApiBundle\Manager\PhotoManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator

@@ -18,3 +18,8 @@ locations:
     prefix: /api
     type:  rest
 
+photos:
+    resource: Nuada\ApiBundle\Controller\PhotosController
+    prefix: /api
+    type:  rest
+
