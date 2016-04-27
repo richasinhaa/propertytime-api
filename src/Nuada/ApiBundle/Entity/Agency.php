@@ -107,13 +107,6 @@ class Agency
     /**
      * @var string
      *
-     * @ORM\Column(name="photo", type="text")
-     */
-    protected $photo;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="type_of_feeds", type="text")
      */
     protected $typeOfFeeds;
@@ -530,26 +523,6 @@ class Agency
     public function getLogo()
     {
         return $this->logo;
-    }
-
-    /**
-     * Set photo
-     *
-     * @param string $photo
-     */
-    public function setPhoto($photo)
-    {
-        $this->photo = $photo;
-    }
-
-    /**
-     * Get photo
-     *
-     * @return string 
-     */
-    public function getPhoto()
-    {
-        return $this->photo;
     }
 
     /**
@@ -1073,7 +1046,6 @@ class Agency
             'phone2'                 => $this->getPhone2(),
             'fax'                    => $this->getFax(),
             'logo'                   => $this->getLogo(),
-            'photo'                  => $this->getPhoto(),
             'type_of_feeds'          => $this->getTypeOfFeeds(),
             'master_key_feeds_url'   => $this->getMasterKeyFeedsUrl(),
             'master_key_access_code' => $this->getMasterKeyAccessCode(),

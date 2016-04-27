@@ -182,12 +182,6 @@ class Listing
 
     /**
      * @var string
-     * @ORM\Column(name="images", type="text")
-     */
-    protected $images;
-
-    /**
-     * @var string
      *
      * @ORM\Column(name="longitude", type="text")
      */
@@ -220,13 +214,6 @@ class Listing
      * @ORM\Column(name="description", type="text")
      */
     protected $description;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="cdn_images", type="text")
-     */
-    protected $cdnImages;
 
     /**
      * @var boolean
@@ -837,26 +824,6 @@ class Listing
     }
 
     /**
-     * Set images
-     *
-     * @param string $images
-     */
-    public function setImages($images)
-    {
-        $this->images = $images;
-    }
-
-    /**
-     * Get images
-     *
-     * @return string 
-     */
-    public function getImages()
-    {
-        return $this->images;
-    }
-
-    /**
      * Set longitude
      *
      * @param string $longitude
@@ -954,26 +921,6 @@ class Listing
     public function getDescription()
     {
         return $this->description;
-    }
-
-    /**
-     * Set cdnImages
-     *
-     * @param string $cdnImages
-     */
-    public function setCdnImages($cdnImages)
-    {
-        $this->cdnImages = $cdnImages;
-    }
-
-    /**
-     * Get cdnImages
-     *
-     * @return string 
-     */
-    public function getCdnImages()
-    {
-        return $this->cdnImages;
     }
 
     /**
@@ -1429,13 +1376,11 @@ class Listing
             'address'              => $this->getAddress(),
             'bedroom'              => $this->getBedroom(),
             'bathroom'             => $this->getBathroom(),
-            'images'               => $this->getImages(),
             'longitude'            => $this->getLongitude(),
             'latitude'             => $this->getLatitude(),
             'from_feed'            => $this->getFromFeed(),
             'title'                => $this->getTitle(),
             'description'          => $this->getDescription(),
-            'cdn_images'           => $this->getCdnImages(),
             'is_cdn'               => $this->getIsCdn(),
             'client_id'            => $this->getClientId(),
             'hot_listing'          => $this->getHotListing(),
