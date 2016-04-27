@@ -73,13 +73,13 @@ class LocationManager
         } else {
             $query = $this->legacyConnection->executeQuery("
                 SELECT derived.location, derived.listing_category from
-                      (SELECT city as location, listing_category FROM bf_listing 
+                      (SELECT DISTINCT city as location, listing_category FROM bf_listing 
                       UNION
-                      SELECT community  as location, listing_category from bf_listing
+                      SELECT DISTINCT community  as location, listing_category from bf_listing
                       UNION
-                      SELECT sub_community as location, listing_category from bf_listing
+                      SELECT DISTINCT sub_community as location, listing_category from bf_listing
                       UNION
-                      select tower as location, listing_category from bf_listing) derived
+                      select DISTINCT tower as location, listing_category from bf_listing) derived
                 WHERE derived.location is not null
                 AND derived.listing_category is not null
                 ORDER BY derived.listing_category, derived.location"
