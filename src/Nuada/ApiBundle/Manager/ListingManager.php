@@ -98,7 +98,7 @@ class ListingManager
                         );
                         $property->setPhotos($photos);
                     }
-                } else {var_dump('here');die;
+                } else {
                     $agencyId = $properties->getAgencyId();
                     if (!is_null($agencyId)) {
                         $agency = $this->agencyManager->load($agencyId);

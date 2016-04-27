@@ -14,6 +14,7 @@ services:
         - @doctrine
         - @security.context
         - @validator
+        - @nuada_api.photo_manager
 
       nuada_api.location_manager:
         class: Nuada\ApiBundle\Manager\LocationManager

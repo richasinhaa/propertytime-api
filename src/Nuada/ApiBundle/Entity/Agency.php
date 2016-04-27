@@ -279,6 +279,8 @@ class Agency
      */
     protected $deleted;
 
+    protected $photos;
+
 
     /**
      * Get id
@@ -1031,6 +1033,26 @@ class Agency
     }
 
     /**
+     * Set photos
+     *
+     * @param array $photos
+     */
+    public function setPhotos($photos)
+    {
+        $this->photos = $photos;
+    }
+
+    /**
+     * Get photos
+     *
+     * @return array
+     */
+    public function getPhotos()
+    {
+        return $this->photos;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1078,6 +1100,7 @@ class Agency
             'modified_by'            => $this->getModifiedBy(),
             'deleted_by'             => $this->getDeletedBy(),
             'deleted'                => $this->getDeleted(),
+            'photos'                 => $this->getPhotos()
         );
 
         return $data;

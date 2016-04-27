@@ -11,17 +11,20 @@ class AgencyManager
 {
     protected $doctrine;
     protected $securityContext;
+    protected $photoManager;
 
     const LIMIT = 25;
     const OFFSET = 0;
 
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
-                                ValidatorInterface $validator)
+                                ValidatorInterface $validator,
+                                PhotoManager $photoManager)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
+        $this->photoManager = $photoManager;
     }
 
     public function load($id = null,
@@ -32,7 +35,8 @@ class AgencyManager
             $userId = null,
             $userName = null,
             $sortOn = null,
-            $reverse = false)
+            $reverse = false,
+            $withPhotos=true)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
 
@@ -49,6 +53,32 @@ class AgencyManager
             $userName,
             $sortOn,
             $reverse);
+
+        //with photos
+        if (!is_null($agencies)) {
+            if ($withPhotos) {
+                if (is_array($agencies)) {
+                    foreach ($agencies as $agency) {
+                        $agencyId = $agency->getId();
+                        $photos = $this->photoManager->load(
+                            null, //$id
+                            null, //$listingId
+                            $agencyId
+                        );
+                        $agency->setPhotos($photos);
+                    }
+                } else {
+                    $agencyId = $agencies->getId();
+                    $photos = $this->photoManager->load(
+                        null, //$id
+                        null, //$listingId
+                        $agencyId
+                    );
+                    $agencies->setPhotos($photos);
+
+                }
+            }
+        }
 
         return $agencies;
 

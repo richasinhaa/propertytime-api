@@ -37,12 +37,11 @@ class AgencyRepository extends EntityRepository
             $sortOn = null,
             $reverse = false)
     {
-        $qb = $this->createQueryBuilder('e');
-
         if (!is_null($id)) {
-            $qb = $qb->andWhere('e.id = :id')
-                ->setParameter('id', $id);
+            return $this->find($id);
         }
+
+        $qb = $this->createQueryBuilder('e');
 
         if (!$withDeleted) {
             $qb = $qb->andWhere('e.deleted = false');
