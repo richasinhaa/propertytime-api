@@ -13,18 +13,21 @@ class ListingManager
     protected $doctrine;
     protected $securityContext;
     protected $agencyManager;
+    protected $photoManager;
 
     
 
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
                                 ValidatorInterface $validator,
-                                AgencyManager $agencyManager)
+                                AgencyManager $agencyManager,
+                                PhotoManager $photoManager)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
         $this->agencyManager = $agencyManager;
+        $this->photoManager = $photoManager;
     }
 
     public function load(
@@ -48,7 +51,9 @@ class ListingManager
             $furnishing = null,
             $agentId = null,
             $sortOn = null,
-            $reverse = null)
+            $reverse = null,
+            $withAgencies=true,
+            $withPhotos=true)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
 
@@ -75,24 +80,77 @@ class ListingManager
             $sortOn,
             $reverse);
 
-        //with agency
+
         if (!is_null($properties)) {
-            if (is_array($properties)) {
-                foreach ($properties as $property) {
-                    $agencyId = $property->getAgencyId();
-                    if (!is_null($agencyId)) {
-                        $agency = $this->agencyManager->load($id);
-                        $property->setAgency($agency);
+            //with agency and with photo
+            if ($withAgencies and $withPhotos) {
+                if (is_array($properties)) {
+                    foreach ($properties as $property) {
+                        $agencyId = $property->getAgencyId();
+                        if (!is_null($agencyId)) {
+                            $agency = $this->agencyManager->load($agencyId);
+                            $property->setAgency($agency);
+                        }
+                        $listingId = $property->getId();
+                        $photos = $this->photoManager->load(
+                            null, //$id
+                            $listingId
+                        );
+                        $property->setPhotos($photos);
                     }
+                } else {var_dump('here');die;
+                    $agencyId = $properties->getAgencyId();
+                    if (!is_null($agencyId)) {
+                        $agency = $this->agencyManager->load($agencyId);
+                        $properties->setAgency($agency);
+                    }
+                    $listingId = $properties->getId();
+                    $photos = $this->photoManager->load(
+                        null, //$id
+                        $listingId
+                    );
+                    $properties->setPhotos($photos);
+
                 }
-            } else {
-                $agencyId = $properties->getAgencyId();
-                if (!is_null($agencyId)) {
-                    $agency = $this->agencyManager->load($agencyId);
-                    $properties->setAgency($agency);
+            } else if ($withAgencies) {
+                if (is_array($properties)) {
+                    foreach ($properties as $property) {
+                        $agencyId = $property->getAgencyId();
+                        if (!is_null($agencyId)) {
+                            $agency = $this->agencyManager->load($agencyId);
+                            $property->setAgency($agency);
+                        }
+                    }
+                } else {
+                    $agencyId = $properties->getAgencyId();
+                    if (!is_null($agencyId)) {
+                        $agency = $this->agencyManager->load($agencyId);
+                        $properties->setAgency($agency);
+                    }
+
                 }
 
+            } else if  ($withPhotos) {
+                if (is_array($properties)) {
+                    foreach ($properties as $property) {
+                        $listingId = $property->getId();
+                        $photos = $this->photoManager->load(
+                            null, //$id
+                            $listingId
+                        );
+                        $property->setPhotos($photos);
+                    }
+                } else {
+                    $listingId = $properties->getId();
+                    $photos = $this->photoManager->load(
+                        null, //$id
+                        $listingId
+                    );
+                    $properties->setPhotos($photos);
+
+                }
             }
+
         }
 
         return $properties;
@@ -139,7 +197,7 @@ class ListingManager
             $furnishing,
             $agentId);
 
-        return $count;
+        return intval($count);
 
     }
 

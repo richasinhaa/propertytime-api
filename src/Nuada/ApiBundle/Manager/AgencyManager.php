@@ -70,7 +70,7 @@ class AgencyManager
             $userId,
             $userName);
 
-        return $count;
+        return intval($count);
 
     }
 

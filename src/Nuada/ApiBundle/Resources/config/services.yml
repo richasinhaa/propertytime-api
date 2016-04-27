@@ -6,6 +6,7 @@ services:
         - @security.context
         - @validator
         - @nuada_api.agency_manager
+        - @nuada_api.photo_manager
 
       nuada_api.agency_manager:
         class: Nuada\ApiBundle\Manager\AgencyManager

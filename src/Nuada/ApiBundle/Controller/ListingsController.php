@@ -51,6 +51,8 @@ class ListingsController extends Controller
         $agentId     = $requestParams['agent_id'] ? $requestParams['agent_id'] : null;
         $sortOn      = $requestParams['sort_on'] ? $requestParams['sort_on'] : null;
         $reverse     = $requestParams['reverse'] ? $requestParams['reverse'] : false;
+        $withAgencies= $requestParams['with_agencies'] ? $requestParams['with_agencies'] : true;
+        $withPhotos  = $requestParams['with_photos'] ? $requestParams['with_photos'] : true;
         
 
         $listingManager = $this->get('nuada_api.listing_manager');
@@ -75,7 +77,9 @@ class ListingsController extends Controller
             $furnishing,
             $agentId,
             $sortOn,
-            $reverse);
+            $reverse,
+            $withAgencies,
+            $withPhotos);
 
         $propertyCount = $listingManager->getCount(
             $id,

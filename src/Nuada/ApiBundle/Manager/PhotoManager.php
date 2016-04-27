@@ -72,7 +72,7 @@ class PhotoManager
             $agencyId,
             $withDeleted);
 
-        return $count;
+        return intval($count);
 
     }
 
