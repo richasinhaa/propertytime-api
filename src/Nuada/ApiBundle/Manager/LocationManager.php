@@ -36,9 +36,10 @@ class LocationManager
         }
         
         $searchResult = array();
+        $search = strtolower($search);
         
         foreach ($allLocations['Commercial'] as $commercialDetail) {
-            if(strpos(strtolower($commercialDetail), strtolower($search)) !== false) {
+            if(strpos(strtolower($commercialDetail), $search) !== false) {
                 $searchResult['Commercial'][] = $commercialDetail;
             }
         }
