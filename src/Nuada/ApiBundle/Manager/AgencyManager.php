@@ -29,7 +29,8 @@ class AgencyManager
         $this->agentManager = $agentManager;
     }
 
-    public function load($id = null,
+    public function load(
+            $id = null,
             $limit = null,
             $offset = null,
             $withDeleted = null,
@@ -59,6 +60,7 @@ class AgencyManager
 
         
         if (!is_null($agencies)) {
+            
             //with photos
             if ($withPhotos) {
                 if (is_array($agencies)) {

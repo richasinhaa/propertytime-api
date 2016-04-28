@@ -276,6 +276,8 @@ class Agency
 
     protected $agents;
 
+    protected $listings;
+
 
     /**
      * Get id
@@ -1048,6 +1050,26 @@ class Agency
     }
 
     /**
+     * Set listings
+     *
+     * @param array $listings
+     */
+    public function setListings($listings)
+    {
+        $this->listings = $listings;
+    }
+
+    /**
+     * Get listings
+     *
+     * @return listings
+     */
+    public function getListings()
+    {
+        return $this->listings;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1097,6 +1119,10 @@ class Agency
             'photos'                 => $this->getPhotos(),
             'agents'                 => $this->getAgents()
         );
+
+        if (!empty($listings)) {
+            $data['listings'] = $listings;
+        }
 
         return $data;
     }

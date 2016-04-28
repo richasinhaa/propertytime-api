@@ -6,7 +6,7 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
- * nl_listing_detail_table
+ * create nl_listing_detail_table and add index
  */
 class Version20160422081831 extends AbstractMigration
 {
@@ -30,6 +30,10 @@ class Version20160422081831 extends AbstractMigration
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
 
+       $this->addSql("ALTER TABLE bf_company ADD INDEX IDX_16AE178YJ67KJ45Y (name)");
+       $this->addSql("ALTER TABLE bf_company ADD INDEX IDX_16AE121J87RT78TY (user_name)");
+       $this->addSql("ALTER TABLE bf_company ADD INDEX IDX_16AE786H34YT87UY (email)");
+
     }
 
     /**
@@ -38,6 +42,9 @@ class Version20160422081831 extends AbstractMigration
     public function down(Schema $schema)
     {
        $this->addSql("DROP TABLE nl_photos"); 
+       $this->addSql("ALTER TABLE bf_company DROP INDEX IDX_16AE178YJ67KJ45Y");
+       $this->addSql("ALTER TABLE bf_company DROP INDEX IDX_16AE121J87RT78TY");
+       $this->addSql("ALTER TABLE bf_company DROP INDEX IDX_16AE786H34YT87UY");
 
     }
 }
