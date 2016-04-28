@@ -23,3 +23,5 @@ agents:
     prefix: /api
     type:  rest
 
+_user_bundle:
+    resource: "@UserBundle/Resources/config/routing.yml"
