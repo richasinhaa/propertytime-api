@@ -39,3 +39,10 @@ services:
         - @doctrine
         - @security.context
         - @validator
+
+      nuada_api.summary_manager:
+        class: Nuada\ApiBundle\Manager\SummaryManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
