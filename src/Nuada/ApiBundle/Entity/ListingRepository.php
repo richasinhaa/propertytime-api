@@ -24,8 +24,7 @@ class ListingRepository extends EntityRepository
      * @param boolean $subcategory - Sub category
      * @param integer $type        - Type
      * @param integer $agencyId    - Agency Id
-     * @param integer $minBed      - Min Bed
-     * @param boolean $maxBed      - Max Bed
+     * @param integer $bed         - bed
      * @param integer $minPrice    - Min Price
      * @param integer $maxPrice    - Max Price
      * @param integer $minArea     - Min Area
@@ -37,7 +36,7 @@ class ListingRepository extends EntityRepository
      */
     public function retrieveAll($id = null, $limit = null, $offset = null, $withDeleted = false, $search = null,
         $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
-        $minBed = null, $maxBed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
+        $bed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
         $furnishing = null, $agentId = null, $sortOn = null, $reverse = false)
     {
     	if (!is_null($id)) {
@@ -71,20 +70,16 @@ class ListingRepository extends EntityRepository
                      ->setParameter('subcategory', $subcategory);
         }
         if (!is_null($type)) {
-            $qb = $qb->andWhere('e.listingType = :type')
+            $qb = $qb->andWhere('e.listingType in (:type)')
                      ->setParameter('type', $type);
         }
         if (!is_null($agencyId)) {
              $qb = $qb->andWhere('e.companyId = :agencyId')
                       ->setParameter('agencyId', $agencyId);
         }
-        if (!is_null($minBed)) {
-            $qb = $qb->andWhere('e.bedroom >= :minBed')
-                     ->setParameter('minBed', $minBed);
-        }
-        if (!is_null($maxBed)) {
-            $qb = $qb->andWhere('e.bedroom <= :maxBed')
-                     ->setParameter('maxBed', $maxBed);
+        if (!is_null($bed)) {
+            $qb = $qb->andWhere('e.bedroom in (:bed)')
+                     ->setParameter('bed', $bed);
         }
         if (!is_null($minPrice)) {
             $qb = $qb->andWhere('e.price >= :minPrice')
@@ -139,8 +134,7 @@ class ListingRepository extends EntityRepository
      * @param boolean $subcategory - Sub category
      * @param integer $type        - Type
      * @param integer $agencyId    - Agency Id
-     * @param integer $minBed      - Min Bed
-     * @param boolean $maxBed      - Max Bed
+     * @param integer $bed         - Bed
      * @param integer $minPrice    - Min Price
      * @param integer $maxPrice    - Max Price
      * @param integer $minArea     - Min Area
@@ -152,7 +146,7 @@ class ListingRepository extends EntityRepository
      */
     public function fetchCount($id = null, $withDeleted = false, $search = null,
         $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
-        $minBed = null, $maxBed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
+        $bed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
         $furnishing = null, $agentId = null)
     {
         $qb = $this->createQueryBuilder('e')
@@ -170,7 +164,7 @@ class ListingRepository extends EntityRepository
                      ->orWhere('e.tower = :search')
                      ->setParameter('search', $search);
         }
-
+        
         if (!is_null($city)) {
             $qb = $qb->andWhere('e.city = :city')
                      ->setParameter('city', $city);
@@ -188,20 +182,16 @@ class ListingRepository extends EntityRepository
                      ->setParameter('subcategory', $subcategory);
         }
         if (!is_null($type)) {
-            $qb = $qb->andWhere('e.listingType = :type')
+            $qb = $qb->andWhere('e.listingType in (:type)')
                      ->setParameter('type', $type);
         }
         if (!is_null($agencyId)) {
              $qb = $qb->andWhere('e.companyId = :agencyId')
                       ->setParameter('agencyId', $agencyId);
         }
-        if (!is_null($minBed)) {
-            $qb = $qb->andWhere('e.bedroom >= :minBed')
-                     ->setParameter('minBed', $minBed);
-        }
-        if (!is_null($maxBed)) {
-            $qb = $qb->andWhere('e.bedroom <= :maxBed')
-                     ->setParameter('maxBed', $maxBed);
+        if (!is_null($bed)) {
+            $qb = $qb->andWhere('e.bedroom in  (:bed)')
+                     ->setParameter('bed', $bed);
         }
         if (!is_null($minPrice)) {
             $qb = $qb->andWhere('e.price >= :minPrice')

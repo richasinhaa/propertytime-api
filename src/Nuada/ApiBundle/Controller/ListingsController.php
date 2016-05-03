@@ -41,8 +41,7 @@ class ListingsController extends Controller
         $subcategory = $requestParams['sub_category'] ? $requestParams['sub_category'] : null;
         $type        = $requestParams['type'] ? $requestParams['type'] : null;
         $agencyId    = $requestParams['agency_id'] ? $requestParams['agency_id'] : null;
-        $minBed      = $requestParams['min_bed'] ? $requestParams['min_bed'] : null;
-        $maxBed      = $requestParams['max_bed'] ? $requestParams['max_bed'] : null;
+        $bed         = $requestParams['bedroom'] ? $requestParams['bedroom'] : null;
         $minPrice    = $requestParams['min_price'] ? $requestParams['min_price'] : null;
         $maxPrice    = $requestParams['max_price'] ? $requestParams['max_price'] : null;
         $minArea     = $requestParams['min_area'] ? $requestParams['min_area'] : null;
@@ -54,6 +53,12 @@ class ListingsController extends Controller
         $withAgencies= $requestParams['with_agencies'] ? $requestParams['with_agencies'] : true;
         $withPhotos  = $requestParams['with_photos'] ? $requestParams['with_photos'] : true;
         
+        if ($bed) {
+            $bed = explode(',', $bed);
+        }
+        if ($type) {
+            $type = explode(',', $type);
+        }
 
         $listingManager = $this->get('nuada_api.listing_manager');
         $properties = $listingManager->load(
@@ -68,8 +73,7 @@ class ListingsController extends Controller
             $subcategory,
             $type,
             $agencyId,
-            $minBed,
-            $maxBed,
+            $bed,
             $minPrice,
             $maxPrice,
             $minArea,
@@ -91,8 +95,7 @@ class ListingsController extends Controller
             $subcategory,
             $type,
             $agencyId,
-            $minBed,
-            $maxBed,
+            $bed,
             $minPrice,
             $maxPrice,
             $minArea,
