@@ -53,3 +53,10 @@ services:
         - @doctrine
         - @security.context
         - @validator
+
+      nuada_api.listing_detail_manager:
+        class: Nuada\ApiBundle\Manager\ListingDetailManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
