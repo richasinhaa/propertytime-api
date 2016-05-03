@@ -46,3 +46,10 @@ services:
         - @doctrine
         - @security.context
         - @validator
+
+      nuada_api.neighbourhood_metric_manager:
+        class: Nuada\ApiBundle\Manager\NeighbourhoodMetricManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator

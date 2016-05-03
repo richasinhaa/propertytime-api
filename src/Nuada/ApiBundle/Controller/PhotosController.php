@@ -59,9 +59,9 @@ class PhotosController extends Controller
         }
 
         if (null === $photos) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else {
-            return View::create(array('photos' => $photos, 'count' => $photoCount), Codes::HTTP_OK);
+            $photos = array();
         }
+        
+        return View::create(array('photos' => $photos, 'count' => $photoCount), Codes::HTTP_OK);
     }
 }

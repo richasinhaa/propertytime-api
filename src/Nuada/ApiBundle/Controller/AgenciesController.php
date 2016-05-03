@@ -61,9 +61,9 @@ class AgenciesController extends Controller
             $userName);
 
         if (null === $agencies) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else {
-            return View::create(array('agencies' => $agencies, 'count' => $agencyCount), Codes::HTTP_OK);
+            $agencies = array();
         }
+        
+        return View::create(array('agencies' => $agencies, 'count' => $agencyCount), Codes::HTTP_OK);
     }
 }

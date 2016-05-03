@@ -101,9 +101,9 @@ class ListingsController extends Controller
             $agentId);
         
         if (null === $properties) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else {
-            return View::create(array('properties' => $properties, 'count' => $propertyCount), Codes::HTTP_OK);
+            $properties = array();
         }
+        
+        return View::create(array('properties' => $properties, 'count' => $propertyCount), Codes::HTTP_OK);
     }
 }

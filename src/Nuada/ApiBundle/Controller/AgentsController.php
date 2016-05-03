@@ -57,9 +57,9 @@ class AgentsController extends Controller
             $agencyId);
 
         if (null === $agents) {
-            return View::create(null, Codes::HTTP_NOT_FOUND);
-        } else {
-            return View::create(array('agents' => $agents, 'count' => $agentCount), Codes::HTTP_OK);
+            $agents = array();
         }
+        
+        return View::create(array('agents' => $agents, 'count' => $agentCount), Codes::HTTP_OK);
     }
 }
