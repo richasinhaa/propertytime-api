@@ -3,15 +3,19 @@
 namespace Nuada\ApiBundle\Manager;
 
 use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
+use Nuada\ApiBundle\Entity\BadAttributeException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Finder\Finder;
+use Doctrine\DBAL\Connection;
+use Nuada\ApiBundle\Entity\Agency;
 
 class AgencyManager
 {
     protected $doctrine;
     protected $securityContext;
     protected $photoManager;
+    protected $legacyConnection;
 
     const LIMIT = 25;
     const OFFSET = 0;
@@ -20,13 +24,15 @@ class AgencyManager
                                 SecurityContextInterface $securityContext,
                                 ValidatorInterface $validator,
                                 PhotoManager $photoManager,
-                                AgentManager $agentManager)
+                                AgentManager $agentManager,
+                                Connection $legacyConnection)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
         $this->photoManager = $photoManager;
         $this->agentManager = $agentManager;
+        $this->legacyConnection = $legacyConnection;
     }
 
     public function load(
@@ -140,6 +146,68 @@ class AgencyManager
 
         return intval($count);
 
+    }
+
+    public function loadForNeighbourhood ($neighbourhood=null, $agencyCount=null)
+    {
+        if (is_null($neighbourhood) || is_null($agencyCount)) {
+            throw new BadAttributeException('neighbourhood or count cant be null in request');
+        }
+
+        if (strcasecmp($neighbourhood, 'Dubai') == 0) {
+            $query = $this->legacyConnection->executeQuery('
+                SELECT a.*  from bf_company a 
+                LEFT JOIN nl_agency_neighbourhood an
+                ON an.agency_id = a.id
+                LEFT JOIN nl_neighbourhood n
+                ON an.neighbourhood_id = n.id
+                order by a.score DESC',
+                array("$neighbourhood"));
+        } else {
+            $query = $this->legacyConnection->executeQuery('
+                SELECT a.*  from bf_company a 
+                LEFT JOIN nl_agency_neighbourhood an
+                ON an.agency_id = a.id
+                LEFT JOIN nl_neighbourhood n
+                ON an.neighbourhood_id = n.id
+                where n.name = ?
+                order by a.score DESC',
+                array("$neighbourhood"));
+        }
+
+
+
+        $data = $query->fetchAll();
+        $agencies = array_slice($data, 0, $agencyCount);
+
+        $hydratedAgencies = $this->hydrate($agencies);
+
+        return $hydratedAgencies;
+    }
+
+    public function hydrate($agencies) {
+        $hydratedAgencies = array();
+
+        if ($agencies == null) {
+            return null;
+        }
+
+        foreach($agencies as $agency) {
+            $hydratedAgency = new Agency();
+            $hydratedAgency->setId($agency['id']);
+            $hydratedAgency->setName($agency['name']);
+            $hydratedAgency->setUserId($agency['user_id']);
+            $hydratedAgency->setUserName($agency['user_name']);
+            $hydratedAgency->setEmail($agency['email']);
+            $hydratedAgency->setAddress($agency['address']);
+            $hydratedAgency->setDescription($agency['description']);
+            $hydratedAgency->setScore($agency['score']);
+
+            $hydratedAgencies[] = $hydratedAgency;
+
+        }
+
+        return $hydratedAgencies;
     }
 
 }

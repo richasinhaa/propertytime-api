@@ -66,4 +66,34 @@ class AgenciesController extends Controller
         
         return View::create(array('agencies' => $agencies, 'count' => $agencyCount), Codes::HTTP_OK);
     }
+
+
+    /**
+     * Get top listed agencies for a neighbourhood (data from bf_company, nl_neighbourhood and nl_agency_neighbourhood)
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function getAgenciesTopAction()
+    {
+        $request = $this->get('request');
+        $neighbourhood = $request->query->get('neighbourhood', null);
+        $count = $request->query->get('count', null);
+
+        $agencyManager = $this->get('nuada_api.agency_manager');
+        try {
+            $agencies = $agencyManager->loadForNeighbourhood(
+                $neighbourhood,
+                $count);
+        } catch (BadAttributeException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (null === $agencies) {
+            $agencies = array();
+        }
+
+        return View::create(array('agencies' => $agencies), Codes::HTTP_OK);
+    }
 }

@@ -38,5 +38,10 @@ listingdetails:
     prefix: /api
     type:  rest
 
+neighbourhoods:
+    resource: Nuada\ApiBundle\Controller\NeighbourhoodsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"

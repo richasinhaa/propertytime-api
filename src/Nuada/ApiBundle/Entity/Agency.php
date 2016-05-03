@@ -278,6 +278,13 @@ class Agency
 
     protected $listings;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="score", type="integer")
+     */
+    protected $score;
+
 
     /**
      * Get id
@@ -287,6 +294,16 @@ class Agency
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set id
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     /**
@@ -1070,6 +1087,26 @@ class Agency
     }
 
     /**
+     * Set score
+     *
+     * @param integer $score
+     */
+    public function setScore($score)
+    {
+        $this->score = $score;
+    }
+
+    /**
+     * Get score
+     *
+     * @return score
+     */
+    public function getScore()
+    {
+        return $this->score;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1117,7 +1154,8 @@ class Agency
             'deleted_by'             => $this->getDeletedBy(),
             'deleted'                => $this->getDeleted(),
             'photos'                 => $this->getPhotos(),
-            'agents'                 => $this->getAgents()
+            'agents'                 => $this->getAgents(),
+            'score'                  => $this->getScore()
         );
 
         if (!empty($listings)) {
