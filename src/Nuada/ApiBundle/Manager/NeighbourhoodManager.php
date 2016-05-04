@@ -13,17 +13,20 @@ class NeighbourhoodManager
 {
     protected $doctrine;
     protected $securityContext;
+    protected $photoManager;
 
     const LIMIT = 25;
     const OFFSET = 0;
 
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
-                                ValidatorInterface $validator)
+                                ValidatorInterface $validator,
+                                PhotoManager $photoManager)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
+        $this->photoManager = $photoManager;
     }
 
     public function load(
@@ -31,7 +34,8 @@ class NeighbourhoodManager
         $name=null,
         $withDeleted=false,
         $offset=null,
-        $limit=null
+        $limit=null,
+        $withPhotos=false
         )
     {
         $limit = $limit ? $limit : self::LIMIT;
@@ -45,6 +49,35 @@ class NeighbourhoodManager
             $offset,
             $limit
         );
+
+
+        //with photos
+        if (!is_null($neighbourhood)) {
+            if ($withPhotos) {
+                if (is_array($neighbourhood)) {
+                    foreach ($neighbourhood as $nbd) {
+                        $nbdId = $nbd->getId();
+                        $photos = $this->photoManager->load(
+                            null, //$id
+                            null, //$listingId
+                            null,//$agencyId
+                            $nbdId
+                        );
+                        $nbd->setPhotos($photos);
+                    }
+                } else {
+                    $nbdId = $neighbourhood->getId();
+                    $photos = $this->photoManager->load(
+                        null, //$id
+                        null, //$listingId
+                        null, //$agencyId
+                        $nbdId
+                    );
+                    $neighbourhood->setPhotos($photos);
+
+                }
+            }
+        }
 
         return $neighbourhood;
 
@@ -68,7 +101,8 @@ class NeighbourhoodManager
 
     public function loadTop(
         $count=null,
-        $withDeleted=false
+        $withDeleted=false,
+        $withPhotos=false
         )
     {
         if (is_null($count)) {
@@ -80,6 +114,34 @@ class NeighbourhoodManager
             $count,
             $withDeleted
         );
+
+        //with photos
+        if (!is_null($neighbourhood)) {
+            if ($withPhotos) {
+                if (is_array($neighbourhood)) {
+                    foreach ($neighbourhood as $nbd) {
+                        $nbdId = $nbd->getId();
+                        $photos = $this->photoManager->load(
+                            null, //$id
+                            null, //$listingId
+                            null,//$agencyId
+                            $nbdId
+                        );
+                        $nbd->setPhotos($photos);
+                    }
+                } else {
+                    $nbdId = $neighbourhood->getId();
+                    $photos = $this->photoManager->load(
+                        null, //$id
+                        null, //$listingId
+                        null, //$agencyId
+                        $nbdId
+                    );
+                    $neighbourhood->setPhotos($photos);
+
+                }
+            }
+        }
 
         return $neighbourhood;
 

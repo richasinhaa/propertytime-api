@@ -29,6 +29,7 @@ class PhotoRepository extends EntityRepository
         $id=null,
         $listingId=null,
         $agencyId=null,
+        $neighbourhoodId=null,
         $sortOn=null,
         $reverse=false,
         $limit=null,
@@ -54,6 +55,11 @@ class PhotoRepository extends EntityRepository
         if (!is_null($agencyId)) {
             $qb = $qb->andWhere('e.agencyId = :agencyId')
                 ->setParameter('agencyId', $agencyId);
+        }
+
+        if (!is_null($neighbourhoodId)) {
+            $qb = $qb->andWhere('e.neighbourhoodId = :neighbourhoodId')
+                ->setParameter('neighbourhoodId', $neighbourhoodId);
         }
 
         if ($sortOn) {

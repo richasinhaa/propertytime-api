@@ -68,3 +68,4 @@ services:
         - @doctrine
         - @security.context
         - @validator
+        - @nuada_api.photo_manager

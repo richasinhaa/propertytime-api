@@ -37,6 +37,13 @@ class Photo
     protected $agencyId;
 
     /**
+     * @var integer $neighbourhoodId
+     *
+     * @ORM\Column(name="neighbourhood_id", type="integer")
+     */
+    protected $neighbourhoodId;
+
+    /**
      * @var string $photoPath
      *
      * @ORM\Column(name="photo_path", type="string")
@@ -128,6 +135,27 @@ class Photo
     public function getAgencyId()
     {
         return $this->agencyId;
+    }
+
+    /**
+     * Set neighbourhoodId
+     *
+     * @param integer $neighbourhoodId
+     */
+    public function setNeighbourhoodId($neighbourhoodId)
+    {
+        $this->neighbourhoodId = $neighbourhoodId;
+
+    }
+
+    /**
+     * Get neighbourhoodId
+     *
+     * @return integer
+     */
+    public function getNeighbourhoodId()
+    {
+        return $this->neighbourhoodId;
     }
 
     /**

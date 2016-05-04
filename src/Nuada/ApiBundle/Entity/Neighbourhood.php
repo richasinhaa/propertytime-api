@@ -48,6 +48,8 @@ class Neighbourhood
      */
     protected $score;
 
+    protected $photos;
+
 
     /**
      * Get id
@@ -140,6 +142,26 @@ class Neighbourhood
     }
 
     /**
+     * Set photos
+     *
+     * @param array $photos
+     */
+    public function setPhotos($photos)
+    {
+        $this->photos = $photos;
+    }
+
+    /**
+     * Get photos
+     *
+     * @return array
+     */
+    public function getPhotos()
+    {
+        return $this->photos;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -151,7 +173,8 @@ class Neighbourhood
             'name'         => $this->getName(),
             'description'  => $this->getDescription(),
             'deleted'      => $this->getDeleted(),
-            'score'        => $this->getScore()
+            'score'        => $this->getScore(),
+            'photos'       => $this->getPhotos(),
         );
 
         return $data;

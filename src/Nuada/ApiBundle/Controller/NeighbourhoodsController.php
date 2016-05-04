@@ -33,6 +33,7 @@ class NeighbourhoodsController extends Controller
         $offset = $request->query->get('offset', null);
         $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
         $name = $request->query->get('name', null);
+        $withPhotos = strtolower($request->get('with_photos', 'true')) == 'true';
 
         $neighbourhoodManager = $this->get('nuada_api.neighbourhood_manager');
         try {
@@ -41,7 +42,8 @@ class NeighbourhoodsController extends Controller
                 $name,
                 $withDeleted,
                 $offset,
-                $limit
+                $limit,
+                $withPhotos
                 );
 
             $neighbourhoodCount = $neighbourhoodManager->getCount(
@@ -69,16 +71,16 @@ class NeighbourhoodsController extends Controller
     public function getNeighbourhoodsTopAction()
     {
         $request = $this->get('request');
-        $limit = $request->query->get('limit', null);
-        $offset = $request->query->get('offset', null);
         $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
         $count = $request->query->get('count', null);
+        $withPhotos = strtolower($request->get('with_photos', 'true')) == 'true';
 
         $neighbourhoodManager = $this->get('nuada_api.neighbourhood_manager');
         try {
             $neighbourhood = $neighbourhoodManager->loadTop(
                 $count,
-                $withDeleted
+                $withDeleted,
+                $withPhotos
             );
 
         } catch (BadAttributeException $e) {
