@@ -74,7 +74,7 @@ class ListingRepository extends EntityRepository
                      ->setParameter('type', $type);
         }
         if (!is_null($agencyId)) {
-             $qb = $qb->andWhere('e.companyId = :agencyId')
+             $qb = $qb->andWhere('e.agencyId = :agencyId')
                       ->setParameter('agencyId', $agencyId);
         }
         if (!is_null($bed)) {
@@ -124,7 +124,7 @@ class ListingRepository extends EntityRepository
     }
 
     /**
-     * Retrieve All
+     * Retrieve Count
      *
      * @param integer $id          - Listing Id
      * @param boolean $withDeleted - With deleted listing
@@ -186,7 +186,7 @@ class ListingRepository extends EntityRepository
                      ->setParameter('type', $type);
         }
         if (!is_null($agencyId)) {
-             $qb = $qb->andWhere('e.companyId = :agencyId')
+             $qb = $qb->andWhere('e.agencyId = :agencyId')
                       ->setParameter('agencyId', $agencyId);
         }
         if (!is_null($bed)) {
@@ -261,5 +261,30 @@ class ListingRepository extends EntityRepository
         }
 
         return $sort;
+    }
+
+    /**
+     * Retrieve Sold Count
+     *
+     * @param integer $agencyId    - Agency Id
+     *
+     * @return array
+     */
+    public function fetchSoldCount($agencyId=null)
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('count(e)');
+
+        if (!is_null($agencyId)) {
+            $qb = $qb->andWhere('e.agencyId = :agencyId')
+                ->setParameter('agencyId', $agencyId);
+        }
+
+        $qb = $qb->andWhere('e.isSold = 1');
+
+        $query = $qb->getQuery();
+
+
+        return $query->getSingleScalarResult();
     }
 }

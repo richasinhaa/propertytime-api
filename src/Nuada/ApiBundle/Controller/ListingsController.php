@@ -109,4 +109,22 @@ class ListingsController extends Controller
         
         return View::create(array('properties' => $properties, 'count' => $propertyCount), Codes::HTTP_OK);
     }
+
+    /**
+     * Get sold listings count
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function getListingsSoldcountAction() {
+        $request = $this->get('request');
+        $agencyId = $request->query->get('agency_id', null);
+
+        $listingManager = $this->get('nuada_api.listing_manager');
+        $listingCount = $listingManager->fetchSoldCount($agencyId);
+
+        return View::create(array('count' => $listingCount), Codes::HTTP_OK);
+
+    }
 }

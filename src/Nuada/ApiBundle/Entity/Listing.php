@@ -352,6 +352,12 @@ class Listing
 
     protected $photos;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_sold", type="boolean")
+     */
+    protected $isSold;
 
     /**
      * Get id
@@ -1344,6 +1350,26 @@ class Listing
     }
 
     /**
+     * Set isSold
+     *
+     * @param boolean $isSold
+     */
+    public function setIsSold($isSold)
+    {
+        $this->isSold = $isSold;
+    }
+
+    /**
+     * Get isSold
+     *
+     * @return boolean
+     */
+    public function getIsSold()
+    {
+        return $this->isSold;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1400,7 +1426,8 @@ class Listing
             'modified_by'          => $this->getModifiedBy(),
             'deleted_by'           => $this->getDeletedBy(),
             'deleted'              => $this->getDeleted(),
-            'photos'               => $this->getPhotos()
+            'photos'               => $this->getPhotos(),
+            'is_sold'              => $this->getIsSold()
         );
 
         return $data;

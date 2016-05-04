@@ -197,4 +197,12 @@ class ListingManager
 
     }
 
+    public function fetchSoldCount($agencyId=null) {
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+
+        $count = $er->fetchSoldCount($agencyId);
+
+        return intval($count);
+    }
+
 }
