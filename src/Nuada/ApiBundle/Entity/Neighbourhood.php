@@ -41,6 +41,13 @@ class Neighbourhood
      */
     protected $deleted;
 
+    /**
+     * @var integer $score
+     *
+     * @ORM\Column(name="score", type="integer")
+     */
+    protected $score;
+
 
     /**
      * Get id
@@ -113,6 +120,26 @@ class Neighbourhood
     }
 
     /**
+     * Set score
+     *
+     * @param integer $score
+     */
+    public function setScore($score)
+    {
+        $this->score = $score;
+    }
+
+    /**
+     * Get score
+     *
+     * @return integer
+     */
+    public function getScore()
+    {
+        return $this->score;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -123,7 +150,8 @@ class Neighbourhood
             'id'           => $this->getId(),
             'name'         => $this->getName(),
             'description'  => $this->getDescription(),
-            'deleted'      => $this->getDeleted()
+            'deleted'      => $this->getDeleted(),
+            'score'        => $this->getScore()
         );
 
         return $data;

@@ -56,6 +56,39 @@ class NeighbourhoodsController extends Controller
             $neighbourhood = array();
         }
 
-        return View::create(array('photos' => $neighbourhood, 'count' => $neighbourhoodCount), Codes::HTTP_OK);
+        return View::create(array('neighbourhoods' => $neighbourhood, 'count' => $neighbourhoodCount), Codes::HTTP_OK);
+    }
+
+    /**
+     * Get neighbourhoods
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function getNeighbourhoodsTopAction()
+    {
+        $request = $this->get('request');
+        $limit = $request->query->get('limit', null);
+        $offset = $request->query->get('offset', null);
+        $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
+        $count = $request->query->get('count', null);
+
+        $neighbourhoodManager = $this->get('nuada_api.neighbourhood_manager');
+        try {
+            $neighbourhood = $neighbourhoodManager->loadTop(
+                $count,
+                $withDeleted
+            );
+
+        } catch (BadAttributeException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (null === $neighbourhood) {
+            $neighbourhood = array();
+        }
+
+        return View::create(array('neighbourhoods' => $neighbourhood), Codes::HTTP_OK);
     }
 }

@@ -7,7 +7,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Finder\Finder;
 use Doctrine\DBAL\Connection;
-use Nuada\ApiBundle\Entity\Summary;
+use Nuada\ApiBundle\Entity\BadAttributeException;
 
 class NeighbourhoodManager
 {
@@ -63,6 +63,25 @@ class NeighbourhoodManager
             $withDeleted);
 
         return intval($count);
+
+    }
+
+    public function loadTop(
+        $count=null,
+        $withDeleted=false
+        )
+    {
+        if (is_null($count)) {
+            throw new BadAttributeException('count cant be null in the request');
+        }
+
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Neighbourhood');
+        $neighbourhood = $er->retrieveTop(
+            $count,
+            $withDeleted
+        );
+
+        return $neighbourhood;
 
     }
 

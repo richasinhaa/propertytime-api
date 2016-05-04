@@ -20,6 +20,7 @@ class Version20160503104331 extends AbstractMigration
             name VARCHAR(255) NOT NULL,
             description TEXT DEFAULT NULL,
             deleted BOOLEAN DEFAULT FALSE,
+            score INT DEFAULT NULL,
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
 
@@ -37,6 +38,8 @@ class Version20160503104331 extends AbstractMigration
 
         $this->addSql("ALTER TABLE bf_company ADD COLUMN score INTEGER DEFAULT NULL");
         $this->addSql("ALTER TABLE bf_company ADD INDEX IDX_16AE187TY56OI892 (score)");
+
+        $this->addSql("ALTER TABLE nl_neighbourhood ADD INDEX IDX_16AE187TY56OLYU6 (score)");
     }
 
     /**

@@ -94,4 +94,35 @@ class NeighbourhoodRepository extends EntityRepository
 
         return $query->getSingleScalarResult();
     }
+
+    /**
+     * Retrieve All
+     *
+     * @param integer $count        - Count
+     * @param boolean $withDeleted  - With deleted mapping
+     * @param integer $offset       - Offset
+     * @param integer $limit        - Limit
+     *
+     * @return array
+     */
+    public function retrieveTop(
+        $count=null,
+        $withDeleted=false)
+    {
+        $qb = $this->createQueryBuilder('e');
+
+        if (!$withDeleted) {
+            $qb = $qb->andWhere('e.deleted = false');
+        }
+
+        if ($count) {
+            $qb->setMaxResults($count);
+        }
+
+        $qb = $qb->orderBy('e.score', 'DESC');
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
+    }
 }
