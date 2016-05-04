@@ -69,3 +69,11 @@ services:
         - @security.context
         - @validator
         - @nuada_api.photo_manager
+
+      nuada_api.neighbourhood_enquiry_manager:
+        class: Nuada\ApiBundle\Manager\NeighbourhoodEnquiryManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
+        - @nuada_api.neighbourhood_manager
