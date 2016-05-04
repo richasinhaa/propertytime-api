@@ -40,6 +40,7 @@ class AgencyManager
             $limit = null,
             $offset = null,
             $withDeleted = null,
+            $search = null,
             $name = null,
             $userId = null,
             $userName = null,
@@ -53,20 +54,28 @@ class AgencyManager
         $limit = $limit ? $limit : self::LIMIT;
         $offset = $offset ? $offset : self::OFFSET;
 
-        $agencies = $er->retrieveAll(
-            $id,
-            $limit,
-            $offset,
-            $withDeleted,
-            $name,
-            $userId,
-            $userName,
-            $sortOn,
-            $reverse);
 
-        
+        if ($search) {
+            //1.Find properties with this search keyword
+            //2. Look for agencies with that property
+            $agencies = $this->findAgencies($search);
+        } else {
+            $agencies = $er->retrieveAll(
+                $id,
+                $limit,
+                $offset,
+                $withDeleted,
+                $search,
+                $name,
+                $userId,
+                $userName,
+                $sortOn,
+                $reverse);
+        }
+
+
         if (!is_null($agencies)) {
-            
+
             //with photos
             if ($withPhotos) {
                 if (is_array($agencies)) {
@@ -131,18 +140,24 @@ class AgencyManager
     public function getCount(
                          $id = null,
                          $withDeleted = false,
+                         $search = null,
                          $name = null,
                          $userId = null,
                          $userName = null)
     {
-        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
+        if ($search) {
+            $count = $this->findAgenciesCount($search);
+        } else {
+            $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
 
-        $count = $er->fetchCount(
-            $id,
-            $withDeleted,
-            $name,
-            $userId,
-            $userName);
+            $count = $er->fetchCount(
+                $id,
+                $withDeleted,
+                $search,
+                $name,
+                $userId,
+                $userName);
+        }
 
         return intval($count);
 
@@ -222,6 +237,40 @@ class AgencyManager
         $phoneNumber = $agency->getPhone();
 
         return $phoneNumber;
+    }
+
+    public function findAgencies($keyword=null) {
+        $query = $this->legacyConnection->executeQuery('
+                SELECT DISTINCT a.* from bf_company a
+                 JOIN bf_listing l
+                 ON a.id = l.company_id
+                 and (l.city like ? 
+                    or l.community like ? 
+                    or l.sub_community like ?
+                    or l.tower like ?)
+                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));
+
+        $data = $query->fetchAll();
+        $agencies = $this->hydrate($data);
+
+        return $agencies;
+    }
+
+    public function findAgenciesCount($keyword=null) {
+        $query = $this->legacyConnection->executeQuery('
+        SELECT count(*) as count from (
+            SELECT DISTINCT a.* from bf_company a
+                 JOIN bf_listing l
+                 ON a.id = l.company_id
+                 and (l.city like ? 
+                    or l.community like ? 
+                    or l.sub_community like ?
+                    or l.tower like ?)) as x
+                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));
+
+        $data = $query->fetch();
+
+        return $data['count'];
     }
 
 }

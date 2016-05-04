@@ -39,6 +39,7 @@ class AgenciesController extends Controller
         $reverse = $request->query->get('reverse', false);
         $withPhotos = strtolower($request->get('with_deleted', 'true')) == 'true';
         $withAgents = strtolower($request->get('with_agents', 'false')) == 'true';
+        $search = $request->query->get('search', null);
 
         $agencyManager = $this->get('nuada_api.agency_manager');
         $agencies = $agencyManager->load(
@@ -46,6 +47,7 @@ class AgenciesController extends Controller
             $limit,
             $offset,
             $withDeleted,
+            $search,
             $name,
             $userId,
             $userName,
@@ -57,6 +59,7 @@ class AgenciesController extends Controller
         $agencyCount = $agencyManager->getCount(
             $id,
             $withDeleted,
+            $search,
             $name,
             $userId,
             $userName);

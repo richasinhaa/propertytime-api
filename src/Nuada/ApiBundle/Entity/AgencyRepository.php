@@ -31,6 +31,7 @@ class AgencyRepository extends EntityRepository
             $limit = null,
             $offset = null,
             $withDeleted = false,
+            $search = null,
             $name = null,
             $userId = null,
             $userName = null,
