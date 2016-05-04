@@ -30,11 +30,11 @@ class LocationManager
 
     public function load($search=null) {
         $allLocations = $this->fetchAllLocations();
-        
+
         if (is_null($search)) {
             return $allLocations;
         }
-        
+
         $searchResult = array();
         $search = strtolower($search);
         
@@ -46,6 +46,7 @@ class LocationManager
 
         if (!is_null($searchResult['Commercial'])) {
             $searchResult['Commercial'] = $this->rank($searchResult['Commercial'], $search);
+            $searchResult['Commercial'] = array_slice($searchResult['Commercial'], 0, 3);
         }
 
         foreach ($allLocations['Residential']as $residentialDetail) {
@@ -56,6 +57,7 @@ class LocationManager
         
         if (!is_null($searchResult['Residential'])) {
             $searchResult['Residential'] = $this->rank($searchResult['Residential'], $search);
+            $searchResult['Residential'] = array_slice($searchResult['Residential'], 0, 3);
         }
 
         return $searchResult;
@@ -113,7 +115,7 @@ class LocationManager
             }
         }
          $location = array('Commercial' => $commercial, 'Residential' => $residential);
-        
+
         
         return $location;
     }
