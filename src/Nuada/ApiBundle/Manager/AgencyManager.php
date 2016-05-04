@@ -210,4 +210,18 @@ class AgencyManager
         return $hydratedAgencies;
     }
 
+    public function fetchPhoneNumber($agencyId=null) {
+        if (is_null($agencyId)) {
+            return null;
+        }
+
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
+
+        $agency = $er->retrieveAll($agencyId);
+
+        $phoneNumber = $agency->getPhone();
+
+        return $phoneNumber;
+    }
+
 }

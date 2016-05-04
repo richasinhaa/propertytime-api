@@ -7,6 +7,7 @@ use FOS\RestBundle\View\View;
 use FOS\RestBundle\Util\Codes;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 
 /**
@@ -95,5 +96,28 @@ class AgenciesController extends Controller
         }
 
         return View::create(array('agencies' => $agencies), Codes::HTTP_OK);
+    }
+
+    /**
+     * Connect to agency
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function getAgenciesConnectAction()
+    {
+        $request = $this->get('request');
+        $agencyId = $request->query->get('agency_id', null);
+        $allowed = false;
+        $phoneNumber = null;
+
+        if ($this->container->get('security.context')->isGranted('IS_AUTHENTICATED_ANONYMOUSLY')) {
+            $agencyManager = $this->get('nuada_api.agency_manager');
+            $phoneNumber = $agencyManager->fetchPhoneNumber($agencyId);
+            $allowed = true;
+        }
+
+        return View::create(array('allowed' => $allowed, 'contact_number' => $phoneNumber), Codes::HTTP_OK);
     }
 }
