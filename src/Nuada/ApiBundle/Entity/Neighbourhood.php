@@ -44,7 +44,7 @@ class Neighbourhood
     /**
      * @var integer $score
      *
-     * @ORM\Column(name="score", type="integer")
+     * @ORM\Column(name="score", type="float")
      */
     protected $score;
 
@@ -122,7 +122,7 @@ class Neighbourhood
     /**
      * Set score
      *
-     * @param integer $score
+     * @param float $score
      */
     public function setScore($score)
     {
@@ -132,7 +132,7 @@ class Neighbourhood
     /**
      * Get score
      *
-     * @return integer
+     * @return float
      */
     public function getScore()
     {

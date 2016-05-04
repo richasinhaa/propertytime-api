@@ -281,7 +281,7 @@ class Agency
     /**
      * @var integer
      *
-     * @ORM\Column(name="score", type="integer")
+     * @ORM\Column(name="score", type="float")
      */
     protected $score;
 
@@ -1089,7 +1089,7 @@ class Agency
     /**
      * Set score
      *
-     * @param integer $score
+     * @param float $score
      */
     public function setScore($score)
     {
@@ -1099,7 +1099,7 @@ class Agency
     /**
      * Get score
      *
-     * @return score
+     * @return float
      */
     public function getScore()
     {
