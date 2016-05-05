@@ -77,3 +77,10 @@ services:
         - @security.context
         - @validator
         - @nuada_api.neighbourhood_manager
+
+      nuada_api.expert_manager:
+        class: Nuada\ApiBundle\Manager\ExpertManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator

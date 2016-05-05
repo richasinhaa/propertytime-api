@@ -48,5 +48,10 @@ neighbourhoodenquiries:
     prefix: /api
     type:  rest
 
+experts:
+    resource: Nuada\ApiBundle\Controller\ExpertsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
