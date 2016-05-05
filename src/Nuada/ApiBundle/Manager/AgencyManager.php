@@ -75,6 +75,25 @@ class AgencyManager
 
 
         if (!is_null($agencies)) {
+            //set listing counts
+            if (!is_array($agencies)) {
+                $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+                $agencyId = $agencies->getId();
+                $listingCount = $listingRepo->fetchCount(
+                    null, //$id
+                    false, // $withDeleted
+                    null, //$search
+                    null, //$city
+                    null, //$community
+                    null, //$category
+                    null, //$subcategory
+                    null, //$type
+                    $agencyId);
+                $agencies->setListingCount($listingCount);
+
+                $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+                $agencies->setSoldListings($soldListingCount);
+            }
 
             //with photos
             if ($withPhotos) {
@@ -96,7 +115,6 @@ class AgencyManager
                         $agencyId
                     );
                     $agencies->setPhotos($photos);
-
                 }
             }
 
@@ -115,6 +133,15 @@ class AgencyManager
                             $agencyId
                         );
                         $agency->setAgents($agents);
+
+                        $agentsCount = $this->agentManager->getCount(
+                            null, //$id
+                            null, //$withDeleted,
+                            null, //$name
+                            null, //$userId
+                            $agencyId
+                        );
+                        $agency->setAgentsCount($agentsCount);
                     }
                 } else {
                     $agencyId = $agencies->getId();
@@ -128,6 +155,15 @@ class AgencyManager
                             $agencyId
                     );
                     $agencies->setAgents($agents);
+
+                    $agentsCount = $this->agentManager->getCount(
+                        null, //$id
+                        null, //$withDeleted,
+                        null, //$name
+                        null, //$userId
+                        $agencyId
+                    );
+                    $agencies->setAgentsCount($agentsCount);
 
                 }
             }

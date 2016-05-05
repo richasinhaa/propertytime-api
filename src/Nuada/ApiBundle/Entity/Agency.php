@@ -278,6 +278,12 @@ class Agency
 
     protected $listings;
 
+    protected $listingCount;
+
+    protected $soldListings;
+
+    protected $agentsCount;
+
     /**
      * @var integer
      *
@@ -1107,6 +1113,66 @@ class Agency
     }
 
     /**
+     * Set listingCount
+     *
+     * @param integer $listingCount
+     */
+    public function setListingCount($listingCount)
+    {
+        $this->listingCount = $listingCount;
+    }
+
+    /**
+     * Get listingCount
+     *
+     * @return integer
+     */
+    public function getListingCount()
+    {
+        return $this->listingCount;
+    }
+
+    /**
+     * Set soldListings
+     *
+     * @param integer $soldListings
+     */
+    public function setSoldListings($soldListings)
+    {
+        $this->soldListings = $soldListings;
+    }
+
+    /**
+     * Get soldListings
+     *
+     * @return integer
+     */
+    public function getSoldListings()
+    {
+        return $this->soldListings;
+    }
+
+    /**
+     * Set agentsCount
+     *
+     * @param integer $agentsCount
+     */
+    public function setAgentsCount($agentsCount)
+    {
+        $this->agentsCount = $agentsCount;
+    }
+
+    /**
+     * Get agentsCount
+     *
+     * @return integer
+     */
+    public function getAgentsCount()
+    {
+        return $this->agentsCount;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1151,7 +1217,10 @@ class Agency
             'deleted'                => $this->getDeleted(),
             'photos'                 => $this->getPhotos(),
             'agents'                 => $this->getAgents(),
-            'score'                  => $this->getScore()
+            'score'                  => $this->getScore(),
+            'listings_count'         => $this->getListingCount(),
+            'listings_sold'          => $this->getSoldListings(),
+            'agents_count'           => $this->getAgentsCount()
         );
 
         if (!empty($listings)) {
