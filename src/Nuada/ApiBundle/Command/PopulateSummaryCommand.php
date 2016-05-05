@@ -22,7 +22,6 @@ class PopulateSummaryCommand extends ContainerAwareCommand
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         parent::initialize($input, $output);
-        $this->summaryManager = $this->getContainer()->get('nuada_api.summary_manager');
         $this->legacyConnection = $this->getContainer()->get('doctrine.dbal.default_connection');
     }
 
