@@ -13,6 +13,9 @@ class ExpertManager
     protected $doctrine;
     protected $securityContext;
 
+    const LIMIT = 25;
+    const OFFSET = 0;
+
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
                                 ValidatorInterface $validator)
@@ -33,6 +36,10 @@ class ExpertManager
                          $withDeleted=false)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Expert');
+
+        $limit = $limit ? $limit : self::LIMIT;
+        $offset = $offset ? $offset : self::OFFSET;
+
         $experts = $er->retrieveAll(
             $id,
             $limit,

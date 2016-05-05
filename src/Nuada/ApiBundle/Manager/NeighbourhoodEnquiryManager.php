@@ -35,30 +35,31 @@ class NeighbourhoodEnquiryManager
     public function add($requestParams = null)
     {
 
-        $neighbourhoodName = $requestParams['neighbourhood'] ? $requestParams['neighbourhood'] : null;
-        $name            = $requestParams['name'] ? $requestParams['name'] : null;
-        $email           = $requestParams['email'] ? $requestParams['email'] : null;
-        $phone           = $requestParams['phone'] ? $requestParams['phone'] : null;
-        $type            = $requestParams['type'] ? $requestParams['type'] : null;
-
-        if (is_null($neighbourhoodName)) {
-            throw new BadAttributeException('neighbourhood cant be null in the request');
-        }
-
-        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:NeighbourhoodEnquiry');
-        $neighbourhoodEnquiry = new NeighbourhoodEnquiry();
-        $neighbourhood = $this->neighbourhoodManager->load(
-                null, //$id
-                $neighbourhoodName
-            );
-        if (empty($neighbourhood)) {
-            throw new BadAttributeException('Neighbourhood with name '. $neighbourhoodName. ' doesnot exist');
-        }
-
-        $neighbourhoodId = $neighbourhood[0]->getId();
-
         try {
-            if (!is_null($requestParams)) {
+            if (!empty($requestParams)) {
+                $neighbourhoodName = $requestParams['neighbourhood'] ? $requestParams['neighbourhood'] : null;
+                $name            = $requestParams['name'] ? $requestParams['name'] : null;
+                $email           = $requestParams['email'] ? $requestParams['email'] : null;
+                $phone           = $requestParams['phone'] ? $requestParams['phone'] : null;
+                $type            = $requestParams['type'] ? $requestParams['type'] : null;
+
+                if (is_null($neighbourhoodName)) {
+                    throw new BadAttributeException('neighbourhood cant be null in the request');
+                }
+
+                $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:NeighbourhoodEnquiry');
+                $neighbourhoodEnquiry = new NeighbourhoodEnquiry();
+                $neighbourhood = $this->neighbourhoodManager->load(
+                        null, //$id
+                        $neighbourhoodName
+                    );
+                if (empty($neighbourhood)) {
+                    throw new BadAttributeException('Neighbourhood with name '. $neighbourhoodName. ' doesnot exist');
+                }
+
+                $neighbourhoodId = $neighbourhood[0]->getId();
+
+
                 if (!is_null($type)) {
                     if ($type == self::BUY || $type == self::RENT) {
                         $conn = $this->doctrine->getConnection();

@@ -53,5 +53,10 @@ experts:
     prefix: /api
     type:  rest
 
+favorites:
+    resource: Nuada\ApiBundle\Controller\FavoritesController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"

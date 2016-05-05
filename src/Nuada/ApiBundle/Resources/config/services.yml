@@ -84,3 +84,11 @@ services:
         - @doctrine
         - @security.context
         - @validator
+
+      nuada_api.favorite_manager:
+        class: Nuada\ApiBundle\Manager\FavoriteManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
+        - @nuada_api.listing_manager
