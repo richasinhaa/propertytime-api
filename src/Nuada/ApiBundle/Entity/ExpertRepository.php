@@ -38,11 +38,12 @@ class ExpertRepository extends EntityRepository
         $email=null,
         $withDeleted=false)
     {
-        if (!is_null($id)) {
-            return $this->find($id);
-        }
-
         $qb = $this->createQueryBuilder('e');
+
+        if (!is_null($id)) {
+            $qb = $qb->andWhere('e.id = :id')
+                ->setParameter('id', $id);
+        }
 
         if (!$withDeleted) {
             $qb = $qb->andWhere('e.deleted = false');
