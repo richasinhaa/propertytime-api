@@ -225,7 +225,7 @@ class AgencyManager
         return $hydratedAgencies;
     }
 
-    public function fetchPhoneNumber($agencyId=null) {
+    public function fetchContactDetails($agencyId=null) {
         if (is_null($agencyId)) {
             return null;
         }
@@ -234,9 +234,14 @@ class AgencyManager
 
         $agency = $er->retrieveAll($agencyId);
 
+        $contactDetails = array();
         $phoneNumber = $agency->getPhone();
+        $email = $agency->getEmail();
 
-        return $phoneNumber;
+        $contactDetails['phone'] = $phoneNumber;
+        $contactDetails['email'] = $email;
+
+        return $contactDetails;
     }
 
     public function findAgencies($keyword=null) {
