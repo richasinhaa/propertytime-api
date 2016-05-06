@@ -136,7 +136,7 @@ fos_user:
 
 ekino_new_relic:
     enabled: true                         # Defaults to true
-    application_name: propertytime-api # default value in newrelic is "PHP Application", or whatever is set
+    application_name: propertytime # default value in newrelic is "PHP Application", or whatever is set
                                           # as php ini-value
     deployment_names: ~                   # default value is 'application_name', supports string array or semi-colon separated string
     api_key:  6b6f490d05a20b0606df7346447619144449f3beac47fc2
