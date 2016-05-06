@@ -28,18 +28,19 @@ class PopulateSummaryCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $listings = $this->fetchTotalListings();
-        $output->writeln('Total Listings :: '. $listings);
+        $output->writeln('Total Listings :: ' . $listings);
         $users = $this->fetchTotalUsers();
-        $output->writeln('Total Users :: '. $users);
+        $output->writeln('Total Users :: ' . $users);
         $listingsAddedInLastOneDay = $this->fetchListingsAddedInLastOneDay();
-        $output->writeln('Total Listing added in 24 hours :: '. $listingsAddedInLastOneDay);
+        $output->writeln('Total Listing added in 24 hours :: ' . $listingsAddedInLastOneDay);
         $listingsSoldOrRented = $this->fetchListingsSoldOrRented();
-        $output->writeln('Total Listing sold or rented :: '. $listingsSoldOrRented);
+        $output->writeln('Total Listing sold or rented :: ' . $listingsSoldOrRented);
 
         $summary = $this->addSummary($listings, $users, $listingsAddedInLastOneDay, $listingsSoldOrRented);
     }
 
-    private function fetchTotalListings() {
+    private function fetchTotalListings()
+    {
         $qb = $this->legacyConnection->createQueryBuilder()
             ->select('count(*) as listings')
             ->from('bf_listing', 'l')
@@ -50,7 +51,8 @@ class PopulateSummaryCommand extends ContainerAwareCommand
         return $result->fetch()['listings'];
     }
 
-    private function fetchTotalUsers() {
+    private function fetchTotalUsers()
+    {
         $qb = $this->legacyConnection->createQueryBuilder()
             ->select('count(*) as users')
             ->from('bf_users', 'u')
@@ -61,7 +63,8 @@ class PopulateSummaryCommand extends ContainerAwareCommand
         return $result->fetch()['users'];
     }
 
-    private function fetchListingsAddedInLastOneDay() {
+    private function fetchListingsAddedInLastOneDay()
+    {
         $qb = $this->legacyConnection->createQueryBuilder()
             ->select('count(*) as listing_last_day')
             ->from('bf_listing', 'l')
@@ -73,7 +76,8 @@ class PopulateSummaryCommand extends ContainerAwareCommand
         return $result->fetch()['listing_last_day'];
     }
 
-    private function fetchListingsSoldOrRented() {
+    private function fetchListingsSoldOrRented()
+    {
         $legacyConnection = $this->getContainer()->get('doctrine.dbal.default_connection');
         $qb = $legacyConnection->createQueryBuilder()
             ->select('count(*) as listing_sold_or_rented')
@@ -86,7 +90,8 @@ class PopulateSummaryCommand extends ContainerAwareCommand
         return $result->fetch()['listing_sold_or_rented'];
     }
 
-    private function addSummary($listings, $users, $listingsAddedInLastOneDay, $listingsSoldOrRented) {
+    private function addSummary($listings, $users, $listingsAddedInLastOneDay, $listingsSoldOrRented)
+    {
         $summary = new Summary();
         $summary->setProperties($listings);
         $summary->setUsers($users);
