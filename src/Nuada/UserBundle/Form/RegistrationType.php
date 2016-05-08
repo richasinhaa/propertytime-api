@@ -8,7 +8,12 @@ class RegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name');
+        parent::buildForm($builder, $options);
+    	$builder->remove('username');
+		$builder->add('phone', 'number', array('required'    => true,'label' => 'mobile', 'translation_domain' => 'FOSUserBundle'));
+        $builder->add('name', null, array('required'    => true,'label' => 'fullname', 'translation_domain' => 'FOSUserBundle'));
+		$builder->add('plainPassword', 'password', array('required'    => true,'label' => 'form.new_password', 'translation_domain' => 'FOSUserBundle'));
+  
     }
 
     public function getParent()
@@ -18,7 +23,7 @@ class RegistrationType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'app_user_registration';
+        return 'Nuada_user_registration';
     }
 
     public function getName()

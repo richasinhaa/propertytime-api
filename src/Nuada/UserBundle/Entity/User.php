@@ -33,6 +33,20 @@ class User extends BaseUser
      * )
      */
     protected $name;	
+     
+     /**
+     * @ORM\Column(type="integer", length=15)
+     *
+     * @Assert\NotBlank(message="Please enter your Mobile Number.", groups={"Registration", "Profile"})
+     * @Assert\Length(
+     *     min=10,
+     *     max=15,
+     *     minMessage="Please enter a valid Mobile Number.",
+     *     maxMessage="Please enter a valid Mobile Number.",
+     *     groups={"Registration", "Profile"}
+     * )
+     */
+    protected $phone;	
 
     public function __construct()
     {
@@ -58,5 +72,35 @@ class User extends BaseUser
     public function getName()
     {
         return $this->name;
+    }
+
+	public function setEmail($email){
+	    $this->email = $email;
+	    $this->username = $email;
+	}
+
+	public function setEmailCanonical($emailCanonical){
+	    $this->emailCanonical = $emailCanonical;
+	    $this->usernameCanonical = $emailCanonical;
+	}
+
+     /**
+     * Set phone
+     *
+     * @param string $phone
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return string 
+     */
+    public function getPhone()
+    {
+        return $this->phone;
     }
 }

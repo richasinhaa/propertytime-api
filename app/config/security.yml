@@ -20,7 +20,9 @@ security:
                 login_path: /auth/login
                 check_path: /auth/login_check
 
-            logout:       true
+            logout:
+                path:   /auth/logout
+                target: /api/logout 
             anonymous:    true
 
     access_control:
