@@ -57,6 +57,13 @@ favorites:
     resource: Nuada\ApiBundle\Controller\FavoritesController
     prefix: /api
     type:  rest
-
+favorites:
+    resource: Nuada\ApiBundle\Controller\LoginController
+    prefix: /api
+    type:  rest
+favorites:
+    resource: Nuada\ApiBundle\Controller\LogoutController
+    prefix: /api
+    type:  rest
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
