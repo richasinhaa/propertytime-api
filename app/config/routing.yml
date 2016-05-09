@@ -57,11 +57,13 @@ favorites:
     resource: Nuada\ApiBundle\Controller\FavoritesController
     prefix: /api
     type:  rest
-favorites:
+
+login:
     resource: Nuada\ApiBundle\Controller\LoginController
     prefix: /api
     type:  rest
-favorites:
+
+logout:
     resource: Nuada\ApiBundle\Controller\LogoutController
     prefix: /api
     type:  rest
