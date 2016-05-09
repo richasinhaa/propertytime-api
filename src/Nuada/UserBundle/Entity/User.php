@@ -35,7 +35,7 @@ class User extends BaseUser
     protected $name;	
      
      /**
-     * @ORM\Column(type="integer", length=15)
+     * @ORM\Column(type="string", length=15)
      *
      * @Assert\NotBlank(message="Please enter your Mobile Number.", groups={"Registration", "Profile"})
      * @Assert\Length(
