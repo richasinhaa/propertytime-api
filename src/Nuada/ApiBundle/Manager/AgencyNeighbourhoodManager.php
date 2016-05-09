@@ -23,6 +23,7 @@ class AgencyNeighbourhoodManager
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
+        $this->agencyManager = $agencyManager;
     }
 
     public function load(
@@ -41,6 +42,11 @@ class AgencyNeighbourhoodManager
             $withDeleted
         );
 
+        foreach ($mapping as $agencyNbh) {
+            $agency = $this->agencyManager->load($id);
+            $agencyNbh->setAgency($agency);
+        }
+        
         return $mapping;
 
     }

@@ -14,6 +14,8 @@ class NeighbourhoodManager
     protected $doctrine;
     protected $securityContext;
     protected $photoManager;
+    protected $agencyManager;
+    protected $container;
 
     const LIMIT = 25;
     const OFFSET = 0;
@@ -21,12 +23,16 @@ class NeighbourhoodManager
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
                                 ValidatorInterface $validator,
-                                PhotoManager $photoManager)
+                                PhotoManager $photoManager,
+                                AgencyManager $agencyManager,
+                                Connection $legacyConnection)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
         $this->photoManager = $photoManager;
+        $this->agencyManager = $agencyManager;
+        $this->legacyConnection = $legacyConnection;
     }
 
     public function load(
@@ -35,7 +41,8 @@ class NeighbourhoodManager
         $withDeleted=false,
         $offset=null,
         $limit=null,
-        $withPhotos=false
+        $withPhotos=false,
+        $withAgency=false
         )
     {
         $limit = $limit ? $limit : self::LIMIT;
@@ -50,9 +57,9 @@ class NeighbourhoodManager
             $limit
         );
 
-
-        //with photos
+        
         if (!is_null($neighbourhood)) {
+            //with photos
             if ($withPhotos) {
                 if (is_array($neighbourhood)) {
                     foreach ($neighbourhood as $nbd) {
@@ -75,6 +82,20 @@ class NeighbourhoodManager
                     );
                     $neighbourhood->setPhotos($photos);
 
+                }
+            }
+
+            if ($withAgency) {
+                if (is_array($neighbourhood)) {
+                    foreach ($neighbourhood as $nbd) {
+                        $nbdId = $nbd->getId();
+                        $agencies[] = $this->fetchAgencies($nbdId);
+                        $nbd->setAgencies($agencies);
+                    }
+                } else {
+                    $nbdId = $neighbourhood->getId();
+                    $agencies[] = $this->fetchAgencies($nbdId);
+                    $neighbourhood->setAgencies($agencies);
                 }
             }
         }
@@ -145,6 +166,28 @@ class NeighbourhoodManager
 
         return $neighbourhood;
 
+    }
+
+    public function fetchAgencies($neighbourhoodId)
+    {
+        $agencies = null;
+        $query = $this->legacyConnection->executeQuery("
+            select agency_id from nl_agency_neighbourhood
+            where neighbourhood_id = ?
+            ", array($neighbourhoodId));
+
+        $data = $query->fetchAll();
+        if (!empty($data)) {
+            foreach ($data as $datum) {
+                $agencyId = $datum['agency_id'];
+                $agency = $this->agencyManager->load($agencyId);
+                $agencies[] = $agency;
+            }
+            
+            return $agencies;
+        }
+
+        return null;
     }
 
 

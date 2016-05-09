@@ -34,6 +34,7 @@ class NeighbourhoodsController extends Controller
         $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
         $name = $request->query->get('name', null);
         $withPhotos = strtolower($request->get('with_photos', 'true')) == 'true';
+        $withAgencies = strtolower($request->get('with_agency', 'false')) == 'true';
 
         $neighbourhoodManager = $this->get('nuada_api.neighbourhood_manager');
         try {
@@ -43,7 +44,8 @@ class NeighbourhoodsController extends Controller
                 $withDeleted,
                 $offset,
                 $limit,
-                $withPhotos
+                $withPhotos,
+                $withAgencies
                 );
 
             $neighbourhoodCount = $neighbourhoodManager->getCount(

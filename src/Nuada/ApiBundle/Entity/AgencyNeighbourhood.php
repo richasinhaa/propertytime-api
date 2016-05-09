@@ -41,6 +41,8 @@ class AgencyNeighbourhood
      */
     protected $deleted;
 
+    protected $agency;
+
 
     /**
      * Get id
@@ -113,6 +115,26 @@ class AgencyNeighbourhood
     }
 
     /**
+     * Set agency
+     *
+     * @param array $agency
+     */
+    public function setAgency($agency)
+    {
+        $this->agency = $agency;
+    }
+
+    /**
+     * Get agency
+     *
+     * @return array 
+     */
+    public function getAgency()
+    {
+        return $this->agency;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -123,7 +145,8 @@ class AgencyNeighbourhood
             'id'                        => $this->getId(),
             'agency_id'                 => $this->getAgencyId(),
             'neighbourhood_id'          => $this->getNeighbourhoodId(),
-            'deleted'                   => $this->getDeleted()
+            'deleted'                   => $this->getDeleted(),
+            'agency'                    => $this->getAgency()
         );
 
         return $data;

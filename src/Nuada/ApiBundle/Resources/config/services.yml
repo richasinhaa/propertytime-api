@@ -69,6 +69,8 @@ services:
         - @security.context
         - @validator
         - @nuada_api.photo_manager
+        - @nuada_api.agency_manager
+        - @doctrine.dbal.default_connection
 
       nuada_api.neighbourhood_enquiry_manager:
         class: Nuada\ApiBundle\Manager\NeighbourhoodEnquiryManager
@@ -92,3 +94,11 @@ services:
         - @security.context
         - @validator
         - @nuada_api.listing_manager
+
+      nuada_api.agency_nbh_manager:
+        class: Nuada\ApiBundle\Manager\AgencyNeighbourhoodManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
+        - @nuada_api.agency_manager

@@ -50,6 +50,8 @@ class Neighbourhood
 
     protected $photos;
 
+    protected $agencies;
+
 
     /**
      * Get id
@@ -162,6 +164,26 @@ class Neighbourhood
     }
 
     /**
+     * Set agencies
+     *
+     * @param array $agencies
+     */
+    public function setAgencies($agencies)
+    {
+        $this->agencies = $agencies;
+    }
+
+    /**
+     * Get agencies
+     *
+     * @return array
+     */
+    public function getAgencies()
+    {
+        return $this->agencies;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -175,6 +197,7 @@ class Neighbourhood
             'deleted'      => $this->getDeleted(),
             'score'        => $this->getScore(),
             'photos'       => $this->getPhotos(),
+            'agencies'     => $this->getAgencies()
         );
 
         return $data;
