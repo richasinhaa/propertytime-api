@@ -45,7 +45,7 @@ class ListingsController extends Controller
         $minPrice    = !empty($requestParams['min_price']) ? $requestParams['min_price'] : null;
         $maxPrice    = !empty($requestParams['max_price']) ? $requestParams['max_price'] : null;
         $minArea     = !empty($requestParams['min_area']) ? $requestParams['min_area'] : null;
-        $maxArea     = !empty($requestParams['max_area'])! ? $requestParams['max_area'] : null;
+        $maxArea     = !empty($requestParams['max_area']) ? $requestParams['max_area'] : null;
         $furnishing  = !empty($requestParams['furnishing']) ? $requestParams['furnishing'] : null;
         $agentId     = !empty($requestParams['agent_id']) ? $requestParams['agent_id'] : null;
         $sortOn      = !empty($requestParams['sort_on']) ? $requestParams['sort_on'] : null;
