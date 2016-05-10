@@ -115,12 +115,12 @@ class AgenciesController extends Controller
         $allowed = false;
         $phoneNumber = null;
 
-        if ($this->container->get('security.context')->isGranted('IS_AUTHENTICATED_ANONYMOUSLY')) {
+        //if ($this->container->get('security.context')->isGranted('IS_AUTHENTICATED_ANONYMOUSLY')) {
             $agencyManager = $this->get('nuada_api.agency_manager');
             $contactDetails = $agencyManager->fetchContactDetails($agencyId);
 
             $allowed = true;
-        }
+        //}
 
         return View::create(array('allowed' => $allowed,
             'contact_number' => $contactDetails['phone'],
