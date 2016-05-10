@@ -212,6 +212,7 @@ class AgencyManager
                 ON an.agency_id = a.id
                 LEFT JOIN nl_neighbourhood n
                 ON an.neighbourhood_id = n.id
+                group by a.id
                 order by a.score DESC',
                 array("$neighbourhood"));
         } else {
