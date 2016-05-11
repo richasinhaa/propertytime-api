@@ -30,6 +30,7 @@ class BlogRepository extends EntityRepository
         $limit=null,
         $offset=null,
         $name=null,
+        $type=null,
         $blogUrl=null,
         $from=null,
         $to=null,
@@ -49,6 +50,11 @@ class BlogRepository extends EntityRepository
         if (!is_null($name)) {
             $qb = $qb->andWhere('e.name = :name')
                 ->setParameter('name', $name);
+        }
+
+        if (!is_null($type)) {
+            $qb = $qb->andWhere('e.type = :type')
+                ->setParameter('type', $type);
         }
 
         if (!is_null($blogUrl)) {
@@ -95,6 +101,7 @@ class BlogRepository extends EntityRepository
     public function fetchCount(
         $id=null,
         $name=null,
+        $type=null,
         $blogUrl=null,
         $from=null,
         $to=null,
@@ -115,6 +122,11 @@ class BlogRepository extends EntityRepository
         if (!is_null($name)) {
             $qb = $qb->andWhere('e.name = :name')
                 ->setParameter('name', $name);
+        }
+
+        if (!is_null($type)) {
+            $qb = $qb->andWhere('e.type = :type')
+                ->setParameter('type', $type);
         }
 
         if (!is_null($blogUrl)) {

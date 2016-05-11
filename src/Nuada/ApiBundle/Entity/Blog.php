@@ -30,6 +30,13 @@ class Blog
     /**
      * @var string
      *
+     * @ORM\Column(name="type", type="string")
+     */
+    protected $type;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="description", type="string")
      */
     protected $description;
@@ -98,6 +105,26 @@ class Blog
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -230,6 +257,7 @@ class Blog
         $data = array(
             'id'           => $this->getId(),
             'name'         => $this->getName(),
+            'type'         => $this->getType(),
             'description'  => $this->getDescription(),
             'blog_url'     => $this->getBlogUrl(),
             'image_path'   => $this->getImagePath(),

@@ -32,6 +32,7 @@ class BlogsController extends Controller
         $limit = $request->query->get('limit', null);
         $offset = $request->query->get('offset', null);
         $name = $request->query->get('name', null);
+        $type = $request->query->get('type', null);
         $blogUrl = $request->query->get('blog_url', null);
         $from = $request->get('from', null);
         $to = $request->get('to', null);
@@ -43,6 +44,7 @@ class BlogsController extends Controller
             $limit,
             $offset,
             $name,
+            $type,
             $blogUrl,
             $from,
             $to,
@@ -52,6 +54,7 @@ class BlogsController extends Controller
         $blogCount = $blogManager->getCount(
             $id,
             $name,
+            $type,
             $blogUrl,
             $from,
             $to,

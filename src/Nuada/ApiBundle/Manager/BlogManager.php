@@ -32,6 +32,7 @@ class BlogManager
                          $limit=null,
                          $offset=null,
                          $name=null,
+                         $type=null,
                          $blogUrl=null,
                          $from=null,
                          $to=null,
@@ -47,6 +48,7 @@ class BlogManager
             $limit,
             $offset,
             $name,
+            $type,
             $blogUrl,
             $from,
             $to,
@@ -60,6 +62,7 @@ class BlogManager
     public function getCount(
         $id=null,
         $name=null,
+        $type=null,
         $blogUrl=null,
         $from=null,
         $to=null,
@@ -70,6 +73,7 @@ class BlogManager
         $count = $er->fetchCount(
             $id,
             $name,
+            $type,
             $blogUrl,
             $from,
             $to,
@@ -84,10 +88,11 @@ class BlogManager
         try {
             if (!empty($requestParams)) {
                 $name        = !empty($requestParams['name']) ? $requestParams['name'] : null;
+                $type        = !empty($requestParams['type']) ? $requestParams['type'] : null;
                 $description = !empty($requestParams['description']) ? $requestParams['description'] : null;
                 $blogUrl     = !empty($requestParams['blog_url']) ? $requestParams['blog_url'] : null;
                 $imagePath   = !empty($requestParams['image_path']) ? $requestParams['image_path'] : null;
-                $visible     = !empty($requestParams['visible']) ? true : false;
+                $visible     = !empty($requestParams['visible']) ? $requestParams['visible'] : true;
 
                 if (is_null($name) || is_null($blogUrl)) {
                     throw new BadAttributeException('Request has null value for blog name or blog url');
@@ -102,6 +107,7 @@ class BlogManager
                     $blog->setCreatedAt(new \DateTime('now'));
                     $blog->setModifiedAt(new \DateTime('now'));
                     $blog->setName($name);
+                    $blog->setType($type);
                     $blog->setDescription($description);
                     $blog->setBlogUrl($blogUrl);
                     $blog->setImagePath($imagePath);
@@ -134,6 +140,7 @@ class BlogManager
         try {
             if (!empty($requestParams)) {
                 $name        = !empty($requestParams['name']) ? $requestParams['name'] : null;
+                $type        = !empty($requestParams['type']) ? $requestParams['type'] : null;
                 $description = !empty($requestParams['description']) ? $requestParams['description'] : null;
                 $blogUrl     = !empty($requestParams['blog_url']) ? $requestParams['blog_url'] : null;
                 $imagePath   = !empty($requestParams['image_path']) ? $requestParams['image_path'] : null;
@@ -148,6 +155,9 @@ class BlogManager
 
                     if (!is_null($name)) {
                         $blog->setName($name);
+                    }
+                    if (!is_null($type)) {
+                        $blog->setType($type);
                     }
                     if (!is_null($description)) {
                         $blog->setDescription($description);

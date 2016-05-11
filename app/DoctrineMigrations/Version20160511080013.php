@@ -18,8 +18,9 @@ class Version20160511080013 extends AbstractMigration
         $this->addSql("CREATE TABLE nl_blogs (
             id INT AUTO_INCREMENT NOT NULL,
             name VARCHAR(200) NOT NULL,
-            description LONGTEXT DEFAULT NULL,
-            blog_url LONGTEXT NOT NULL,
+            type VARCHAR(255) DEFAULT NULL,
+            description VARCHAR(1000) DEFAULT NULL,
+            blog_url varchar(400) NOT NULL,
             image_path VARCHAR(200) DEFAULT NULL,
             created_at DATETIME NOT NULL,
             modified_at DATETIME NOT NULL,
