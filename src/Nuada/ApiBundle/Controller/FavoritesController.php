@@ -90,7 +90,7 @@ class FavoritesController extends Controller
     /**
      * Patch favorites
      *
-     * @Method({"POST"})
+     * @Method({"PATCH"})
      *
      * @return array
      */

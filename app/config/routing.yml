@@ -67,5 +67,11 @@ logout:
     resource: Nuada\ApiBundle\Controller\LogoutController
     prefix: /api
     type:  rest
+
+blogs:
+    resource: Nuada\ApiBundle\Controller\BlogsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
