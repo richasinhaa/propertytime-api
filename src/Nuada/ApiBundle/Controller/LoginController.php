@@ -26,7 +26,8 @@ class LoginController extends Controller
      */
     public function getLoginAction()
     {
-    	        
+    	$user = 0;
+		var_dump($user);
         return View::create(array('result' => 'success', 'redirect' => '/#/profile'), Codes::HTTP_OK);
     }
 }

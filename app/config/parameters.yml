@@ -7,7 +7,7 @@ parameters:
     database_user: root
     database_password: root
     mailer_transport: gmail
-    mailer_host: 127.0.0.1
+    mailer_host: smtp.gmail.com
     mailer_user: admin@nuadalabs.com
     mailer_password: Nuada123!
     locale: en
