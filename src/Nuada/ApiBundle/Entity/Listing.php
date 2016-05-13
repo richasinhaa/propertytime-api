@@ -342,6 +342,13 @@ class Listing
     protected $deletedBy;
 
     /**
+     * @var agencyName
+     *
+     * @ORM\Column(name="company_name", type="string")
+     */
+    protected $agencyName;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="deleted", type="boolean")
@@ -1367,6 +1374,26 @@ class Listing
     public function getIsSold()
     {
         return $this->isSold;
+    }
+
+    /**
+     * Get agencyName
+     *
+     * @return string 
+     */
+    public function getAgencyName()
+    {
+        return $this->agencyName;
+    }
+
+    /**
+     * Set agencyName
+     *
+     * @param string $agencyName
+     */
+    public function setAgencyName($agencyName)
+    {
+        $this->agencyName = $agencyName;
     }
 
     /**
