@@ -60,6 +60,17 @@ class LocationManager
             $searchResult['Residential'] = array_slice($searchResult['Residential'], 0, 3);
         }
 
+        foreach ($allLocations['Agencies']as $agencyDetail) {
+            if(strpos(strtolower($agencyDetail), strtolower($search)) !== false) {
+                $searchResult['Agencies'][] = $agencyDetail;
+            }
+        }
+
+        if (!is_null($searchResult['Agencies'])) {
+            $searchResult['Agencies'] = $this->rank($searchResult['Agencies'], $search);
+            $searchResult['Agencies'] = array_slice($searchResult['Agencies'], 0, 3);
+        }
+
         return $searchResult;
     }
 
@@ -89,7 +100,18 @@ class LocationManager
             );
 
             $data = $query->fetchAll();
-            $locations = $this->hydrate($data);
+
+            $agencyQuery = $this->legacyConnection->executeQuery(
+                "SELECT DISTINCT company_name as agency from bf_listing
+                where company_name != '0'
+                and company_name is not null
+                and company_name != ''
+                order by company_name"
+            );
+
+            $agency = $agencyQuery->fetchAll();
+
+            $locations = $this->hydrate($data, $agency);
             
             $fh = fopen($cache, 'w+') or die ('error writing location cache file');
             fwrite($fh, json_encode($locations));
@@ -100,11 +122,12 @@ class LocationManager
         return $locations;
     }
 
-    public function hydrate($data) {
+    public function hydrate($data, $agency) {
         $location = array();
         
         $commercial = array();
         $residential = array();
+        $agencies = array();
 
         foreach ($data as $detail) {
             if ($detail['listing_category'] == 'Commercial') {
@@ -114,8 +137,12 @@ class LocationManager
                 $residential[] = $detail['location'];
             }
         }
-         $location = array('Commercial' => $commercial, 'Residential' => $residential);
 
+        foreach ($agency as $a) {
+            $agencies[] = $a['agency'];
+        }
+
+        $location = array('Commercial' => $commercial, 'Residential' => $residential, 'Agencies' => $agencies);
         
         return $location;
     }
