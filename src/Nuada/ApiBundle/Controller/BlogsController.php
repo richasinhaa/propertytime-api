@@ -36,7 +36,7 @@ class BlogsController extends Controller
         $blogUrl = $request->query->get('blog_url', null);
         $from = $request->get('from', null);
         $to = $request->get('to', null);
-        $all = strtolower($request->get('to', 'false')) == 'true';
+        $all = strtolower($request->get('all', 'false')) == 'true';
 
         $blogManager = $this->get('nuada_api.blog_manager');
         $blogs = $blogManager->load(

@@ -73,5 +73,10 @@ blogs:
     prefix: /api
     type:  rest
 
+reviews:
+    resource: Nuada\ApiBundle\Controller\ReviewsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"

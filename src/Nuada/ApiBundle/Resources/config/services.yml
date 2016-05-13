@@ -109,3 +109,12 @@ services:
           - @doctrine
           - @security.context
           - @validator
+
+      nuada_api.review_manager:
+          class: Nuada\ApiBundle\Manager\ReviewManager
+          arguments:
+          - @doctrine
+          - @security.context
+          - @validator
+          - @nuada_api.agency_manager
+          - @nuada_api.agent_manager
