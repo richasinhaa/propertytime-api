@@ -62,6 +62,8 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
+    auth_mode: login
+    encryption: ssl
     transport: %mailer_transport%
     host:      %mailer_host%
     username:  %mailer_user%
@@ -134,7 +136,17 @@ fos_user:
     registration:
       form:
          type: Nuada_user_registration
-
+      confirmation:
+            enabled:    true
+    from_email:
+        address:        education@eduthon.in
+        sender_name:    Property Time
+    service:
+        mailer:               fos_user.mailer.default
+        email_canonicalizer:  fos_user.util.canonicalizer.default
+        token_generator:      fos_user.util.token_generator.default
+        username_canonicalizer:  fos_user.util.canonicalizer.default
+        user_manager:         fos_user.user_manager.default
 
 ekino_new_relic:
     enabled: true                         # Defaults to true
