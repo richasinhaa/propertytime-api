@@ -21,11 +21,13 @@ class BlogManager
 
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
-                                ValidatorInterface $validator)
+                                ValidatorInterface $validator,
+                                Connection $legacyConnection)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
+        $this->legacyConnection = $legacyConnection;
     }
 
     public function load($id=null,
@@ -36,24 +38,29 @@ class BlogManager
                          $blogUrl=null,
                          $from=null,
                          $to=null,
-                         $all=false)
+                         $all=false,
+                         $allTypes=false)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Blog');
 
         $limit = $limit ? $limit : self::LIMIT;
         $offset = $offset ? $offset : self::OFFSET;
 
-        $blogs = $er->retrieveAll(
-            $id,
-            $limit,
-            $offset,
-            $name,
-            $type,
-            $blogUrl,
-            $from,
-            $to,
-            $all
-        );
+        if ($limit && $allTypes) {
+            $blogs = $this->fetchAllTypes($limit, $allType);
+        } else {
+            $blogs = $er->retrieveAll(
+                $id,
+                $limit,
+                $offset,
+                $name,
+                $type,
+                $blogUrl,
+                $from,
+                $to,
+                $all
+            );
+        }
 
         return $blogs;
 
@@ -77,7 +84,8 @@ class BlogManager
             $blogUrl,
             $from,
             $to,
-            $all);
+            $all,
+            $allTypes);
 
         return intval($count);
 
@@ -206,6 +214,47 @@ class BlogManager
         }
 
         return true;
+    }
+
+    public function fetchAllTypes($limit) {
+        $blogs = array();
+        $query = $this->legacyConnection->executeQuery("
+            select DISTINCT(type) from nl_blogs");
+
+        $blogTypes = $query->fetchAll();
+        foreach ($blogTypes as $blogType) {
+            $query = $this->legacyConnection->executeQuery("
+            select * from nl_blogs
+            where type = ?
+            and visible = 1
+            limit $limit
+            ", array($blogType['type']));
+
+            $data = $query->fetchAll();
+            foreach ($data as $datum) {
+                $blog = $this->hydrate($datum);
+                $blogs[] = $blog;
+            }
+            
+            
+        }
+        
+        return $blogs;
+    }
+
+    public function hydrate($blogArray) {
+        $blog = new Blog();
+        $blog->setId($blogArray['id']);
+        $blog->setName($blogArray['name']);
+        $blog->setType($blogArray['type']);
+        $blog->setDescription($blogArray['description']);
+        $blog->setBlogUrl($blogArray['blog_url']);
+        $blog->setImagePath($blogArray['image_path']);
+        $blog->setCreatedAt(new \DateTime($blogArray['created_at']));
+        $blog->setModifiedAt(new \DateTime($blogArray['modified_at']));
+        $blog->setVisible($blogArray['visible']);
+
+        return $blog;
     }
 
 }

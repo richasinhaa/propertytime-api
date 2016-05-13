@@ -109,6 +109,7 @@ services:
           - @doctrine
           - @security.context
           - @validator
+          - @doctrine.dbal.default_connection
 
       nuada_api.review_manager:
           class: Nuada\ApiBundle\Manager\ReviewManager
@@ -118,3 +119,10 @@ services:
           - @validator
           - @nuada_api.agency_manager
           - @nuada_api.agent_manager
+
+      nuada_api.file_manager:
+          class: Nuada\ApiBundle\Manager\FileManager
+          arguments:
+          - @doctrine
+          - @security.context
+          - @validator

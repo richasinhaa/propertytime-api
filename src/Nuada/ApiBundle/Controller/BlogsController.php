@@ -37,6 +37,7 @@ class BlogsController extends Controller
         $from = $request->get('from', null);
         $to = $request->get('to', null);
         $all = strtolower($request->get('all', 'false')) == 'true';
+        $allTypes = strtolower($request->get('all_types', 'false')) == 'true';
 
         $blogManager = $this->get('nuada_api.blog_manager');
         $blogs = $blogManager->load(
@@ -48,7 +49,8 @@ class BlogsController extends Controller
             $blogUrl,
             $from,
             $to,
-            $all
+            $all,
+            $allTypes
         );
 
         $blogCount = $blogManager->getCount(
@@ -58,13 +60,14 @@ class BlogsController extends Controller
             $blogUrl,
             $from,
             $to,
-            $all);
+            $all,
+            $allTypes);
 
         if (null === $blogs) {
             $blogs = array();
         }
 
-        return View::create(array('blogs' => $blogs, 'count' => $blogCount), Codes::HTTP_OK);
+        return View::create(array('blogs' => $blogs), Codes::HTTP_OK);
     }
 
     /**

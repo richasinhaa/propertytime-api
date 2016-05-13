@@ -88,6 +88,16 @@ class Blog
     }
 
     /**
+     * Set Id
+     *
+     * @param integer $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
