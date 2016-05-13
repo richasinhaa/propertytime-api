@@ -145,7 +145,7 @@ class ReviewManager
                 $reviewTitle     = !empty($requestParams['review_title']) ? $requestParams['review_title'] : null;
                 $reviewDesc      = !empty($requestParams['review_description']) ? $requestParams['review_description'] : null;
                 $rating          = !empty($requestParams['rating']) ? $requestParams['rating'] : null;
-                $file            = !empty($requestParams['file']) ? $requestParams['file'] : null;
+                $fileId          = !empty($requestParams['file_id']) ? $requestParams['file_id'] : null;
                 $adminApproved   = !empty($requestParams['admin_approved']) ? $requestParams['admin_approved'] : false;
 
 
@@ -193,6 +193,7 @@ class ReviewManager
                     $review->setReviewTitle($reviewTitle);
                     $review->setReviewDescription($reviewDesc);
                     $review->setRating($rating);
+                    $review->setFileId($fileId);
                     $review->setAdminApproved($adminApproved);
 
                     $em = $this->doctrine->getManager();
