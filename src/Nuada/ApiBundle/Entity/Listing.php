@@ -355,6 +355,13 @@ class Listing
      */
     protected $deleted;
 
+    /**
+     * @var text
+     *
+     * @ORM\Column(name="images", type="string")
+     */
+    protected $cdnImages;
+
     protected $agency;
 
     protected $photos;
@@ -1317,6 +1324,26 @@ class Listing
     }
 
     /**
+     * Set cdnImages
+     *
+     * @param text $cdnImages
+     */
+    public function setCdnImages($cdnImages)
+    {
+        $this->cdnImages = $cdnImages;
+    }
+
+    /**
+     * Get cdnImages
+     *
+     * @return text 
+     */
+    public function getCdnImages()
+    {
+        return $this->cdnImages;
+    }
+
+    /**
      * Set agency
      *
      * @param Agency $agency
@@ -1444,6 +1471,7 @@ class Listing
             'old_publish_state'    => $this->getOldPublishState(),
             'visibility'           => $this->getVisibility(),
             'approved'             => $this->getApproved(),
+            'cdn_images'           => $this->getCdnImages(),
             'archived'             => $this->getArchived(),
             'total_view'           => $this->getTotalView(),
             'last_viewed'          => $this->getLastViewed(),
