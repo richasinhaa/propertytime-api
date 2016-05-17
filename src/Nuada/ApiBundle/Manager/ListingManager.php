@@ -80,97 +80,64 @@ class ListingManager
 
 
 
-        if (!is_null($properties)) {
-
-            if (is_array($properties)) {
-                foreach($properties as $property) {
-                    $features = $property->getFeatures();
-                    $description = $property->getDescription();
-                    if ($features) {
-                        $property->setFeatures($features);
-                        $description = str_replace($features, '', $description);
-                        $property->setDescription($description);
-                    }
-                } 
-            } else {
-                $features = $properties->getFeatures();
-                $description = $properties->getDescription();
+    if (!is_null($properties)) {
+        if (is_array($properties)) {
+            foreach($properties as $property) {
+                $features = $property->getFeatures();
+                $description = $property->getDescription();
                 if ($features) {
-                    $properties->setFeatures($features);
+                    $property->setFeatures($features);
                     $description = str_replace($features, '', $description);
-                    $properties->setDescription($description);
+                    $property->setDescription($description);
                 }
-            }
-            //with agency and with photo
-            if ($withAgencies and $withPhotos) {
-                if (is_array($properties)) {
-                    foreach ($properties as $property) {
-                        $agencyId = $property->getAgencyId();
-                        if (!is_null($agencyId)) {
-                            $agency = $this->agencyManager->load($agencyId);
-                            $property->setAgency($agency);
-                        }
-                        $listingId = $property->getId();
-                        $photos = $this->photoManager->load(
-                            null, //$id
-                            $listingId
-                        );
-                        $property->setPhotos($photos);
-                    }
-                } else {
-                    $agencyId = $properties->getAgencyId();
+                //with agencies
+                if ($withAgencies) {
+                    $agencyId = $property->getAgencyId();
                     if (!is_null($agencyId)) {
                         $agency = $this->agencyManager->load($agencyId);
-                        $properties->setAgency($agency);
+                        $property->setAgency($agency);
                     }
-                    $listingId = $properties->getId();
+                }
+                //with photos
+                if  ($withPhotos) {
+                    $listingId = $property->getId();
                     $photos = $this->photoManager->load(
                         null, //$id
                         $listingId
                     );
-                    $properties->setPhotos($photos);
-
-                }
-            } else if ($withAgencies) {
-                if (is_array($properties)) {
-                    foreach ($properties as $property) {
-                        $agencyId = $property->getAgencyId();
-                        if (!is_null($agencyId)) {
-                            $agency = $this->agencyManager->load($agencyId);
-                            $property->setAgency($agency);
-                        }
-                    }
-                } else {
-                    $agencyId = $properties->getAgencyId();
-                    if (!is_null($agencyId)) {
-                        $agency = $this->agencyManager->load($agencyId);
-                        $properties->setAgency($agency);
-                    }
-
-                }
-
-            } else if  ($withPhotos) {
-                if (is_array($properties)) {
-                    foreach ($properties as $property) {
-                        $listingId = $property->getId();
-                        $photos = $this->photoManager->load(
-                            null, //$id
-                            $listingId
-                        );
-                        $property->setPhotos($photos);
-                    }
-                } else {
-                    $listingId = $properties->getId();
-                    $photos = $this->photoManager->load(
-                        null, //$id
-                        $listingId
-                    );
-                    $properties->setPhotos($photos);
-
+                    $property->setPhotos($photos);
                 }
             }
 
+        } else {
+            $features = $properties->getFeatures();
+            $description = $properties->getDescription();
+            if ($features) {
+                $properties->setFeatures($features);
+                $description = str_replace($features, '', $description);
+                $properties->setDescription($description);
+            }
+            //with agencies
+            if ($withAgencies) {
+                $agencyId = $properties->getAgencyId();
+                if (!is_null($agencyId)) {
+                    $agency = $this->agencyManager->load($agencyId);
+                    $properties->setAgency($agency);
+                }
+
+            }
+            //with photos
+            if  ($withPhotos) {
+                $listingId = $properties->getId();
+                $photos = $this->photoManager->load(
+                    null, //$id
+                    $listingId
+                );
+                $properties->setPhotos($photos);
+
+            }
         }
+    }
 
         return $properties;
 

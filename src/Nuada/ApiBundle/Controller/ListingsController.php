@@ -33,7 +33,6 @@ class ListingsController extends Controller
         $id          = !empty($requestParams['id']) ? $requestParams['id'] : null;
         $limit       = !empty($requestParams['limit']) ? $requestParams['limit'] : $limit;
         $offset      = !empty($requestParams['offset']) ? $requestParams['offset'] : $offset;
-        $withDeleted = !empty($requestParams['with_deleted']) ? $requestParams['with_deleted'] : false;
         $search      = !empty($requestParams['search']) ? $requestParams['search'] : null;
         $city        = !empty($requestParams['city']) ? $requestParams['city'] : null;
         $community   = !empty($requestParams['community']) ? $requestParams['community'] : null;
@@ -49,9 +48,30 @@ class ListingsController extends Controller
         $furnishing  = !empty($requestParams['furnishing']) ? $requestParams['furnishing'] : null;
         $agentId     = !empty($requestParams['agent_id']) ? $requestParams['agent_id'] : null;
         $sortOn      = !empty($requestParams['sort_on']) ? $requestParams['sort_on'] : null;
-        $reverse     = !empty($requestParams['reverse']) ? $requestParams['reverse'] : false;
-        $withAgencies= !empty($requestParams['with_agencies']) ? $requestParams['with_agencies'] : true;
-        $withPhotos  = !empty($requestParams['with_photos']) ? $requestParams['with_photos'] : true;
+
+        if ($requestParams['with_agencies'] === false) {
+            $withAgencies = false;
+        } else {
+            $withAgencies = true;
+        }
+
+        if ($requestParams['with_photos'] === true) {
+            $withPhotos = true;
+        } else {
+            $withPhotos = false;
+        }
+
+        if ($requestParams['reverse'] === true) {
+            $reverse = true;
+        } else {
+            $reverse = false;
+        }
+
+        if ($requestParams['with_deleted'] === true) {
+            $withDeleted = true;
+        } else {
+            $withDeleted = false;
+        }
         
         if ($bed) {
             $bed = explode(',', $bed);
