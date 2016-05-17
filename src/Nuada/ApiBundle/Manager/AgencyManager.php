@@ -76,8 +76,23 @@ class AgencyManager
 
         if (!is_null($agencies)) {
             //set listing counts
-            if (!is_array($agencies)) {
-                $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+            $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+            if (is_array($agencies)) {
+                foreach($agencies as $agency) {
+                    $agencyId = $agency->getId();
+                    $listingCount = $listingRepo->fetchCount(
+                    null, //$id
+                    false, // $withDeleted
+                    null, //$search
+                    null, //$city
+                    null, //$community
+                    null, //$category
+                    null, //$subcategory
+                    null, //$type
+                    $agencyId);
+                    $agency->setListingCount($listingCount);
+                }
+            } else {
                 $agencyId = $agencies->getId();
                 $listingCount = $listingRepo->fetchCount(
                     null, //$id
@@ -90,7 +105,6 @@ class AgencyManager
                     null, //$type
                     $agencyId);
                 $agencies->setListingCount($listingCount);
-
                 $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
                 $agencies->setSoldListings($soldListingCount);
             }
