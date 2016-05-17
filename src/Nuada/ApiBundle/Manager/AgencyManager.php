@@ -91,6 +91,8 @@ class AgencyManager
                     null, //$type
                     $agencyId);
                     $agency->setListingCount($listingCount);
+                    $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+                    $agency->setSoldListings($soldListingCount);
                 }
             } else {
                 $agencyId = $agencies->getId();
@@ -268,6 +270,22 @@ class AgencyManager
             $hydratedAgency->setAddress($agency['address']);
             $hydratedAgency->setDescription($agency['description']);
             $hydratedAgency->setScore($agency['score']);
+
+            $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+            $agencyId = $agency['id'];
+            $listingCount = $listingRepo->fetchCount(
+            null, //$id
+            false, // $withDeleted
+            null, //$search
+            null, //$city
+            null, //$community
+            null, //$category
+            null, //$subcategory
+            null, //$type
+            $agencyId);
+            $hydratedAgency->setListingCount($listingCount);
+            $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+            $hydratedAgency->setSoldListings($soldListingCount);
 
             $hydratedAgencies[] = $hydratedAgency;
 
