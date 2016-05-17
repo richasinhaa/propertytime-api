@@ -59,7 +59,7 @@ class ListingsController extends Controller
         if ($type) {
             $type = explode(',', $type);
         }
-
+        
         $listingManager = $this->get('nuada_api.listing_manager');
         $properties = $listingManager->load(
             $id,

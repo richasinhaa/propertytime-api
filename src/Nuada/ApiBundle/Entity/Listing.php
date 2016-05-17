@@ -373,6 +373,8 @@ class Listing
      */
     protected $isSold;
 
+    protected $features;
+
     /**
      * Get id
      *
@@ -1424,6 +1426,32 @@ class Listing
     }
 
     /**
+     * Get features
+     *
+     * @return string 
+     */
+    public function getFeatures()
+    {
+        $description = $this->getDescription();
+        $position = strpos($this->getDescription(), 'PROPERTY FEATURES');
+        if ($description and ($position !== -1)) {
+            $features = substr($description, $position);
+        }
+
+        return $features;
+    }
+
+    /**
+     * Set features
+     *
+     * @param string $features
+     */
+    public function setFeatures($features)
+    {
+        $this->features = $features;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1461,6 +1489,7 @@ class Listing
             'from_feed'            => $this->getFromFeed(),
             'title'                => $this->getTitle(),
             'description'          => $this->getDescription(),
+            'features'             => $this->getFeatures(),
             'is_cdn'               => $this->getIsCdn(),
             'client_id'            => $this->getClientId(),
             'hot_listing'          => $this->getHotListing(),

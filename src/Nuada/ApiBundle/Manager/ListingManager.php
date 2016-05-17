@@ -79,7 +79,28 @@ class ListingManager
             $reverse);
 
 
+
         if (!is_null($properties)) {
+
+            if (is_array($properties)) {
+                foreach($properties as $property) {
+                    $features = $property->getFeatures();
+                    $description = $property->getDescription();
+                    if ($features) {
+                        $property->setFeatures($features);
+                        $description = str_replace($features, '', $description);
+                        $property->setDescription($description);
+                    }
+                } 
+            } else {
+                $features = $properties->getFeatures();
+                $description = $properties->getDescription();
+                if ($features) {
+                    $properties->setFeatures($features);
+                    $description = str_replace($features, '', $description);
+                    $properties->setDescription($description);
+                }
+            }
             //with agency and with photo
             if ($withAgencies and $withPhotos) {
                 if (is_array($properties)) {
