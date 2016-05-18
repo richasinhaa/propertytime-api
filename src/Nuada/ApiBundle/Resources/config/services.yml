@@ -126,3 +126,4 @@ services:
           - @doctrine
           - @security.context
           - @validator
+          - @service_container

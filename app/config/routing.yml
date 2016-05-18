@@ -73,6 +73,11 @@ blogs:
     prefix: /api
     type:  rest
 
+files:
+    resource: Nuada\ApiBundle\Controller\FilesController
+    prefix: /api
+    type:  rest
+
 reviews:
     resource: Nuada\ApiBundle\Controller\ReviewsController
     prefix: /api
