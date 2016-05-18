@@ -29,17 +29,17 @@ class FilesController extends Controller
         $file = $this->getRequest()->files;
         $fileManager = $this->get('nuada_api.file_manager');
         try {
-            $files = $fileManager->add($file);
+            $response = $fileManager->add($file);
         } catch (BadAttributeException $e) {
             return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
         }
 
-        if (is_null($files)) {
-            $message = 'failed';
-        } else {
+        if ($response['message']) {
             $message = 'success';
+        } else {
+            $message = 'failed';
         }
 
-        return View::create(array('message' => $message), Codes::HTTP_OK);
+        return View::create(array('message' => $message, 'file' => $response['document']), Codes::HTTP_OK);
     }
 }

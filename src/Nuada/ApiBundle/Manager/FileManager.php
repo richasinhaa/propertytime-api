@@ -58,7 +58,11 @@ class FileManager extends FileBag
         } catch (Exception $e) {
             throw $e;
         }
-        return $result;
+        $response = array();
+        $response['message'] = $result ? true : false;
+        $response['document'] = $document;
+        
+        return $response;
     }
 
 
