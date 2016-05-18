@@ -315,7 +315,7 @@ class AgencyManager
     }
 
     public function findAgencies($keyword=null) {
-        $query = $this->legacyConnection->executeQuery('
+        /*$query = $this->legacyConnection->executeQuery('
                 SELECT DISTINCT a.* from bf_company a
                  JOIN bf_listing l
                  ON a.id = l.company_id
@@ -323,7 +323,12 @@ class AgencyManager
                     or l.community like ? 
                     or l.sub_community like ?
                     or l.tower like ?)
-                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));
+                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));*/
+
+            $query = $this->legacyConnection->executeQuery('
+                SELECT DISTINCT a.* from bf_company a
+                 where a.name like ?
+                 ', array("%$keyword%"));
 
         $data = $query->fetchAll();
         $agencies = $this->hydrate($data);
@@ -332,7 +337,7 @@ class AgencyManager
     }
 
     public function findAgenciesCount($keyword=null) {
-        $query = $this->legacyConnection->executeQuery('
+        /*$query = $this->legacyConnection->executeQuery('
         SELECT count(*) as count from (
             SELECT DISTINCT a.* from bf_company a
                  JOIN bf_listing l
@@ -341,7 +346,13 @@ class AgencyManager
                     or l.community like ? 
                     or l.sub_community like ?
                     or l.tower like ?)) as x
-                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));
+                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));*/
+
+            $query = $this->legacyConnection->executeQuery('
+            SELECT count(*) as count from (
+                SELECT DISTINCT a.* from bf_company a
+                 where a.name like ?) as x
+                 ', array("%$keyword%"));
 
         $data = $query->fetch();
 
