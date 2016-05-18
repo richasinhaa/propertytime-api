@@ -93,28 +93,9 @@ class AgencyManager
                     $agency->setListingCount($listingCount);
                     $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
                     $agency->setSoldListings($soldListingCount);
-                }
-            } else {
-                $agencyId = $agencies->getId();
-                $listingCount = $listingRepo->fetchCount(
-                    null, //$id
-                    false, // $withDeleted
-                    null, //$search
-                    null, //$city
-                    null, //$community
-                    null, //$category
-                    null, //$subcategory
-                    null, //$type
-                    $agencyId);
-                $agencies->setListingCount($listingCount);
-                $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
-                $agencies->setSoldListings($soldListingCount);
-            }
-
-            //with photos
-            if ($withPhotos) {
-                if (is_array($agencies)) {
-                    foreach ($agencies as $agency) {
+                            
+                    //with photos
+                    if ($withPhotos) {
                         $agencyId = $agency->getId();
                         $photos = $this->photoManager->load(
                             null, //$id
@@ -123,21 +104,9 @@ class AgencyManager
                         );
                         $agency->setPhotos($photos);
                     }
-                } else {
-                    $agencyId = $agencies->getId();
-                    $photos = $this->photoManager->load(
-                        null, //$id
-                        null, //$listingId
-                        $agencyId
-                    );
-                    $agencies->setPhotos($photos);
-                }
-            }
 
-            //with agents
-            if ($withAgents) {
-                if (is_array($agencies)) {
-                    foreach ($agencies as $agency) {
+                    //with agents
+                    if ($withAgents) {
                         $agencyId = $agency->getId();
                         $agents = $this->agentManager->load(
                             null, //$id
@@ -159,7 +128,38 @@ class AgencyManager
                         );
                         $agency->setAgentsCount($agentsCount);
                     }
-                } else {
+                }
+
+            } else {
+                $agencyId = $agencies->getId();
+                $listingCount = $listingRepo->fetchCount(
+                    null, //$id
+                    false, // $withDeleted
+                    null, //$search
+                    null, //$city
+                    null, //$community
+                    null, //$category
+                    null, //$subcategory
+                    null, //$type
+                    $agencyId);
+                $agencies->setListingCount($listingCount);
+                $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+                $agencies->setSoldListings($soldListingCount);
+
+                //with photos
+                if ($withPhotos) {
+                    $agencyId = $agencies->getId();
+                    $photos = $this->photoManager->load(
+                        null, //$id
+                        null, //$listingId
+                        $agencyId
+                    );
+
+                    $agencies->setPhotos($photos);
+                }
+
+                //with agents
+                if ($withAgents) {
                     $agencyId = $agencies->getId();
                     $agents = $this->agentManager->load(
                             null, //$id
@@ -179,11 +179,12 @@ class AgencyManager
                         null, //$userId
                         $agencyId
                     );
+                    
                     $agencies->setAgentsCount($agentsCount);
 
+                    }
                 }
             }
-        }
 
         return $agencies;
 
