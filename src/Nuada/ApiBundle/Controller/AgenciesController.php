@@ -41,6 +41,12 @@ class AgenciesController extends Controller
         $withAgents = strtolower($request->get('with_agents', 'false')) == 'true';
         $search = $request->query->get('search', null);
 
+        if ($search == '') {
+            $search = null;
+        }
+        if ($name == '') {
+            $name = null;
+        }
         $agencyManager = $this->get('nuada_api.agency_manager');
         $agencies = $agencyManager->load(
             $id,

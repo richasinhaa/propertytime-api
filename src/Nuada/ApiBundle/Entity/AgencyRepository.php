@@ -118,6 +118,7 @@ class AgencyRepository extends EntityRepository
     public function fetchCount(
         $id = null,
         $withDeleted = false,
+        $search=null,
         $name = null,
         $userId = null,
         $userName = null)
