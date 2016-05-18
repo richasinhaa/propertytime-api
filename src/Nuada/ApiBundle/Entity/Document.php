@@ -224,7 +224,7 @@ class Document
      */
     public function setSize($size)
     {
-        $this->type = $size;
+        $this->size = $size;
     }
 
     public function upload()
@@ -245,7 +245,7 @@ class Document
         );
 
         // set the path property to the filename where you've saved the file
-        $this->path = $this->getFile()->getClientOriginalName();
+        $this->path = $this->getUploadDir() . '/' .$this->getFile()->getClientOriginalName();
         // clean up the file property as you won't need it anymore
         $this->file = null;
 
