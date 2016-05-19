@@ -1434,7 +1434,7 @@ class Listing
     {
         $description = $this->getDescription();
         $position = strpos($this->getDescription(), 'PROPERTY FEATURES');
-        if ($description and ($position !== -1)) {
+        if ($description and ($position !== false)) {
             $features = substr($description, $position);
         }
 
