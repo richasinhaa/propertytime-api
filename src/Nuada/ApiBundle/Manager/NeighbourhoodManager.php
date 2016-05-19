@@ -59,10 +59,10 @@ class NeighbourhoodManager
 
         
         if (!is_null($neighbourhood)) {
-            //with photos
-            if ($withPhotos) {
-                if (is_array($neighbourhood)) {
-                    foreach ($neighbourhood as $nbd) {
+            if (is_array($neighbourhood)) {
+                foreach ($neighbourhood as $nbd) {
+                    //with photos
+                    if ($withPhotos) {
                         $nbdId = $nbd->getId();
                         $photos = $this->photoManager->load(
                             null, //$id
@@ -72,7 +72,16 @@ class NeighbourhoodManager
                         );
                         $nbd->setPhotos($photos);
                     }
-                } else {
+                    //with agency
+                    if ($withAgency) {
+                        $nbdId = $nbd->getId();
+                        $agencies[] = $this->fetchAgencies($nbdId);
+                        $nbd->setAgencies($agencies);
+                    }
+                }
+            } else {
+                //with photos
+                if ($withPhotos) {
                     $nbdId = $neighbourhood->getId();
                     $photos = $this->photoManager->load(
                         null, //$id
@@ -81,18 +90,9 @@ class NeighbourhoodManager
                         $nbdId
                     );
                     $neighbourhood->setPhotos($photos);
-
                 }
-            }
-
-            if ($withAgency) {
-                if (is_array($neighbourhood)) {
-                    foreach ($neighbourhood as $nbd) {
-                        $nbdId = $nbd->getId();
-                        $agencies[] = $this->fetchAgencies($nbdId);
-                        $nbd->setAgencies($agencies);
-                    }
-                } else {
+                //with agency
+                if ($withAgency) {
                     $nbdId = $neighbourhood->getId();
                     $agencies[] = $this->fetchAgencies($nbdId);
                     $neighbourhood->setAgencies($agencies);
