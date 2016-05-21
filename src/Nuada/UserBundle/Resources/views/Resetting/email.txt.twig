@@ -6,7 +6,7 @@
 {% endblock %}
 {% block body_text %}
 {% autoescape false %}
-{{ 'resetting.email.message'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl}) }}
+{{ 'resetting.email.message'|trans({'%username%': user.name, '%confirmationUrl%': 'http://propertytime.ae/#/auth/emailConfirm?url='~confirmationUrl}) }}
 {% endautoescape %}
 {% endblock %}
 {% block body_html %}{% endblock %}

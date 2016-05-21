@@ -1,6 +1,6 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<form action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
+<form id="registerFormId" ng-submit="registerformAction('{{ path('fos_user_registration_register') }}','POST')" {{ form_enctype(form) }} class="fos_user_registration_register">
 
     <div id="fos_user_registration_form">
     <div class="form-group">
@@ -19,7 +19,7 @@
     <div class="form-group">
          <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-phone"></i></div>
-                    <input placeholder="Enter your phone number" type="text" id="fos_user_registration_form_phone" name="fos_user_registration_form[phone]" required="required" />
+                    <input placeholder="Enter your phone number" type="number" id="fos_user_registration_form_phone" name="fos_user_registration_form[phone]" required="required" />
          </div>
     </div>
     <div class="form-group">

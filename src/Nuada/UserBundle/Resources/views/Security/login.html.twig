@@ -3,12 +3,10 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block fos_user_content %}
-{% if error %}
-    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-{% endif %}
 
-<form action="{{ path("fos_user_security_check") }}" method="post">
+<form ng-submit="loginformAction('{{ path("fos_user_security_check") }}', 'post')" id="loginFormId">
 <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+<input type="hidden" name="_target_path" value="/auth/redirectlogin" />
  <div class="form-group">
     <div class="input-group">
             <div class="input-group-addon"><i class="fa fa-user"></i></div>
@@ -21,6 +19,11 @@
         <input type="password" placeholder="Enter Password" id="password" name="_password" required="required" />
     </div>
  </div>
+<div class="error-div text-center">
+	{% if error %}
+	    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+	{% endif %}
+</div>
  <div class="checkbox-area">
      <div class="col-md-6">
         <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
@@ -34,4 +37,5 @@
  <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
 
 </form>
+
 {% endblock fos_user_content %}
