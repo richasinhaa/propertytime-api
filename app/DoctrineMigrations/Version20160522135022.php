@@ -6,7 +6,7 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
 /**
- * Auto-generated Migration: Please modify to your needs!
+ * New neighbouhood mappings - rewrites the old one
  */
 class Version20160522135022 extends AbstractMigration
 {
