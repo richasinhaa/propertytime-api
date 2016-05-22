@@ -7,6 +7,10 @@
     <route id="fos_user_security_login" path="/auth/login" methods="GET POST">
         <default key="_controller">FOSUserBundle:Security:login</default>
     </route>
+    <route id="security_login_redirect" path="/auth/redirectlogin" methods="GET POST">
+        <default key="_controller">UserBundle:RedirectLogin:redirectLogin</default>
+        <default key="_format">json</default>
+    </route>
 
     <route id="fos_user_security_check" path="/auth/login_check" methods="POST">
         <default key="_controller">FOSUserBundle:Security:check</default>

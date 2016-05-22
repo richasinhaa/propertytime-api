@@ -1,10 +1,36 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<div ng-controller="FormHandlerUserRegister">
-	<form ng-submit="submit('{{ path('fos_user_registration_register') }}')" {{ form_enctype(form) }} class="fos_user_registration_register">
-	    {{ form_widget(form) }}
-	    <div>
-	        <input type="submit" value="{{ 'registration.submit'|trans }}" />
-	    </div>
-	</form>
-</div>
+<form id="registerFormId" ng-submit="registerformAction('{{ path('fos_user_registration_register') }}','POST')" {{ form_enctype(form) }} class="fos_user_registration_register">
+
+    <div id="fos_user_registration_form">
+    <div class="form-group">
+         <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+            <input placeholder="Enter your Email Address" type="email" id="fos_user_registration_form_email" name="fos_user_registration_form[email]" required="required" />
+         </div>
+    </div>
+    <div class="form-group">
+         <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+            <input placeholder="Enter your Password" type="password" id="fos_user_registration_form_plainPassword" name="fos_user_registration_form[plainPassword]" required="required" />
+         </div>
+    </div>
+
+    <div class="form-group">
+         <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-phone"></i></div>
+                    <input placeholder="Enter your phone number" type="number" id="fos_user_registration_form_phone" name="fos_user_registration_form[phone]" required="required" />
+         </div>
+    </div>
+    <div class="form-group">
+        <div class="input-group">
+                   <div class="input-group-addon"><i class="fa fa-user"></i></div>
+        <input placeholder="Enter your Full Name" type="text" id="fos_user_registration_form_name" name="fos_user_registration_form[name]" required="required" maxlength="255" pattern=".{3,}" />
+        </div>
+    </div>
+{{ form_widget(form._token) }}
+{{form_errors(form)}}
+    <div>
+        <input type="submit" value="{{ 'registration.submit'|trans }}" />
+    </div>
+</form>

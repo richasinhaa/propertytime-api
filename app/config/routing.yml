@@ -58,11 +58,6 @@ favorites:
     prefix: /api
     type:  rest
 
-login:
-    resource: Nuada\ApiBundle\Controller\LoginController
-    prefix: /api
-    type:  rest
-
 logout:
     resource: Nuada\ApiBundle\Controller\LogoutController
     prefix: /api

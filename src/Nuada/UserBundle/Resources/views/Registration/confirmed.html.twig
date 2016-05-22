@@ -3,8 +3,11 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block fos_user_content %}
-    <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
-    {% if targetUrl %}
-    <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
-    {% endif %}
+    <p>{{ 'registration.confirmed'|trans({'%username%': user.name}) }}</p>
+    
+    <script type="text/javascript">
+    	setTimeout(function(){
+    		window.location.href = "http://propertytime.ae";
+    	}, 1500);
+    </script>
 {% endblock fos_user_content %}

@@ -1,0 +1,16 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<form ng-submit="passwordFormAction('{{ path('fos_user_resetting_send_email') }}', 'POST')" class="fos_user_resetting_request" id="passwordFormId">
+    <div>
+        {% if invalid_username is defined %}
+            <p>{{ 'resetting.request.invalid_username'|trans({'%username%': invalid_username}) }}</p>
+        {% endif %}
+        <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+            <input type="text" id="username" name="username" required="required" placeholder="Enter Registered Email Address"/>
+        </div>
+    </div>
+    <div>
+        <input type="submit" value="{{ 'resetting.request.submit'|trans }}" />
+    </div>
+</form>
