@@ -107,13 +107,6 @@ class Agency
     /**
      * @var string
      *
-     * @ORM\Column(name="photo", type="text")
-     */
-    protected $cdnPhoto;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="type_of_feeds", type="text")
      */
     protected $typeOfFeeds;
@@ -557,26 +550,6 @@ class Agency
     public function getLogo()
     {
         return $this->logo;
-    }
-
-    /**
-     * Set cdnPhoto
-     *
-     * @param string $cdnPhoto
-     */
-    public function setCdnPhoto($cdnPhoto)
-    {
-        $this->cdnPhoto = $cdnPhoto;
-    }
-
-    /**
-     * Get cdnPhoto
-     *
-     * @return string 
-     */
-    public function getCdnPhoto()
-    {
-        return $this->cdnPhoto;
     }
 
     /**
@@ -1216,7 +1189,6 @@ class Agency
             'agents_allowed'         => $this->getAgentsAllowed(),
             'address'                => $this->getAddress(),
             'logo'                   => $this->getLogo(),
-            'cdn_photo'              => $this->getCdnPhoto(),
             'type_of_feeds'          => $this->getTypeOfFeeds(),
             'master_key_feeds_url'   => $this->getMasterKeyFeedsUrl(),
             'master_key_access_code' => $this->getMasterKeyAccessCode(),
