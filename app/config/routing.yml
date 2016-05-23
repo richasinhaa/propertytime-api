@@ -78,5 +78,10 @@ reviews:
     prefix: /api
     type:  rest
 
+useragencies:
+    resource: Nuada\ApiBundle\Controller\UserAgenciesController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"

@@ -127,3 +127,12 @@ services:
           - @security.context
           - @validator
           - @service_container
+
+      nuada_api.user_agency_manager:
+        class: Nuada\ApiBundle\Manager\UserAgencyManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
+        - @nuada_api.agency_manager
+        

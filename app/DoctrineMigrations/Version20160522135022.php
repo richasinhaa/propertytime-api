@@ -45,6 +45,8 @@ class Version20160522135022 extends AbstractMigration
 
         $this->addSql('update nl_neighbourhood_metrics set neighbourhood_id = (select id from nl_neighbourhood where name = \'The Villa\') where neighbourhood_name = \'The Villa\'');
 
+        $this->addSql('insert into nl_neighbourhood_metrics(neighbourhood_name, avg_sales_price, avg_rental_value, maintenance_fee, annual_gross_yield, occupancy) values (\'Dubai\', 1367, 8.5, 15.6, 7.8, 88.4 )');
+
         //Data for below query from
         //select community, company_id from bf_listing where community in (\'Palm Jumeirah\', \'Jumeirah Lakes Towers\',\'Remraam\', \'DIFC\', \'Business Bay\', \'Victory Heights\', \'Dubai Marina\', \'Jumeirah Islands\', \'Jumeirah Lakes Towers\', \'The Villa\')
         //and company_id is not null
