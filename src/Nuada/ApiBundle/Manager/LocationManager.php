@@ -44,7 +44,7 @@ class LocationManager
             }
         }
 
-        if (!is_null($searchResult['Commercial'])) {
+        if (array_key_exists('Commercial', $searchResult) && !is_null($searchResult['Commercial'])) {
             $searchResult['Commercial'] = $this->rank($searchResult['Commercial'], $search);
             $searchResult['Commercial'] = array_slice($searchResult['Commercial'], 0, 3);
         }
@@ -55,7 +55,7 @@ class LocationManager
             }
         }
         
-        if (!is_null($searchResult['Residential'])) {
+        if (array_key_exists('Residential', $searchResult) && !is_null($searchResult['Residential'])) {
             $searchResult['Residential'] = $this->rank($searchResult['Residential'], $search);
             $searchResult['Residential'] = array_slice($searchResult['Residential'], 0, 3);
         }

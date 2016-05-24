@@ -49,25 +49,25 @@ class ListingsController extends Controller
         $agentId     = !empty($requestParams['agent_id']) ? $requestParams['agent_id'] : null;
         $sortOn      = !empty($requestParams['sort_on']) ? $requestParams['sort_on'] : null;
 
-        if ($requestParams['with_agencies'] === false) {
+        if (array_key_exists('with_agencies', $requestParams) && $requestParams['with_agencies'] === false) {
             $withAgencies = false;
         } else {
             $withAgencies = true;
         }
 
-        if ($requestParams['with_photos'] === true) {
+        if (array_key_exists('with_photos', $requestParams) && $requestParams['with_photos'] === true) {
             $withPhotos = true;
         } else {
             $withPhotos = false;
         }
 
-        if ($requestParams['reverse'] === true) {
+        if (array_key_exists('reverse', $requestParams) && $requestParams['reverse'] === true) {
             $reverse = true;
         } else {
             $reverse = false;
         }
 
-        if ($requestParams['with_deleted'] === true) {
+        if (array_key_exists('with_deleted', $requestParams) && $requestParams['with_deleted'] === true) {
             $withDeleted = true;
         } else {
             $withDeleted = false;

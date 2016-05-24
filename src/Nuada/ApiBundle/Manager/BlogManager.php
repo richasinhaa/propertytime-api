@@ -47,7 +47,7 @@ class BlogManager
         $offset = $offset ? $offset : self::OFFSET;
 
         if ($limit && $allTypes) {
-            $blogs = $this->fetchAllTypes($limit, $allType);
+            $blogs = $this->fetchAllTypes($limit, $allTypes);
         } else {
             $blogs = $er->retrieveAll(
                 $id,
@@ -73,7 +73,8 @@ class BlogManager
         $blogUrl=null,
         $from=null,
         $to=null,
-        $all=false)
+        $all=false,
+        $allTypes=false)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Blog');
 

@@ -15,7 +15,7 @@ class Version20160504075428 extends AbstractMigration
      */
     public function up(Schema $schema)
     {
-        //updating modified_on because ass is_sold was throwing
+        //updating modified_on because is_sold was throwing
         // MySQL Incorrect datetime value: '0000-00-00 00:00:00' on modified_on
         $this->addSql("UPDATE bf_listing set modified_on=NULL");
         $this->addSql("ALTER TABLE bf_listing ADD COLUMN is_sold TINYINT(1) DEFAULT 0");
