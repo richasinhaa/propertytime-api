@@ -3,3 +3,10 @@ services:
         class: Nuada\UserBundle\Form\RegistrationType
         tags:
             - { name: form.type, alias: Nuada_user_registration }
+
+    nuada_api.update_user_manager:
+        class: Nuada\UserBundle\Manager\UpdatedUserManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator

@@ -83,5 +83,10 @@ useragencies:
     prefix: /api
     type:  rest
 
+updateduser:
+    resource: Nuada\UserBundle\Controller\UpdateduserController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
