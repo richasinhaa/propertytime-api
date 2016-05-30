@@ -163,6 +163,7 @@ class ListingRepository extends EntityRepository
                      ->orWhere('e.community = :search')
                      ->orWhere('e.subCommunity = :search')
                      ->orWhere('e.tower = :search')
+                     ->orWhere('e.agencyName = :search')
                      ->setParameter('search', $search);
         }
         
