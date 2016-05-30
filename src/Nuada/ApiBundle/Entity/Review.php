@@ -121,6 +121,41 @@ class Review
     protected $createdAt;
 
     /**
+     * @var float $professionalism
+     *
+     * @ORM\Column(name="professionalism", type="float")
+     */
+    protected $professionalism;
+
+    /**
+     * @var float $localMarketKnowledge
+     *
+     * @ORM\Column(name="local_market_knowledge", type="float")
+     */
+    protected $localMarketKnowledge;
+
+    /**
+     * @var float $responsiveness
+     *
+     * @ORM\Column(name="responsiveness", type="float")
+     */
+    protected $responsiveness;
+
+    /**
+     * @var float $processExpertise
+     *
+     * @ORM\Column(name="process_expertise", type="float")
+     */
+    protected $processExpertise;
+
+    /**
+     * @var float $afterSalesService
+     *
+     * @ORM\Column(name="after_sales_service", type="float")
+     */
+    protected $afterSalesService;
+
+    /**
      * @var \DateTime $modifiedAt
      *
      * @ORM\Column(name="modified_at", type="datetime")
@@ -483,6 +518,106 @@ class Review
     }
 
     /**
+     * Set professionalism
+     *
+     * @param float $professionalism
+     */
+    public function setProfessionalism($professionalism)
+    {
+        $this->professionalism = $professionalism;
+    }
+
+    /**
+     * Get professionalism
+     *
+     * @return float 
+     */
+    public function getProfessionalism()
+    {
+        return $this->professionalism;
+    }
+
+    /**
+     * Set localMarketKnowledge
+     *
+     * @param float $localMarketKnowledge
+     */
+    public function setLocalMarketKnowledge($localMarketKnowledge)
+    {
+        $this->localMarketKnowledge = $localMarketKnowledge;
+    }
+
+    /**
+     * Get localMarketKnowledge
+     *
+     * @return float 
+     */
+    public function getLocalMarketKnowledge()
+    {
+        return $this->localMarketKnowledge;
+    }
+
+    /**
+     * Set responsiveness
+     *
+     * @param float $responsiveness
+     */
+    public function setResponsiveness($responsiveness)
+    {
+        $this->responsiveness = $responsiveness;
+    }
+
+    /**
+     * Get responsiveness
+     *
+     * @return float 
+     */
+    public function getResponsiveness()
+    {
+        return $this->responsiveness;
+    }
+
+    /**
+     * Set processExpertise
+     *
+     * @param float $processExpertise
+     */
+    public function setProcessExpertise($processExpertise)
+    {
+        $this->processExpertise = $processExpertise;
+    }
+
+    /**
+     * Get processExpertise
+     *
+     * @return float 
+     */
+    public function getProcessExpertise()
+    {
+        return $this->processExpertise;
+    }
+
+    /**
+     * Set afterSalesService
+     *
+     * @param float $afterSalesService
+     */
+    public function setAfterSalesService($afterSalesService)
+    {
+        $this->afterSalesService = $afterSalesService;
+    }
+
+    /**
+     * Get afterSalesService
+     *
+     * @return float 
+     */
+    public function getAfterSalesService()
+    {
+        return $this->afterSalesService;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -490,24 +625,29 @@ class Review
     public function serialise()
     {
         $data = array(
-            'id'                => $this->getId(),
-            'agency_id'         => $this->getAgencyId(),
-            'agency'            => $this->getAgency(),
-            'agent_id'          => $this->getAgentId(),
-            'agent_name'        => $this->getAgentName(),
-            'agent'             => $this->getAgent(),
-            'customer_name'     => $this->getCustomerName(),
-            'nationality'       => $this->getNationality(),
-            'phone'             => $this->getPhone(),
-            'email'             => $this->getEmail(),
-            'review_title'      => $this->getReviewTitle(),
-            'review_description'=> $this->getReviewDescription(),
-            'rating'            => $this->getRating(),
-            'file_id'           => $this->getFileId(),
-            'admin_approved'    => $this->getAdminApproved(),
-            'deleted'           => $this->getDeleted(),
-            'created_at'        => $this->getCreatedAt(),
-            'modified_at'       => $this->getModifiedAt(),
+            'id'                     => $this->getId(),
+            'agency_id'              => $this->getAgencyId(),
+            'agency'                 => $this->getAgency(),
+            'agent_id'               => $this->getAgentId(),
+            'agent_name'             => $this->getAgentName(),
+            'agent'                  => $this->getAgent(),
+            'customer_name'          => $this->getCustomerName(),
+            'nationality'            => $this->getNationality(),
+            'phone'                  => $this->getPhone(),
+            'email'                  => $this->getEmail(),
+            'review_title'           => $this->getReviewTitle(),
+            'review_description'     => $this->getReviewDescription(),
+            'rating'                 => $this->getRating(),
+            'professionalism'        => $this->getProfessionalism(),
+            'local_market_knowledge' => $this->getLocalMarketKnowledge(),
+            'responsiveness'         => $this->getResponsiveness(),
+            'process_expertise'      => $this->getProcessExpertise(),
+            'after_sales_service'    => $this->getAfterSalesService(),
+            'file_id'                => $this->getFileId(),
+            'admin_approved'         => $this->getAdminApproved(),
+            'deleted'                => $this->getDeleted(),
+            'created_at'             => $this->getCreatedAt(),
+            'modified_at'            => $this->getModifiedAt(),
         );
 
         return $data;

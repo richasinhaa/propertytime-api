@@ -135,18 +135,40 @@ class ReviewManager
     {
         try {
             if (!empty($requestParams)) {
-                $agencyId        = !empty($requestParams['agency_id']) ? $requestParams['agency_id'] : null;
-                $agentId         = !empty($requestParams['agent_id']) ? $requestParams['agent_id'] : null;
-                $agentName       = !empty($requestParams['agent_name']) ? $requestParams['agent_name'] : null;
-                $customerName    = !empty($requestParams['customer_name']) ? $requestParams['customer_name'] : null;
-                $nationality     = !empty($requestParams['nationality']) ? $requestParams['nationality'] : null;
-                $phone           = !empty($requestParams['phone']) ? $requestParams['phone'] : null;
-                $email           = !empty($requestParams['email']) ? $requestParams['email'] : null;
-                $reviewTitle     = !empty($requestParams['review_title']) ? $requestParams['review_title'] : null;
-                $reviewDesc      = !empty($requestParams['review_description']) ? $requestParams['review_description'] : null;
-                $rating          = !empty($requestParams['rating']) ? $requestParams['rating'] : null;
-                $fileId          = !empty($requestParams['file_id']) ? $requestParams['file_id'] : null;
-                $adminApproved   = !empty($requestParams['admin_approved']) ? $requestParams['admin_approved'] : false;
+                $agencyId        = !empty($requestParams['agency_id']) 
+                    ? $requestParams['agency_id'] : null;
+                $agentId         = !empty($requestParams['agent_id']) 
+                    ? $requestParams['agent_id'] : null;
+                $agentName       = !empty($requestParams['agent_name']) 
+                    ? $requestParams['agent_name'] : null;
+                $customerName    = !empty($requestParams['customer_name']) 
+                    ? $requestParams['customer_name'] : null;
+                $nationality     = !empty($requestParams['nationality']) 
+                    ? $requestParams['nationality'] : null;
+                $phone           = !empty($requestParams['phone']) 
+                    ? $requestParams['phone'] : null;
+                $email           = !empty($requestParams['email']) 
+                    ? $requestParams['email'] : null;
+                $reviewTitle     = !empty($requestParams['review_title']) 
+                    ? $requestParams['review_title'] : null;
+                $reviewDesc      = !empty($requestParams['review_description']) 
+                    ? $requestParams['review_description'] : null;
+                $rating          = !empty($requestParams['rating']) 
+                    ? $requestParams['rating'] : null;
+                $fileId          = !empty($requestParams['file_id']) 
+                    ? $requestParams['file_id'] : null;
+                $adminApproved   = !empty($requestParams['admin_approved']) 
+                    ? $requestParams['admin_approved'] : false;
+                $professionalism = !empty($requestParams['professionalism']) 
+                    ? $requestParams['professionalism'] : null;
+                $localMarketKnowledge = !empty($requestParams['local_market_knowledge']) 
+                    ? $requestParams['local_market_knowledge'] : null;
+                $responsiveness = !empty($requestParams['responsiveness']) 
+                    ? $requestParams['responsiveness'] : null;
+                $processExpertise = !empty($requestParams['process_expertise']) 
+                    ? $requestParams['process_expertise'] : null;
+                $afterSalesService = !empty($requestParams['after_sales_service']) 
+                    ? $requestParams['after_sales_service'] : null;
 
 
                 if (empty($agencyId)) {
@@ -170,7 +192,7 @@ class ReviewManager
                 if (empty($customerName) || empty($email) || empty($phone)) {
                     throw new BadAttributeException('Customer name, phone and email cannot be null');
                 }
-                if (empty($reviewDesc) || str_word_count($reviewDesc) < 10) {
+                if (empty($reviewDesc) || str_word_count($reviewDesc) < 50) {
                     throw new BadAttributeException('Review cannot be less than 50 words');
                 }
 
@@ -195,6 +217,11 @@ class ReviewManager
                     $review->setRating($rating);
                     $review->setFileId($fileId);
                     $review->setAdminApproved($adminApproved);
+                    $review->setProfessionalism($professionalism);
+                    $review->setLocalMarketKnowledge($localMarketKnowledge);
+                    $review->setResponsiveness($responsiveness);
+                    $review->setProcessExpertise($processExpertise);
+                    $review->setAfterSalesService($afterSalesService);
 
                     $em = $this->doctrine->getManager();
                     $em->persist($review);
