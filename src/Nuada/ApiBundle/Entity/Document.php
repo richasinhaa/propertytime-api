@@ -58,6 +58,8 @@ class Document
      */
     public $file;
 
+    protected $directory;
+
 
     public function getAbsolutePath()
     {
@@ -84,9 +86,12 @@ class Document
     {
         // get rid of the __DIR__ so it doesn't screw up
         // when displaying uploaded doc/image in the view.
-        return 'uploads/documents';
+        return $this->directory;
     }
 
+    public function setUploadDirectory($directory) {
+        $this->directory = $directory;
+    }
     /**
      * Sets file.
      *
@@ -245,7 +250,7 @@ class Document
         );
 
         // set the path property to the filename where you've saved the file
-        $this->path = $this->getUploadDir() . '/' .$this->getFile()->getClientOriginalName();
+        $this->path = $this->getUploadDir() . '/' .$this->getFile()->getClientOriginalName(); 
         // clean up the file property as you won't need it anymore
         $this->file = null;
 

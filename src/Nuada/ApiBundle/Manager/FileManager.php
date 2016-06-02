@@ -44,6 +44,7 @@ class FileManager extends FileBag
             $size = $uploadedFile->getClientSize();
 
             $document = new Document();
+            $document->setUploadDirectory($this->container->get('kernel')->getRootDir() .'/uploads/document');
             $document->setFile($file->get('files'));
             $document->setName($fileName);
             $document->setSize($size);
