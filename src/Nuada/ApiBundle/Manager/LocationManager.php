@@ -66,7 +66,7 @@ class LocationManager
             }
         }
 
-        if (!is_null($searchResult['Agencies'])) {
+        if (array_key_exists('Agencies', $searchResult) && !is_null($searchResult['Agencies'])) {
             $searchResult['Agencies'] = $this->rank($searchResult['Agencies'], $search);
             $searchResult['Agencies'] = array_slice($searchResult['Agencies'], 0, 3);
         }
