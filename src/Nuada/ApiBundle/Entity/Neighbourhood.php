@@ -48,6 +48,13 @@ class Neighbourhood
      */
     protected $score;
 
+    /**
+     * @var text $score
+     *
+     * @ORM\Column(name="video", type="string")
+     */
+    protected $video;
+
     protected $photos;
 
     protected $agencies;
@@ -184,6 +191,26 @@ class Neighbourhood
     }
 
     /**
+     * Set video
+     *
+     * @param text $video
+     */
+    public function setVideo($video)
+    {
+        $this->video = $video;
+    }
+
+    /**
+     * Get video
+     *
+     * @return text
+     */
+    public function getVideo()
+    {
+        return $this->video;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -197,7 +224,8 @@ class Neighbourhood
             'deleted'      => $this->getDeleted(),
             'score'        => $this->getScore(),
             'photos'       => $this->getPhotos(),
-            'agencies'     => $this->getAgencies()
+            'agencies'     => $this->getAgencies(),
+            'video'        => $this->getVideo()
         );
 
         return $data;
