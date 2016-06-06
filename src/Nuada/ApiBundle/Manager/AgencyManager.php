@@ -240,6 +240,7 @@ class AgencyManager
                 LEFT JOIN nl_neighbourhood n
                 ON an.neighbourhood_id = n.id
                 where n.name = ?
+                group by a.id
                 order by a.score DESC',
                 array("$neighbourhood"));
         }
