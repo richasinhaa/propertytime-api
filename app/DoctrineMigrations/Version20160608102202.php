@@ -16,6 +16,7 @@ class Version20160608102202 extends AbstractMigration
     public function up(Schema $schema)
     {
         $this->addSql('alter table nl_reviews modify agent_name varchar(255) default null');
+        $this->addSql('alter table nl_reviews modify review_desc varchar(255) default null');
 
     }
 
@@ -25,6 +26,7 @@ class Version20160608102202 extends AbstractMigration
     public function down(Schema $schema)
     {
         $this->addSql('alter table nl_reviews modify agent_name varchar(255) default not null');
+        $this->addSql('alter table nl_reviews modify review_desc varchar(255) default not null');
 
     }
 }
