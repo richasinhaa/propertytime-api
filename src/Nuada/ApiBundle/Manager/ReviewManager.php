@@ -192,7 +192,7 @@ class ReviewManager
                 if (empty($customerName) || empty($email) || empty($phone)) {
                     throw new BadAttributeException('Customer name, phone and email cannot be null');
                 }
-                if (empty($reviewDesc) || str_word_count($reviewDesc) < 50) {
+                if (!empty($reviewDesc) && str_word_count($reviewDesc) < 50) {
                     throw new BadAttributeException('Review cannot be less than 50 words');
                 }
 
