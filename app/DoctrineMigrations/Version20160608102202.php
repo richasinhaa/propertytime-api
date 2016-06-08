@@ -17,6 +17,7 @@ class Version20160608102202 extends AbstractMigration
     {
         $this->addSql('alter table nl_reviews modify agent_name varchar(255) default null');
         $this->addSql('alter table nl_reviews modify review_desc varchar(255) default null');
+        $this->addSql('alter table nl_reviews modify file_id int(11) default null');
 
     }
 
@@ -27,6 +28,7 @@ class Version20160608102202 extends AbstractMigration
     {
         $this->addSql('alter table nl_reviews modify agent_name varchar(255)');
         $this->addSql('alter table nl_reviews modify review_desc varchar(255)');
+        $this->addSql('alter table nl_reviews modify file_id int(11)');
 
     }
 }
