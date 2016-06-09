@@ -200,10 +200,15 @@ class AgencyManager
                          $search = null,
                          $name = null,
                          $userId = null,
-                         $userName = null)
+                         $userName = null,
+                         $searchForLocation=null)
     {
         if ($search) {
             $count = $this->findAgenciesCount($search);
+        } else if ($searchForLocation) {
+            $count = $this->findAgenciesCount(
+                null, //$search
+                $searchForLocation);
         } else {
             $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
 
@@ -358,26 +363,28 @@ class AgencyManager
         return $agencies;
     }
 
-    public function findAgenciesCount($keyword=null) {
-        /*$query = $this->legacyConnection->executeQuery('
-        SELECT count(*) as count from (
-            SELECT DISTINCT a.* from bf_company a
-                 JOIN bf_listing l
-                 ON a.id = l.company_id
-                 and (l.city like ? 
-                    or l.community like ? 
-                    or l.sub_community like ?
-                    or l.tower like ?)) as x
-                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));*/
-
+    public function findAgenciesCount($keyword=null, $searchForLocation) {
+        if ($searchForLocation) {
+            $query = $this->legacyConnection->executeQuery('
+            SELECT count(*) as count from (
+                SELECT DISTINCT a.* from bf_company a
+                     JOIN bf_listing l
+                     ON a.id = l.company_id
+                     and (l.city like ? 
+                        or l.community like ? 
+                        or l.sub_community like ?
+                        or l.tower like ?)) as x
+                        ', array("%$searchForLocation%", "%$searchForLocation%", "%$searchForLocation%", "%$searchForLocation%"));
+        } else {
             $query = $this->legacyConnection->executeQuery('
             SELECT count(*) as count from (
                 SELECT DISTINCT a.* from bf_company a
                  where a.name like ?) as x
                  ', array("%$keyword%"));
+        }
 
         $data = $query->fetch();
-
+        
         return $data['count'];
     }
 

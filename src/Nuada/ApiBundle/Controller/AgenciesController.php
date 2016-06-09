@@ -70,7 +70,8 @@ class AgenciesController extends Controller
             $search,
             $name,
             $userId,
-            $userName);
+            $userName,
+            $searchForLocation);
 
         if (null === $agencies) {
             $agencies = array();
