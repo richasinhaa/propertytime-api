@@ -102,11 +102,11 @@ class LocationManager
             $data = $query->fetchAll();
 
             $agencyQuery = $this->legacyConnection->executeQuery(
-                "SELECT DISTINCT company_name as agency from bf_listing
-                where company_name != '0'
-                and company_name is not null
-                and company_name != ''
-                order by company_name"
+                "SELECT DISTINCT name as agency from bf_company
+                where name != '0'
+                and name is not null
+                and name != ''
+                order by name"
             );
 
             $agency = $agencyQuery->fetchAll();
