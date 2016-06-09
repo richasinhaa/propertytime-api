@@ -47,7 +47,8 @@ class AgencyManager
             $sortOn = null,
             $reverse = false,
             $withPhotos=true,
-            $withAgents=false)
+            $withAgents=false,
+            $searchForLocation=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
 
@@ -56,9 +57,12 @@ class AgencyManager
 
 
         if ($search) {
+            //Find agencies with search keyword
+            $agencies = $this->findAgencies($search);
+        } elseif ($searchForLocation) {
             //1.Find properties with this search keyword
             //2. Look for agencies with that property
-            $agencies = $this->findAgencies($search);
+            $agencies = $this->findAgenciesForLocation($searchForLocation);
         } else {
             $agencies = $er->retrieveAll(
                 $id,
@@ -330,6 +334,23 @@ class AgencyManager
                 SELECT DISTINCT a.* from bf_company a
                  where a.name like ?
                  ', array("%$keyword%"));
+
+        $data = $query->fetchAll();
+        $agencies = $this->hydrate($data);
+
+        return $agencies;
+    }
+
+    public function findAgenciesForLocation($keyword=null) {
+        $query = $this->legacyConnection->executeQuery('
+                SELECT DISTINCT a.* from bf_company a
+                 JOIN bf_listing l
+                 ON a.id = l.company_id
+                 and (l.city like ? 
+                    or l.community like ? 
+                    or l.sub_community like ?
+                    or l.tower like ?)
+                    ', array("%$keyword%", "%$keyword%", "%$keyword%", "%$keyword%"));
 
         $data = $query->fetchAll();
         $agencies = $this->hydrate($data);

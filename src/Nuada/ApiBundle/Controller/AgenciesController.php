@@ -40,6 +40,7 @@ class AgenciesController extends Controller
         $withPhotos = strtolower($request->get('with_deleted', 'true')) == 'true';
         $withAgents = strtolower($request->get('with_agents', 'false')) == 'true';
         $search = $request->query->get('search', null);
+        $searchForLocation = $request->query->get('search_for_location', null);
 
         if ($search == '') {
             $search = null;
@@ -60,7 +61,8 @@ class AgenciesController extends Controller
             $sortOn,
             $reverse,
             $withPhotos,
-            $withAgents);
+            $withAgents,
+            $searchForLocation);
 
         $agencyCount = $agencyManager->getCount(
             $id,
