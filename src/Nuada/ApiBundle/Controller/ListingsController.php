@@ -75,9 +75,11 @@ class ListingsController extends Controller
         
         if ($bed) {
             $bed = explode(',', $bed);
+            $bed = array_filter($bed);
         }
         if ($type) {
             $type = explode(',', $type);
+            $type = array_filter($type);
         }
         
         $listingManager = $this->get('nuada_api.listing_manager');
