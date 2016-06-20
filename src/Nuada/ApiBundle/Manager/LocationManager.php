@@ -147,6 +147,7 @@ class LocationManager
         return $location;
     }
 
+
     public function rank($locationArray, $search) {
         $rank = null;
         foreach ($locationArray as $location) {
@@ -154,6 +155,7 @@ class LocationManager
             $rank[$location][] = $position;
         }
         asort($rank);
+        array_multisort(array_values($rank), array_keys($rank), $rank);
         
         return array_keys($rank);
     }
