@@ -388,4 +388,318 @@ class AgencyManager
         return $data['count'];
     }
 
+    public function add($requestParams = null)
+    {
+        try {
+            if (!empty($requestParams)) {
+                $name                = !empty($requestParams['name']) ? $requestParams['name'] : null;
+                $managerName         = !empty($requestParams['manager_name']) 
+                                       ? $requestParams['manager_name'] : null;
+                $managerPosition     = !empty($requestParams['manager_position']) 
+                                       ? $requestParams['manager_position'] : null;
+                $userId              = !empty($requestParams['user_id']) ? $requestParams['user_id'] : null;
+                $userName            = !empty($requestParams['user_name']) ? $requestParams['user_name'] : null;
+                $email               = !empty($requestParams['email']) ? $requestParams['email'] : null;
+                $agentsAllowed       = !empty($requestParams['agents_allowed']) 
+                                       ? $requestParams['agents_allowed'] : false;
+                $address             = !empty($requestParams['address']) ? $requestParams['address'] : null;
+                $phone               = !empty($requestParams['phone']) ? $requestParams['phone'] : null;
+                $phone2              = !empty($requestParams['phone2']) ? $requestParams['phone2'] : null;
+                $fax                 = !empty($requestParams['fax']) ? $requestParams['fax'] : null;
+                $logo                = !empty($requestParams['logo']) ? $requestParams['logo'] : null;
+                $typeOfFeeds         = !empty($requestParams['type_of_feeds']) 
+                                        ? $requestParams['type_of_feeds'] : null;
+                $masterKeyFeedsUrl   = !empty($requestParams['master_key_feeds_url']) 
+                                        ? $requestParams['master_key_feeds_url'] : null;
+                $masterKeyAccessCode = !empty($requestParams['master_key_access_code']) 
+                                        ? $requestParams['master_key_access_code'] : null;
+                $masterKeyGroupCode  = !empty($requestParams['master_key_group_code']) 
+                                        ? $requestParams['master_key_group_code'] : null;
+                $otherFeedsType      = !empty($requestParams['other_feeds_type']) 
+                                        ? $requestParams['other_feeds_type'] : null;
+                $otherFeedsUrl       = !empty($requestParams['other_feeds_url']) 
+                                        ? $requestParams['other_feeds_url'] : null;
+                $otherFeedsMapping   = !empty($requestParams['other_feeds_mapping']) 
+                                        ? $requestParams['other_feeds_mapping'] : null;
+                $propspaceFeedsUrl   = !empty($requestParams['propspace_feeds_url']) 
+                                        ? $requestParams['propspace_feeds_url'] : null;
+                $websiteUrl          = !empty($requestParams['website_url']) 
+                                        ? $requestParams['website_url'] : null;
+                $language            = !empty($requestParams['language']) ? $requestParams['language'] : null;
+                $timezones           = !empty($requestParams['timezones']) ? $requestParams['timezones'] : null;
+                $featured            = !empty($requestParams['featured']) ? $requestParams['featured'] : null;
+                $featureListing      = !empty($requestParams['feature_listing']) 
+                                        ? $requestParams['feature_listing'] : null;
+                $openHouseListing    = !empty($requestParams['open_house_listing']) 
+                                        ? $requestParams['open_house_listing'] : null;
+                $description         = !empty($requestParams['description']) 
+                                        ? $requestParams['description'] : null;
+                $publish             = !empty($requestParams['publish']) ? $requestParams['publish'] : false;
+                $oldPublishState     = !empty($requestParams['old_publish_state']) 
+                                        ? $requestParams['old_publish_state'] : null;
+                $enable              = !empty($requestParams['enable']) ? $requestParams['enable'] : false;
+                $score               = !empty($requestParams['score']) ? $requestParams['score'] : null;
+
+                if (is_null($name) 
+                    || is_null($managerName)
+                    || is_null($managerPosition)
+                    || is_null($userId) 
+                    || is_null($userName)
+                    || is_null($email)
+                    || is_null($phone)
+                    || is_null($typeOfFeeds)) {
+                    throw new BadAttributeException('Request has null value for name or manager_name or manager_position or user_id or user_name or email or phone or type_of_feeds');
+                }
+
+                if (is_null($masterKeyFeedsUrl) 
+                    && is_null($otherFeedsUrl) 
+                    && is_null($propspaceFeedsUrl)) {
+                    throw new BadAttributeException('Request has null value for master_key_feeds_url and other_feeds_url and propspace_feeds_url. Atleast one should be non-null');
+                }
+
+                $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
+                $agency = new Agency();
+                $conn = $this->doctrine->getConnection();
+
+                try {
+                    $conn->beginTransaction();
+                    $agency->setCreatedOn(new \DateTime('now'));
+                    $agency->setModifiedOn(new \DateTime('now'));
+                    $agency->setDeleted(false);
+                    $agency->setName($name);
+                    $agency->setManagerName($managerName);
+                    $agency->setManagerPosition($managerPosition);
+                    $agency->setUserId($userId);
+                    $agency->setUserName($userName);
+                    $agency->setAgentsAllowed($agentsAllowed);
+                    $agency->setAddress($address);
+                    $agency->setLogo($logo);
+                    $agency->setTypeOfFeeds($typeOfFeeds);
+                    $agency->setMasterKeyFeedsUrl($masterKeyFeedsUrl);
+                    $agency->setMasterKeyAccessCode($masterKeyAccessCode);
+                    $agency->setMasterKeyGroupCode($masterKeyGroupCode);
+                    $agency->setOtherFeedsType($otherFeedsType);
+                    $agency->setOtherFeedsUrl($otherFeedsUrl);
+                    $agency->setOtherFeedsMapping($otherFeedsMapping);
+                    $agency->setPropspaceFeedsUrl($propspaceFeedsUrl);
+                    $agency->setWebsiteUrl($websiteUrl);
+                    $agency->setLanguage($language);
+                    $agency->setTimezones($timezones);
+                    $agency->setFeatured($featured);
+                    $agency->setFeatureListing($featureListing);
+                    $agency->setOpenHouseListing($openHouseListing);
+                    $agency->setDescription($description);
+                    $agency->setPublish($publish);
+                    $agency->setOldPublishState($oldPublishState);
+                    $agency->setEnable($enable);
+                    $agency->setEmail($email);
+                    $agency->setPhone($phone);
+                    $agency->setPhone2($phone2);
+                    $agency->setScore($score);
+
+                    $em = $this->doctrine->getManager();
+                    $em->persist($agency);
+                    $em->flush();
+                    $conn->commit();
+
+                    return $agency;
+                } catch (\Exception $e) {
+                    $conn->rollback();
+                    throw $e;
+                }
+
+            } else {
+                throw new BadAttributeException('Empty request parameters');
+            }
+        } catch(Exception $e) {
+            throw $e;
+        }
+
+        return null;
+
+    }
+
+        public function update($agency, $requestParams = null)
+    {
+        try {
+            if (!empty($requestParams)) {
+                $name                = !empty($requestParams['name']) ? $requestParams['name'] : null;
+                $managerName         = !empty($requestParams['manager_name']) 
+                                       ? $requestParams['manager_name'] : null;
+                $managerPosition     = !empty($requestParams['manager_position']) 
+                                       ? $requestParams['manager_position'] : null;
+                $userId              = !empty($requestParams['user_id']) ? $requestParams['user_id'] : null;
+                $userName            = !empty($requestParams['user_name']) ? $requestParams['user_name'] : null;
+                $email               = !empty($requestParams['email']) ? $requestParams['email'] : null;
+                $agentsAllowed       = !empty($requestParams['agents_allowed']) 
+                                       ? $requestParams['agents_allowed'] : null;
+                $address             = !empty($requestParams['address']) ? $requestParams['address'] : null;
+                $phone               = !empty($requestParams['phone']) ? $requestParams['phone'] : null;
+                $phone2              = !empty($requestParams['phone2']) ? $requestParams['phone2'] : null;
+                $fax                 = !empty($requestParams['fax']) ? $requestParams['fax'] : null;
+                $logo                = !empty($requestParams['logo']) ? $requestParams['logo'] : null;
+                $typeOfFeeds         = !empty($requestParams['type_of_feeds']) 
+                                        ? $requestParams['type_of_feeds'] : null;
+                $masterKeyFeedsUrl   = !empty($requestParams['master_key_feeds_url']) 
+                                        ? $requestParams['master_key_feeds_url'] : null;
+                $masterKeyAccessCode = !empty($requestParams['master_key_access_code']) 
+                                        ? $requestParams['master_key_access_code'] : null;
+                $masterKeyGroupCode  = !empty($requestParams['master_key_group_code']) 
+                                        ? $requestParams['master_key_group_code'] : null;
+                $otherFeedsType      = !empty($requestParams['other_feeds_type']) 
+                                        ? $requestParams['other_feeds_type'] : null;
+                $otherFeedsUrl       = !empty($requestParams['other_feeds_url']) 
+                                        ? $requestParams['other_feeds_url'] : null;
+                $otherFeedsMapping   = !empty($requestParams['other_feeds_mapping']) 
+                                        ? $requestParams['other_feeds_mapping'] : null;
+                $propspaceFeedsUrl   = !empty($requestParams['propspace_feeds_url']) 
+                                        ? $requestParams['propspace_feeds_url'] : null;
+                $websiteUrl          = !empty($requestParams['website_url']) 
+                                        ? $requestParams['website_url'] : null;
+                $language            = !empty($requestParams['language']) ? $requestParams['language'] : null;
+                $timezones           = !empty($requestParams['timezones']) ? $requestParams['timezones'] : null;
+                $featured            = !empty($requestParams['featured']) ? $requestParams['featured'] : null;
+                $featureListing      = !empty($requestParams['feature_listing']) 
+                                        ? $requestParams['feature_listing'] : null;
+                $openHouseListing    = !empty($requestParams['open_house_listing']) 
+                                        ? $requestParams['open_house_listing'] : null;
+                $description         = !empty($requestParams['description']) 
+                                        ? $requestParams['description'] : null;
+                $publish             = !empty($requestParams['publish']) ? $requestParams['publish'] : null;
+                $oldPublishState     = !empty($requestParams['old_publish_state']) 
+                                        ? $requestParams['old_publish_state'] : null;
+                $enable              = !empty($requestParams['enable']) ? $requestParams['enable'] : null;
+                $score               = !empty($requestParams['score']) ? $requestParams['score'] : null;
+
+
+                $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
+                $conn = $this->doctrine->getConnection();
+
+                try {
+                    $conn->beginTransaction();
+                    $agency->setModifiedOn(new \DateTime('now'));
+                    $agency->setDeleted(false);
+                    if (!is_null($name)) {
+                        $agency->setName($name);
+                    }
+                    if (!is_null($managerName)) {
+                        $agency->setManagerName($managerName);
+                    }
+                    if (!is_null($managerPosition)) {
+                        $agency->setManagerPosition($managerPosition);
+                    }
+                    if (!is_null($userId)) {
+                        $agency->setUserId($userId);
+                    }
+                    if (!is_null($userName)) {
+                        $agency->setUserName($userName);
+                    }
+                    if (!is_null($email)) {
+                        $agency->setEmail($email);
+                    }
+                    if (!is_null($phone)) {
+                        $agency->setPhone($phone);
+                    }
+                    if (!is_null($phone2)) {
+                        $agency->setPhone2($phone2);
+                    }
+                    if (!is_null($fax)) {
+                        $agency->setFax($fax);
+                    }
+                    if (!is_null($logo)) {
+                        $agency->setLogo($logo);
+                    }
+                    if (!is_null($typeOfFeeds)) {
+                        $agency->setTypeOfFeeds($typeOfFeeds);
+                    }
+                    if (!is_null($masterKeyFeedsUrl)) {
+                        $agency->setMasterKeyFeedsUrl($masterKeyFeedsUrl);
+                    }
+                    if (!is_null($masterKeyAccessCode)) {
+                        $agency->setMasterKeyAccessCode($masterKeyAccessCode);
+                    }
+                    if (!is_null($masterKeyGroupCode)) {
+                        $agency->setMasterKeyGroupCode($masterKeyGroupCode);
+                    }
+                    if (!is_null($otherFeedsType)) {
+                        $agency->setOtherFeedsType($otherFeedsType);
+                    }
+                    if (!is_null($otherFeedsUrl)) {
+                        $agency->setOtherFeedsUrl($otherFeedsUrl);
+                    }
+                    if (!is_null($otherFeedsMapping)) {
+                        $agency->setOtherFeedsMapping($otherFeedsMapping);
+                    }
+                    if (!is_null($propspaceFeedsUrl)) {
+                        $agency->setPropspaceFeedsUrl($propspaceFeedsUrl);
+                    }
+                    if (!is_null($websiteUrl)) {
+                        $agency->setWebsiteUrl($websiteUrl);
+                    }
+                    if (!is_null($language)) {
+                        $agency->setLanguage($language);
+                    }
+                    if (!is_null($timezones)) {
+                        $agency->setTimezones($timezones);
+                    }
+                    if (!is_null($featured)) {
+                        $agency->setFeatured($featured);
+                    }
+                    if (!is_null($featureListing)) {
+                        $agency->setFeatureListing($featureListing);
+                    }
+                    if (!is_null($openHouseListing)) {
+                        $agency->setOpenHouseListing($openHouseListing);
+                    }
+                    if (!is_null($description)) {
+                        $agency->setDescription($description);
+                    }
+                    if (!is_null($publish)) {
+                        $agency->setPublish($publish);
+                    }
+                    if (!is_null($oldPublishState)) {
+                        $agency->setOldPublishState($oldPublishState);
+                    }
+                    if (!is_null($enable)) {
+                        $agency->setEnable($enable);
+                    }
+                    if (!is_null($score)) {
+                        $agency->setScore($score);
+                    }
+
+
+                    $em = $this->doctrine->getManager();
+                    $em->persist($agency);
+                    $em->flush();
+                    $conn->commit();
+                } catch (\Exception $e) {
+                    $conn->rollback();
+                    throw $e;
+                }
+            } 
+            
+            return $agency;
+
+        } catch(Exception $e) {
+            throw $e;
+        }
+
+        return null;
+    }
+
+
+    public function delete($agency) {
+        try {
+            $agency->setDeleted(true);
+            $agency->setModifiedOn(new \DateTime('now'));
+            $em = $this->doctrine->getManager();
+            $em->persist($agency);
+            $em->flush();
+        } catch(Exception $e) {
+            throw $e;
+        }
+
+        return true;
+    }
+
 }

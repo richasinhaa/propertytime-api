@@ -1204,8 +1204,6 @@ class Agency
             'feature_listing'        => $this->getFeatureListing(),
             'open_house_listing'     => $this->getOpenHouseListing(),
             'description'            => $this->getDescription(),
-            'title'                  => $this->getTitle(),
-            'description'            => $this->getDescription(),
             'publish'                => $this->getPublish(),
             'old_publish_state'      => $this->getOldPublishState(),
             'enable'                 => $this->getEnable(),

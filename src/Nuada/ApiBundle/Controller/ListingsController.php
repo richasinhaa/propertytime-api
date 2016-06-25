@@ -200,36 +200,6 @@ class ListingsController extends Controller
     }
 
     /**
-     * Add new Listing
-     *
-     * @Method({"POST"})
-     * 
-     * @Route("/listings/add")
-     *
-     *
-     * @return array
-     */
-    public function postListingsAddAction()
-    {var_dump('here');die;
-        $requestParams = $this->getRequest()->request->all();
-
-        $listingManager = $this->get('nuada_api.listing_manager');
-        try {
-            $listing = $listingManager->add($requestParams);
-        } catch (BadAttributeException $e) {
-            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
-        }
-
-        if (is_null($listing)) {
-            $message = 'failed';
-        } else {
-            $message = 'success';
-        }
-
-        return View::create(array('message' => $message, 'listing' => $listing), Codes::HTTP_OK);
-    }
-
-    /**
      * Patch listings
      *
      * @Method({"PATCH"})

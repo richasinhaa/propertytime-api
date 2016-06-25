@@ -135,4 +135,89 @@ class AgenciesController extends Controller
             'contact_number' => $contactDetails['phone'],
             'email' => $contactDetails['email']), Codes::HTTP_OK);
     }
+
+    /**
+     * Add new Agency
+     *
+     * @Method({"POST"})
+     *
+     *
+     * @return array
+     */
+    public function postAgenciesAction()
+    {
+        $requestParams = $this->getRequest()->request->all();
+
+        $agencyManager = $this->get('nuada_api.agency_manager');
+        try {
+            $agency = $agencyManager->add($requestParams);
+        } catch (BadAttributeException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($agency)) {
+            $message = 'failed';
+        } else {
+            $message = 'success';
+        }
+
+        return View::create(array('message' => $message, 'agency' => $agency), Codes::HTTP_OK);
+    }
+
+
+    /**
+     * Patch Agency
+     *
+     * @Method({"PATCH"})
+     *
+     * @return array
+     */
+    public function patchAgenciesAction($id)
+    {
+        $requestParams = $this->getRequest()->request->all();
+
+        $agencyManager = $this->get('nuada_api.agency_manager');
+        try {
+            $agency = $agencyManager->load($id);
+
+            if (is_null($agency)) {
+                return View::create(array('message' => 'failed'), Codes::HTTP_NOT_FOUND);
+            }
+
+            $updatedAgency= $agencyManager->update($agency, $requestParams);
+        } catch (BadAttributeException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($updatedAgency)) {
+            $message = 'failed';
+        } else {
+            $message = 'success';
+        }
+
+        return View::create(array('message' => $message, 'agency' => $updatedAgency), Codes::HTTP_OK);
+    }
+
+    /**
+     * Delete agencies
+     *
+     * @Method({"DELETE"})
+     *
+     * @return array
+     */
+    public function deleteAgenciesAction($id) {
+        $agencyManager = $this->get('nuada_api.agency_manager');
+        try {
+            $agency = $agencyManager->load($id);
+
+            if (is_null($agency)) {
+                return View::create(array('message' => 'failed'), Codes::HTTP_NOT_FOUND);
+            }
+
+            $response = $agencyManager->delete($agency);
+            return View::create(array('message' => $response), Codes::HTTP_OK);
+        } catch(Exception $e) {
+            throw $e;
+        }
+    }
 }
