@@ -3,6 +3,11 @@ listings:
     prefix: /api
     type:  rest
 
+addlistings:
+    resource: Nuada\ApiBundle\Controller\AddlistingsController
+    prefix: /api
+    type:  rest
+
 agencies:
     resource: Nuada\ApiBundle\Controller\AgenciesController
     prefix: /api

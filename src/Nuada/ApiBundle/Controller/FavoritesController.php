@@ -144,7 +144,7 @@ class FavoritesController extends Controller
             }
 
             $response = $favoriteManager->delete($favorite[0]);
-            return View::create(array('message' => $response), Codes::HTTP_NOT_FOUND);
+            return View::create(array('message' => $response), Codes::HTTP_OK);
         } catch(Exception $e) {
             throw $e;
         }

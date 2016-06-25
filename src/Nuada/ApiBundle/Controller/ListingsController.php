@@ -139,6 +139,55 @@ class ListingsController extends Controller
      *
      * @return array
      */
+    public function getListingsCountAction() {
+        $request = $this->get('request');
+        $id = $request->query->get('id', null);
+        $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
+        $search = $request->query->get('search', null);
+        $city = $request->query->get('city', null);
+        $community = $request->query->get('community', null);
+        $category = $request->query->get('category', null);
+        $subcategory = $request->query->get('sub_category', null);
+        $type = $request->query->get('type', null);
+        $bed = $request->query->get('bedroom', null);
+        $minPrice = $request->query->get('min_price', null);
+        $maxPrice = $request->query->get('max_price', null);
+        $minArea = $request->query->get('min_area', null);
+        $maxArea = $request->query->get('max_area', null);
+        $furnishing = $request->query->get('furnishing', null);
+        $agentId = $request->query->get('agent_id', null);
+
+
+        $listingManager = $this->get('nuada_api.listing_manager');
+        $propertyCount = $listingManager->getCount(
+            $id,
+            $withDeleted,
+            $search,
+            $city,
+            $community,
+            $category,
+            $subcategory,
+            $type,
+            $agencyId,
+            $bed,
+            $minPrice,
+            $maxPrice,
+            $minArea,
+            $maxArea,
+            $furnishing,
+            $agentId);
+
+        return View::create(array('count' => $propertyCount), Codes::HTTP_OK);
+
+    }
+
+    /**
+     * Get sold listings count
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
     public function getListingsSoldcountAction() {
         $request = $this->get('request');
         $agencyId = $request->query->get('agency_id', null);
@@ -148,5 +197,91 @@ class ListingsController extends Controller
 
         return View::create(array('count' => $listingCount), Codes::HTTP_OK);
 
+    }
+
+    /**
+     * Add new Listing
+     *
+     * @Method({"POST"})
+     * 
+     * @Route("/listings/add")
+     *
+     *
+     * @return array
+     */
+    public function postListingsAddAction()
+    {var_dump('here');die;
+        $requestParams = $this->getRequest()->request->all();
+
+        $listingManager = $this->get('nuada_api.listing_manager');
+        try {
+            $listing = $listingManager->add($requestParams);
+        } catch (BadAttributeException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($listing)) {
+            $message = 'failed';
+        } else {
+            $message = 'success';
+        }
+
+        return View::create(array('message' => $message, 'listing' => $listing), Codes::HTTP_OK);
+    }
+
+    /**
+     * Patch listings
+     *
+     * @Method({"PATCH"})
+     *
+     * @return array
+     */
+    public function patchListingsAction($id)
+    {
+        $requestParams = $this->getRequest()->request->all();
+
+        $listingManager = $this->get('nuada_api.listing_manager');
+        try {
+            $listing = $listingManager->load($id);
+
+            if (is_null($listing)) {
+                return View::create(array('message' => 'failed'), Codes::HTTP_NOT_FOUND);
+            }
+
+            $updatedListing= $listingManager->update($listing, $requestParams);
+        } catch (BadAttributeException $e) {
+            return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($updatedListing)) {
+            $message = 'failed';
+        } else {
+            $message = 'success';
+        }
+
+        return View::create(array('message' => $message, 'listing' => $updatedListing), Codes::HTTP_OK);
+    }
+
+    /**
+     * Delete listings
+     *
+     * @Method({"DELETE"})
+     *
+     * @return array
+     */
+    public function deleteListingsAction($id) {
+        $listingManager = $this->get('nuada_api.listing_manager');
+        try {
+            $listing = $listingManager->load($id);
+
+            if (is_null($listing)) {
+                return View::create(array('message' => 'failed'), Codes::HTTP_NOT_FOUND);
+            }
+
+            $response = $listingManager->delete($listing);
+            return View::create(array('message' => $response), Codes::HTTP_OK);
+        } catch(Exception $e) {
+            throw $e;
+        }
     }
 }
