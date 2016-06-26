@@ -6,6 +6,8 @@ use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Finder\Finder;
+use Nuada\ApiBundle\Entity\BadAttributeException;
+use Nuada\ApiBundle\Entity\Agent;
 
 class AgentManager
 {
@@ -73,6 +75,177 @@ class AgentManager
 
         return intval($count);
 
+    }
+
+    public function add($requestParams = null)
+    {
+        try {
+            if (!empty($requestParams)) {
+                $name                = !empty($requestParams['name']) ? $requestParams['name'] : null;
+                $userId              = !empty($requestParams['user_id']) ? $requestParams['user_id'] : null;
+                $agencyId            = !empty($requestParams['agency_id']) ? $requestParams['agency_id'] : null;
+                $email               = !empty($requestParams['email']) ? $requestParams['email'] : null;
+                $position            = !empty($requestParams['position']) ? $requestParams['position'] : null;
+                $publishAgentOnline  = !empty($requestParams['publish_agent_online']) 
+                                        ? $requestParams['publish_agent_online'] : false;
+                $phone               = !empty($requestParams['phone']) ? $requestParams['phone'] : null;
+                $photo               = !empty($requestParams['photo']) ? $requestParams['photo'] : null;
+                $sendWelcomeEmail    = !empty($requestParams['send_welcome_email']) 
+                                        ? $requestParams['send_welcome_email'] : false;
+                $miscellaneous       = !empty($requestParams['miscellaneous']) 
+                                        ? $requestParams['miscellaneous'] : null;
+                $autoCreated         = !empty($requestParams['auto_created']) 
+                                        ? $requestParams['auto_created'] : null;
+                $enable              = !empty($requestParams['enable']) 
+                                        ? $requestParams['enable'] : false;
+
+                if (is_null($name) 
+                    || is_null($agencyId)
+                    || is_null($email)
+                    || is_null($userId) 
+                    || is_null($phone)) {
+                    throw new BadAttributeException('Request has null value for name or agency_id or email or user_id or phone');
+                }
+
+                $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agent');
+                $agent = new Agent();
+                $conn = $this->doctrine->getConnection();
+
+                try {
+                    $conn->beginTransaction();
+                    $agent->setCreatedOn(new \DateTime('now'));
+                    $agent->setModifiedOn(new \DateTime('now'));
+                    $agent->setDeleted(false);
+                    $agent->setName($name);
+                    $agent->setUserId($userId);
+                    $agent->setAgencyId($agencyId);
+                    $agent->setPosition($position);
+                    $agent->setPublishAgentOnline($publishAgentOnline);
+                    $agent->setPhoto($photo);
+                    $agent->setSendWelcomeEmail($sendWelcomeEmail);
+                    $agent->setMiscellaneous($miscellaneous);
+                    $agent->setAutoCreated($autoCreated);
+                    $agent->setPhone($phone);
+                    $agent->setEmail($email);
+
+                    $em = $this->doctrine->getManager();
+                    $em->persist($agent);
+                    $em->flush();
+                    $conn->commit();
+
+                    return $agent;
+                } catch (\Exception $e) {
+                    $conn->rollback();
+                    throw $e;
+                }
+
+            } else {
+                throw new BadAttributeException('Empty request parameters');
+            }
+        } catch(Exception $e) {
+            throw $e;
+        }
+
+        return null;
+
+    }
+
+    public function update($agent, $requestParams = null) {
+
+    try {
+            if (!empty($requestParams)) {
+                $name                = !empty($requestParams['name']) ? $requestParams['name'] : null;
+                $userId              = !empty($requestParams['user_id']) ? $requestParams['user_id'] : null;
+                $agencyId            = !empty($requestParams['agency_id']) ? $requestParams['agency_id'] : null;
+                $email               = !empty($requestParams['email']) ? $requestParams['email'] : null;
+                $position            = !empty($requestParams['position']) ? $requestParams['position'] : null;
+                $publishAgentOnline  = !empty($requestParams['publish_agent_online']) 
+                                        ? $requestParams['publish_agent_online'] : null;
+                $phone               = !empty($requestParams['phone']) ? $requestParams['phone'] : null;
+                $photo               = !empty($requestParams['photo']) ? $requestParams['photo'] : null;
+                $sendWelcomeEmail    = !empty($requestParams['send_welcome_email']) 
+                                        ? $requestParams['send_welcome_email'] : null;
+                $miscellaneous       = !empty($requestParams['miscellaneous']) 
+                                        ? $requestParams['miscellaneous'] : null;
+                $autoCreated         = !empty($requestParams['auto_created']) 
+                                        ? $requestParams['auto_created'] : null;
+                $enable              = !empty($requestParams['enable']) 
+                                        ? $requestParams['enable'] : null;
+
+
+                $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agent');
+                $conn = $this->doctrine->getConnection();
+
+                try {
+                    $conn->beginTransaction();
+                    $agent->setModifiedOn(new \DateTime('now'));
+                    
+                    if (!is_null($name)) {
+                        $agent->setName($name);
+                    }
+                    if (!is_null($userId)) {
+                        $agent->setUserId($userId);
+                    }
+                    if (!is_null($agencyId)) {
+                        $agent->setAgencyId($agencyId);
+                    }
+                    if (!is_null($position)) {
+                        $agent->setPosition($position);
+                    }
+                    if (!is_null($publishAgentOnline)) {
+                        $agent->setPublishAgentOnline($publishAgentOnline);
+                    }
+                    if (!is_null($photo)) {
+                        $agent->setPhoto($photo);
+                    }
+                    if (!is_null($sendWelcomeEmail)) {
+                        $agent->setSendWelcomeEmail($sendWelcomeEmail);
+                    }
+                    if (!is_null($miscellaneous)) {
+                        $agent->setMiscellaneous($miscellaneous);
+                    }
+                    if (!is_null($autoCreated)) {
+                        $agent->setAutoCreated($autoCreated);
+                    }
+                    if (!is_null($phone)) {
+                        $agent->setPhone($phone);
+                    }
+                    if (!is_null($email)) {
+                        $agent->setEmail($email);
+                    }
+
+                    $em = $this->doctrine->getManager();
+                    $em->persist($agent);
+                    $em->flush();
+                    $conn->commit();
+
+                    return $agent;
+                } catch (\Exception $e) {
+                    $conn->rollback();
+                    throw $e;
+                }
+
+            }
+        } catch(Exception $e) {
+            throw $e;
+        }
+
+        return null;
+    }
+
+
+    public function delete($agent) {
+        try {
+            $agent->setDeleted(true);
+            $agent->setModifiedOn(new \DateTime('now'));
+            $em = $this->doctrine->getManager();
+            $em->persist($agent);
+            $em->flush();
+        } catch(Exception $e) {
+            throw $e;
+        }
+
+        return true;
     }
 
 }

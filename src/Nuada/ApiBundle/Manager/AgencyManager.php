@@ -578,7 +578,7 @@ class AgencyManager
                 try {
                     $conn->beginTransaction();
                     $agency->setModifiedOn(new \DateTime('now'));
-                    $agency->setDeleted(false);
+                    
                     if (!is_null($name)) {
                         $agency->setName($name);
                     }
