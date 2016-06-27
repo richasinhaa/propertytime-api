@@ -148,7 +148,7 @@ class ListingRepository extends EntityRepository
     public function fetchCount($id = null, $withDeleted = false, $search = null,
         $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
         $bed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
-        $furnishing = null, $agentId = null)
+        $furnishing = null, $agentId = null, $fromDate = null, $todate = null)
     {
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)');
@@ -214,6 +214,14 @@ class ListingRepository extends EntityRepository
         if (!is_null($agentId)) {
             $qb = $qb->andWhere('e.agentId = :agentId')
                      ->setParameter('agentId', $agentId);
+        }
+        if (!is_null($fromDate)) {
+            $qb = $qb->andWhere('e.createdOn >= :fromDate')
+                     ->setParameter('fromDate', $fromDate);
+        }
+        if (!is_null($toDate)) {
+            $qb = $qb->andWhere('e.createdOn <= :toDate')
+                     ->setParameter('toDate', $toDate);
         }
 
         $query = $qb->getQuery();

@@ -156,6 +156,8 @@ class ListingsController extends Controller
         $maxArea = $request->query->get('max_area', null);
         $furnishing = $request->query->get('furnishing', null);
         $agentId = $request->query->get('agent_id', null);
+        $fromDate = $request->query->get('from', null);
+        $toDate = $request->query->get('to', null);
 
 
         $listingManager = $this->get('nuada_api.listing_manager');
@@ -175,7 +177,9 @@ class ListingsController extends Controller
             $minArea,
             $maxArea,
             $furnishing,
-            $agentId);
+            $agentId,
+            $fromDate,
+            $toDate);
 
         return View::create(array('count' => $propertyCount), Codes::HTTP_OK);
 

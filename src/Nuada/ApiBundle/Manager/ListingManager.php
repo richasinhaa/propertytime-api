@@ -163,7 +163,9 @@ class ListingManager
             $minArea = null,
             $maxArea = null,
             $furnishing = null,
-            $agentId = null) {
+            $agentId = null,
+            $fromDate = null,
+            $toDate = null) {
 
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
         
@@ -183,7 +185,9 @@ class ListingManager
             $minArea,
             $maxArea,
             $furnishing,
-            $agentId);
+            $agentId,
+            $fromdate,
+            $todate);
 
         return intval($count);
 
