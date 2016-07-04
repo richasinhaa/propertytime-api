@@ -112,7 +112,7 @@ class ReviewsController extends Controller
             }
 
             $response = $reviewManager->delete($review[0]);
-            return View::create(array('message' => $response), Codes::HTTP_NOT_FOUND);
+            return View::create(array('message' => $response), Codes::HTTP_OK);
         } catch(Exception $e) {
             throw $e;
         }

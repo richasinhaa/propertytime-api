@@ -93,5 +93,10 @@ updateduser:
     prefix: /api
     type:  rest
 
+advertisements:
+    resource: Nuada\ApiBundle\Controller\AdvertisementsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"

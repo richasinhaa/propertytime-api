@@ -136,4 +136,11 @@ services:
         - @security.context
         - @validator
         - @nuada_api.agency_manager
+
+      nuada_api.advertisement_manager:
+        class: Nuada\ApiBundle\Manager\AdvertisementManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
         
