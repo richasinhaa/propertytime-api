@@ -31,9 +31,9 @@ class AdvertisementsController extends Controller
         $id = $request->query->get('id', null);
         $limit = $request->query->get('limit', null);
         $offset = $request->query->get('offset', null);
-        $path = $request->query->get('agency_id', null);
-        $redirectTo = $request->query->get('agent_id', null);
-        $page = $request->query->get('agent_name', null);
+        $path = $request->query->get('path', null);
+        $redirectTo = $request->query->get('redirect_to', null);
+        $page = $request->query->get('page', null);
         $withDeleted = strtolower($request->get('with_deleted', 'false')) == 'true';
 
         $advertisementManager = $this->get('nuada_api.advertisement_manager');
