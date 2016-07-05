@@ -10,6 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity
  * @ORM\Table(name="bf_user")
+ * @ORM\Entity(repositoryClass="UserRepository")
+ *
  */
 class User extends BaseUser
 {
@@ -46,7 +48,14 @@ class User extends BaseUser
      *     groups={"Registration", "Profile"}
      * )
      */
-    protected $phone;	
+    protected $phone;
+
+     /**
+     * @var string $userType
+     *
+     * @ORM\Column(name="user_type", type="string")
+     */
+    protected $userType;	
 
     public function __construct()
     {
@@ -103,5 +112,25 @@ class User extends BaseUser
     public function getPhone()
     {
         return $this->phone;
+    }
+
+     /**
+     * Set userType
+     *
+     * @param string $userType
+     */
+    public function setUserType($userType)
+    {
+        $this->userType = $userType;
+    }
+
+    /**
+     * Get userType
+     *
+     * @return string 
+     */
+    public function getUserType()
+    {
+        return $this->userType;
     }
 }

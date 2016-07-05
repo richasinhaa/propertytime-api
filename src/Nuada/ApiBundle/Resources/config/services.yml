@@ -143,4 +143,11 @@ services:
         - @doctrine
         - @security.context
         - @validator
+
+      nuada_api.user_manager:
+        class: Nuada\UserBundle\Manager\UserManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
         

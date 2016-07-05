@@ -98,5 +98,10 @@ advertisements:
     prefix: /api
     type:  rest
 
+users:
+    resource: Nuada\UserBundle\Controller\UsersController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
