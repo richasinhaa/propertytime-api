@@ -148,7 +148,7 @@ class ListingRepository extends EntityRepository
     public function fetchCount($id = null, $withDeleted = false, $search = null,
         $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
         $bed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
-        $furnishing = null, $agentId = null, $fromDate = null, $todate = null)
+        $furnishing = null, $agentId = null, $fromDate = null, $toDate = null)
     {
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)');

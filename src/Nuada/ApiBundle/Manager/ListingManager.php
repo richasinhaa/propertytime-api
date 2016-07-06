@@ -186,8 +186,8 @@ class ListingManager
             $maxArea,
             $furnishing,
             $agentId,
-            $fromdate,
-            $todate);
+            $fromDate,
+            $toDate);
 
         return intval($count);
 
