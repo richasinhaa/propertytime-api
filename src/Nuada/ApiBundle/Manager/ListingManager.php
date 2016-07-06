@@ -193,6 +193,36 @@ class ListingManager
 
     }
 
+    public function getUnpublishedCount() {
+
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+        
+        $count = $er->getUnpublishedCount();
+
+        return intval($count);
+
+    }
+
+    public function getPublishedCount() {
+
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+        
+        $count = $er->getPublishedCount();
+
+        return intval($count);
+
+    }
+
+    public function getActiveCount() {
+
+        $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
+        
+        $count = $er->getActiveCount();
+
+        return intval($count);
+
+    }
+
     public function fetchSoldCount($agencyId=null) {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
 

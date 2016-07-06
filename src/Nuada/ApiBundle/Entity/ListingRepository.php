@@ -230,6 +230,49 @@ class ListingRepository extends EntityRepository
         return $query->getSingleScalarResult();
     }
 
+    public function getUnpublishedCount() {
+
+        $qb = $this->createQueryBuilder('e')
+                    ->select('count(e)')
+                    ->where('e.publishListing = 0');
+
+        $query = $qb->getQuery();
+
+
+        return $query->getSingleScalarResult();
+
+    }
+
+    public function getPublishedCount() {
+
+       $qb = $this->createQueryBuilder('e')
+                    ->select('count(e)')
+                    ->where('e.publishListing = 1');
+
+        $query = $qb->getQuery();
+
+
+        return $query->getSingleScalarResult();
+
+    }
+
+    public function getActiveCount() {
+
+        $totalListing = $this->fetchCount();
+        $unpublished = $this->getUnpublishedCount();
+
+        $qb = $this->createQueryBuilder('e')
+                    ->select('count(e)')
+                    ->where('e.archived = 1');
+
+        $query = $qb->getQuery();
+
+        $archived = $query->getSingleScalarResult();
+
+        return ($totalListing - $unpublished - $archived);
+
+    }
+
 
      /**
      * @param string  $sortOn  - Sort field
