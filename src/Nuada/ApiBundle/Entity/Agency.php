@@ -285,6 +285,34 @@ class Agency
     protected $agentsCount;
 
     /**
+     * @var string $facebookUrl
+     *
+     * @ORM\Column(name="facebook_url", type="string")
+     */
+    protected $facebookUrl;
+
+    /**
+     * @var string $instagramUrl
+     *
+     * @ORM\Column(name="instagram_url", type="string")
+     */
+    protected $instagramUrl;
+
+    /**
+     * @var string $twitterUrl
+     *
+     * @ORM\Column(name="twitter_url", type="string")
+     */
+    protected $twitterUrl;
+
+    /**
+     * @var text $twitterSnippet
+     *
+     * @ORM\Column(name="twitter_snippet", type="text")
+     */
+    protected $twitterSnippet;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="score", type="float")
@@ -1173,6 +1201,86 @@ class Agency
     }
 
     /**
+     * Set facebookUrl
+     *
+     * @param string $facebookUrl
+     */
+    public function setFaceboolUrl($facebookUrl)
+    {
+        $this->facebookUrl = $facebookUrl;
+    }
+
+    /**
+     * Get facebookUrl
+     *
+     * @return string 
+     */
+    public function getFaceboolUrl()
+    {
+        return $this->facebookUrl;
+    }
+
+    /**
+     * Set instagramUrl
+     *
+     * @param string $instagramUrl
+     */
+    public function setInstagramUrl($instagramUrl)
+    {
+        $this->instagramUrl = $instagramUrl;
+    }
+
+    /**
+     * Get instagramUrl
+     *
+     * @return string 
+     */
+    public function getInstagramUrl()
+    {
+        return $this->instagramUrl;
+    }
+
+    /**
+     * Set twitterUrl
+     *
+     * @param string $twitterUrl
+     */
+    public function setTwitterUrl($twitterUrl)
+    {
+        $this->twitterUrl = $twitterUrl;
+    }
+
+    /**
+     * Get twitterUrl
+     *
+     * @return string 
+     */
+    public function getTwitterUrl()
+    {
+        return $this->twitterUrl;
+    }
+
+    /**
+     * Set twitterSnippet
+     *
+     * @param string $twitterSnippet
+     */
+    public function setTwitterSnippet($twitterSnippet)
+    {
+        $this->twitterSnippet = $twitterSnippet;
+    }
+
+    /**
+     * Get twitterSnippet
+     *
+     * @return string 
+     */
+    public function getTwitterSnippet()
+    {
+        return $this->twitterSnippet;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1218,7 +1326,11 @@ class Agency
             'score'                  => $this->getScore(),
             'listings_count'         => $this->getListingCount(),
             'listings_sold'          => $this->getSoldListings(),
-            'agents_count'           => $this->getAgentsCount()
+            'agents_count'           => $this->getAgentsCount(),
+            'facebook_url'           => $this->getFaceboolUrl(),
+            'instagram_url'          => $this->getInstagramUrl(),
+            'twitter_url'            => $this->getTwitterUrl(),
+            'twitter_snippet'        => $this->getTwitterSnippet()
         );
 
         if (!empty($listings)) {
