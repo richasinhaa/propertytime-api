@@ -193,31 +193,31 @@ class ListingManager
 
     }
 
-    public function getUnpublishedCount() {
+    public function getUnpublishedCount($agencyId=null) {
 
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
         
-        $count = $er->getUnpublishedCount();
+        $count = $er->getUnpublishedCount($agencyId);
 
         return intval($count);
 
     }
 
-    public function getPublishedCount() {
+    public function getPublishedCount($agencyId=null) {
 
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
         
-        $count = $er->getPublishedCount();
+        $count = $er->getPublishedCount($agencyId);
 
         return intval($count);
 
     }
 
-    public function getActiveCount() {
+    public function getActiveCount($agencyId=null) {
 
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
         
-        $count = $er->getActiveCount();
+        $count = $er->getActiveCount($agencyId);
 
         return intval($count);
 

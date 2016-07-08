@@ -188,10 +188,11 @@ class ListingsController extends Controller
 
     public function getListingsMiscelleneouscountAction() {
         $request = $this->get('request');
+        $agencyId = $request->query->get('agency_id', null);
         $listingManager = $this->get('nuada_api.listing_manager');
-        $unpublished = $listingManager->getUnpublishedCount();
-        $published = $listingManager->getPublishedCount();
-        $active = $listingManager->getActiveCount();
+        $unpublished = $listingManager->getUnpublishedCount($agencyId);
+        $published = $listingManager->getPublishedCount($agencyId);
+        $active = $listingManager->getActiveCount($agencyId);
 
         return View::create(array(
             'total_unpublished' => $unpublished,

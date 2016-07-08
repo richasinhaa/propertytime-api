@@ -230,12 +230,17 @@ class ListingRepository extends EntityRepository
         return $query->getSingleScalarResult();
     }
 
-    public function getUnpublishedCount() {
+    public function getUnpublishedCount($agencyId=null) {
 
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)')
                     ->where('e.publishListing = 0');
 
+        if (!is_null($agencyId)) {
+            $qb = $qb->AndWhere('e.agencyId = :agencyId')
+                        ->setParameter('agencyId', $agencyId);
+        }
+
         $query = $qb->getQuery();
 
 
@@ -243,12 +248,17 @@ class ListingRepository extends EntityRepository
 
     }
 
-    public function getPublishedCount() {
+    public function getPublishedCount($agencyId=null) {
 
        $qb = $this->createQueryBuilder('e')
                     ->select('count(e)')
                     ->where('e.publishListing = 1');
 
+        if (!is_null($agencyId)) {
+            $qb = $qb->AndWhere('e.agencyId = :agencyId')
+                        ->setParameter('agencyId', $agencyId);
+        }
+
         $query = $qb->getQuery();
 
 
@@ -256,7 +266,7 @@ class ListingRepository extends EntityRepository
 
     }
 
-    public function getActiveCount() {
+    public function getActiveCount($agencyId=null) {
 
         $totalListing = $this->fetchCount();
         $unpublished = $this->getUnpublishedCount();
@@ -264,6 +274,11 @@ class ListingRepository extends EntityRepository
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)')
                     ->where('e.archived = 1');
+
+        if (!is_null($agencyId)) {
+            $qb = $qb->AndWhere('e.agencyId = :agencyId')
+                        ->setParameter('agencyId', $agencyId);
+        }
 
         $query = $qb->getQuery();
 
