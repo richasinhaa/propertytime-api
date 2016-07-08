@@ -376,6 +376,13 @@ class Listing
     protected $features;
 
     /**
+     * @var text
+     *
+     * @ORM\Column(name="facilities", type="text")
+     */
+    protected $facilities;
+
+    /**
      * Get id
      *
      * @return integer 
