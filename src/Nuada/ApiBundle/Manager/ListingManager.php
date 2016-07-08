@@ -666,8 +666,11 @@ class ListingManager
     }
 
         $data = $query->fetchAll();
-
-        return $data;
+        $count = array();
+        foreach($data as $datum) {
+                $count[] = $datum['count(*)'];
+        }
+        return $count;
     }
 
 }
