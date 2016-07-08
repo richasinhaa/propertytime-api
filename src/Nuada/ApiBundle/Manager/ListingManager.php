@@ -650,18 +650,24 @@ class ListingManager
     }
 
    public function fetchListingCountForAnYear($agencyId=null) {
+    if (is_null($agencyId)) {
         $query = $this->legacyConnection->executeQuery('
-            SELECT count(*) as count,  a.m , a.cr FROM           
+            SELECT count(*) FROM           
             (SELECT bl.id, MONTH(bl.created_on) as m, YEAR(bl.created_on) as cr FROM  bf_listing bl  where (bl.created_on < NOW() AND bl.created_on > NOW() - INTERVAL 365 day)) a
             GROUP BY a.m, a.cr ORDER BY a.cr, a.m');
+    } else {
+        $query = $this->legacyConnection->executeQuery('
+            SELECT count(*) FROM           
+            (SELECT bl.id, MONTH(bl.created_on) as m, YEAR(bl.created_on) as cr FROM  bf_listing bl  
+            where bl.company_id = ? 
+            and (bl.created_on < NOW() AND bl.created_on > NOW() - INTERVAL 365 day)) a
+            GROUP BY a.m, a.cr ORDER BY a.cr, a.m',
+            array("$agencyId"));
+    }
 
         $data = $query->fetchAll();
-        $count = array();
 
-        foreach($data as $datum) {
-        $count[] = $datum['count'];
-         }
-        return $count;
+        return $data;
     }
 
 }
