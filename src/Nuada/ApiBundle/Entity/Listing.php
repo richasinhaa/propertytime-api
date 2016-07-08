@@ -1443,6 +1443,26 @@ class Listing
     }
 
     /**
+     * Set facilities
+     *
+     * @param string $facilities
+     */
+    public function setFacilities($facilities)
+    {
+        $this->facilities = $facilities;
+    }
+
+    /**
+     * Get facilities
+     *
+     * @return string 
+     */
+    public function getFacilities()
+    {
+        return $this->facilities;
+    }
+
+    /**
      * Set features
      *
      * @param string $features
@@ -1512,7 +1532,8 @@ class Listing
             'deleted_by'           => $this->getDeletedBy(),
             'deleted'              => $this->getDeleted(),
             'photos'               => $this->getPhotos(),
-            'is_sold'              => $this->getIsSold()
+            'is_sold'              => $this->getIsSold(),
+            'facilities'           => $this->getFacilities()
         );
 
         return $data;
