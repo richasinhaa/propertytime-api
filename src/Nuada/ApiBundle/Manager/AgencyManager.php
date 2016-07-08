@@ -87,7 +87,7 @@ class AgencyManager
                     $listingCount = $listingRepo->fetchCount(
                     null, //$id
                     false, // $withDeleted
-                    $search, //$search
+                    $searchForLocation, //$search
                     null, //$city
                     null, //$community
                     null, //$category
@@ -95,7 +95,7 @@ class AgencyManager
                     null, //$type
                     $agencyId);
                     $agency->setListingCount($listingCount);
-                    $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $search);
+                    $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $searchForLocation);
                     $agency->setSoldListings($soldListingCount);
                             
                     //with photos
@@ -139,7 +139,7 @@ class AgencyManager
                 $listingCount = $listingRepo->fetchCount(
                     null, //$id
                     false, // $withDeleted
-                    $search, //$search
+                    $searchForLocation, //$search
                     null, //$city
                     null, //$community
                     null, //$category
@@ -147,7 +147,7 @@ class AgencyManager
                     null, //$type
                     $agencyId);
                 $agencies->setListingCount($listingCount);
-                $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $search);
+                $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $searchForLocation);
                 $agencies->setSoldListings($soldListingCount);
 
                 //with photos
