@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Finder\Finder;
 use Nuada\ApiBundle\Entity\BadAttributeException;
+use Doctrine\DBAL\Connection;
 
 class ListingManager
 {
@@ -16,6 +17,7 @@ class ListingManager
     protected $agencyManager;
     protected $photoManager;
     protected $agentManager;
+    protected $legacyConnection;
 
     
 
@@ -24,7 +26,8 @@ class ListingManager
                                 ValidatorInterface $validator,
                                 AgencyManager $agencyManager,
                                 PhotoManager $photoManager,
-                                AgentManager $agentManager)
+                                AgentManager $agentManager,
+                                Connection $legacyConnection)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
@@ -32,6 +35,7 @@ class ListingManager
         $this->agencyManager = $agencyManager;
         $this->photoManager = $photoManager;
         $this->agentManager = $agentManager;
+        $this->legacyConnection = $legacyConnection;
     }
 
     public function load(
@@ -643,6 +647,17 @@ class ListingManager
         }
 
         return true;
+    }
+
+    public function fetchListingCountForAnYear($agencyId=null) {
+        $query = $this->legacyConnection->executeQuery('
+            SELECT count(*) as count,  a.m , a.cr FROM           
+            (SELECT bl.id, MONTH(bl.created_on) as m, YEAR(bl.created_on) as cr FROM  bf_listing bl  where (bl.created_on < NOW() AND bl.created_on > NOW() - INTERVAL 365 day)) a
+            GROUP BY a.m, a.cr ORDER BY a.cr, a.m');
+
+        $data = $query->fetchAll();
+
+        return $data['count'];
     }
 
 }

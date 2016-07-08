@@ -275,4 +275,21 @@ class ListingsController extends Controller
             throw $e;
         }
     }
+
+    /**
+     * Get yearly listings count
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function getListingsCountforyearAction() {
+        $request = $this->get('request');
+        $agencyId = $request->query->get('agency_id', null);
+
+        $listingManager = $this->get('nuada_api.listing_manager');
+        $listingCount = $listingManager->fetchListingCountForAnYear($agencyId);
+
+        return View::create(array('count' => $listingCount), Codes::HTTP_OK);
+    }
 }
