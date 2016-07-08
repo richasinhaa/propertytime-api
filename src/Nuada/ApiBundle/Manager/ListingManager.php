@@ -656,8 +656,13 @@ class ListingManager
             GROUP BY a.m, a.cr ORDER BY a.cr, a.m');
 
         $data = $query->fetchAll();
+        $count = array();
 
-        return $data['count'];
+        foreach($data as $datum) {
+            $count[] = $datum['count'];
+        }
+
+        return $count;
     }
 
 }
