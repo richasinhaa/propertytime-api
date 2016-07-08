@@ -8,6 +8,7 @@ services:
         - @nuada_api.agency_manager
         - @nuada_api.photo_manager
         - @nuada_api.agent_manager
+        - @doctrine.dbal.default_connection
 
       nuada_api.agency_manager:
         class: Nuada\ApiBundle\Manager\AgencyManager
