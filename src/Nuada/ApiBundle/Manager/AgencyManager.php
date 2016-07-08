@@ -259,12 +259,12 @@ class AgencyManager
         $data = $query->fetchAll();
         $agencies = array_slice($data, 0, $agencyCount);
 
-        $hydratedAgencies = $this->hydrate($agencies);
+        $hydratedAgencies = $this->hydrate($agencies, $neighbourhood);
 
         return $hydratedAgencies;
     }
 
-    public function hydrate($agencies) {
+    public function hydrate($agencies, $search=null) {
         $hydratedAgencies = array();
 
         if ($agencies == null) {
@@ -287,7 +287,7 @@ class AgencyManager
             $listingCount = $listingRepo->fetchCount(
             null, //$id
             false, // $withDeleted
-            null, //$search
+            $search, //$search
             null, //$city
             null, //$community
             null, //$category
@@ -295,7 +295,7 @@ class AgencyManager
             null, //$type
             $agencyId);
             $hydratedAgency->setListingCount($listingCount);
-            $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+            $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $search);
             $hydratedAgency->setSoldListings($soldListingCount);
 
             $hydratedAgencies[] = $hydratedAgency;
