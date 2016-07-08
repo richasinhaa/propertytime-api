@@ -148,6 +148,7 @@ class ListingsController extends Controller
         $community = $request->query->get('community', null);
         $category = $request->query->get('category', null);
         $subcategory = $request->query->get('sub_category', null);
+        $agencyId = $request->query->get('agency_id', null);
         $type = $request->query->get('type', null);
         $bed = $request->query->get('bedroom', null);
         $minPrice = $request->query->get('min_price', null);
