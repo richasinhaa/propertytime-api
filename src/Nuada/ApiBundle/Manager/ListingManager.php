@@ -649,7 +649,7 @@ class ListingManager
         return true;
     }
 
-    public function fetchListingCountForAnYear($agencyId=null) {
+   public function fetchListingCountForAnYear($agencyId=null) {
         $query = $this->legacyConnection->executeQuery('
             SELECT count(*) as count,  a.m , a.cr FROM           
             (SELECT bl.id, MONTH(bl.created_on) as m, YEAR(bl.created_on) as cr FROM  bf_listing bl  where (bl.created_on < NOW() AND bl.created_on > NOW() - INTERVAL 365 day)) a
@@ -659,9 +659,8 @@ class ListingManager
         $count = array();
 
         foreach($data as $datum) {
-            $count[] = $datum['count'];
-        }
-
+        $count[] = $datum['count'];
+         }
         return $count;
     }
 
