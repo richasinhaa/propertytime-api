@@ -323,7 +323,7 @@ class ListingRepository extends EntityRepository
      *
      * @return array
      */
-    public function fetchSoldCount($agencyId=null)
+    public function fetchSoldCount($agencyId=null, $search=null)
     {
         $qb = $this->createQueryBuilder('e')
             ->select('count(e)');
@@ -331,6 +331,14 @@ class ListingRepository extends EntityRepository
         if (!is_null($agencyId)) {
             $qb = $qb->andWhere('e.agencyId = :agencyId')
                 ->setParameter('agencyId', $agencyId);
+        }
+        if (!is_null($search)) {
+            $qb = $qb->orWhere('e.city = :search')
+                     ->orWhere('e.community = :search')
+                     ->orWhere('e.subCommunity = :search')
+                     ->orWhere('e.tower = :search')
+                     ->orWhere('e.agencyName = :search')
+                     ->setParameter('search', $search);
         }
 
         $qb = $qb->andWhere('e.isSold = 1');

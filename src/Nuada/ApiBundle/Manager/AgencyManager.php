@@ -56,7 +56,7 @@ class AgencyManager
         $offset = $offset ? $offset : self::OFFSET;
 
 
-        if ($search) {
+        if ($search && is_null($id)) {
             //Find agencies with search keyword
             $agencies = $this->findAgencies($search);
         } elseif ($searchForLocation) {
@@ -87,7 +87,7 @@ class AgencyManager
                     $listingCount = $listingRepo->fetchCount(
                     null, //$id
                     false, // $withDeleted
-                    null, //$search
+                    $search, //$search
                     null, //$city
                     null, //$community
                     null, //$category
@@ -95,7 +95,7 @@ class AgencyManager
                     null, //$type
                     $agencyId);
                     $agency->setListingCount($listingCount);
-                    $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+                    $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $search);
                     $agency->setSoldListings($soldListingCount);
                             
                     //with photos
@@ -139,7 +139,7 @@ class AgencyManager
                 $listingCount = $listingRepo->fetchCount(
                     null, //$id
                     false, // $withDeleted
-                    null, //$search
+                    $search, //$search
                     null, //$city
                     null, //$community
                     null, //$category
@@ -147,7 +147,7 @@ class AgencyManager
                     null, //$type
                     $agencyId);
                 $agencies->setListingCount($listingCount);
-                $soldListingCount = $listingRepo->fetchSoldCount($agencyId);
+                $soldListingCount = $listingRepo->fetchSoldCount($agencyId, $search);
                 $agencies->setSoldListings($soldListingCount);
 
                 //with photos

@@ -98,7 +98,7 @@ class ListingManager
                 if ($withAgencies) {
                     $agencyId = $property->getAgencyId();
                     if (!is_null($agencyId)) {
-                        $agency = $this->agencyManager->load($agencyId);
+                        $agency = $this->agencyManager->load($agencyId, null, null, null, $search);
                         $property->setAgency($agency);
                     }
                 }
@@ -125,7 +125,7 @@ class ListingManager
             if ($withAgencies) {
                 $agencyId = $properties->getAgencyId();
                 if (!is_null($agencyId)) {
-                    $agency = $this->agencyManager->load($agencyId);
+                    $agency = $this->agencyManager->load($agencyId, null, null, null, $search);
                     $properties->setAgency($agency);
                 }
 
