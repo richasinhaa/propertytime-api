@@ -44,7 +44,7 @@ class ListingRepository extends EntityRepository
         }
 
         $qb = $this->createQueryBuilder('e')
-                    ->where('e.publish_listing = 1');
+                    ->where('e.publishListing = 1');
 
         if (!is_null($search)) {
             $qb = $qb->orWhere('e.city = :search')
@@ -153,7 +153,7 @@ class ListingRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)')
-                    ->where('e.publish_listing = 1');
+                    ->where('e.publishListing = 1');
 
         if (!is_null($id)) {
             $qb = $qb->where('e.id = :id')
@@ -344,7 +344,7 @@ class ListingRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('e')
             ->select('count(e)')
-            ->where('e.publish_listing = 1');
+            ->where('e.publishListing = 1');
 
         if (!is_null($agencyId)) {
             $qb = $qb->andWhere('e.agencyId = :agencyId')
