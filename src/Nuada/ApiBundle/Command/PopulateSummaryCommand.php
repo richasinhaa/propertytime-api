@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 namespace Nuada\ApiBundle\Command;
 
@@ -55,7 +55,7 @@ class PopulateSummaryCommand extends ContainerAwareCommand
     {
         $qb = $this->legacyConnection->createQueryBuilder()
             ->select('count(*) as users')
-            ->from('bf_users', 'u')
+            ->from('bf_user', 'u')
             ->where('u.deleted = 0');
 
         $result = $qb->execute();

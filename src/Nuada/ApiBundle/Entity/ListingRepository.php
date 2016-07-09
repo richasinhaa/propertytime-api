@@ -43,7 +43,8 @@ class ListingRepository extends EntityRepository
         	return $this->find($id);
         }
 
-        $qb = $this->createQueryBuilder('e');
+        $qb = $this->createQueryBuilder('e')
+                    ->where('e.publish_listing = 1');
 
         if (!is_null($search)) {
             $qb = $qb->orWhere('e.city = :search')
@@ -151,7 +152,8 @@ class ListingRepository extends EntityRepository
         $furnishing = null, $agentId = null, $fromDate = null, $toDate = null)
     {
         $qb = $this->createQueryBuilder('e')
-                    ->select('count(e)');
+                    ->select('count(e)')
+                    ->where('e.publish_listing = 1');
 
         if (!is_null($id)) {
             $qb = $qb->where('e.id = :id')
@@ -341,7 +343,8 @@ class ListingRepository extends EntityRepository
     public function fetchSoldCount($agencyId=null, $search=null)
     {
         $qb = $this->createQueryBuilder('e')
-            ->select('count(e)');
+            ->select('count(e)')
+            ->where('e.publish_listing = 1');
 
         if (!is_null($agencyId)) {
             $qb = $qb->andWhere('e.agencyId = :agencyId')
@@ -363,4 +366,6 @@ class ListingRepository extends EntityRepository
 
         return $query->getSingleScalarResult();
     }
+
+
 }
