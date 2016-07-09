@@ -55,8 +55,7 @@ class PopulateSummaryCommand extends ContainerAwareCommand
     {
         $qb = $this->legacyConnection->createQueryBuilder()
             ->select('count(*) as users')
-            ->from('bf_user', 'u')
-            ->where('u.deleted = 0');
+            ->from('bf_user', 'u');
 
         $result = $qb->execute();
 
