@@ -160,7 +160,15 @@ class ListingsController extends Controller
         $fromDate = $request->query->get('from', null);
         $toDate = $request->query->get('to', null);
 
-
+        if ($bed) {
+            $bed = explode(',', $bed);
+            $bed = array_filter($bed);
+        }
+        if ($type) {
+            $type = explode(',', $type);
+            $type = array_filter($type);
+        }
+        
         $listingManager = $this->get('nuada_api.listing_manager');
         $propertyCount = $listingManager->getCount(
             $id,
