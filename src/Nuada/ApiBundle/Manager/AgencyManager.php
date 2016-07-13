@@ -281,6 +281,24 @@ class AgencyManager
             $hydratedAgency->setAddress($agency['address']);
             $hydratedAgency->setDescription($agency['description']);
             $hydratedAgency->setScore($agency['score']);
+            $hydratedAgency->setManagerName($agency['manager_name']);
+            $hydratedAgency->setManagerPosition($agency['manager_position']);
+            $hydratedAgency->setAgentsAllowed($agency['agents_allowed']);
+            $hydratedAgency->setPhone($agency['phone']);
+            $hydratedAgency->setPhone2($agency['phone2']);
+            $hydratedAgency->setFax($agency['fax']);
+            $hydratedAgency->setLogo($agency['logo']);
+            $hydratedAgency->setTypeOfFeeds($agency['type_of_feeds']);
+            $hydratedAgency->setPropspaceFeedsUrl($agency['propspace_feeds_url']);
+            $hydratedAgency->setWebsiteUrl($agency['website_url']);
+            $hydratedAgency->setLanguage($agency['language']);
+            $hydratedAgency->setTimezones($agency['timezones']);
+            $hydratedAgency->setFeatureListing($agency['feature_listing']);
+            $hydratedAgency->setOpenHouseListing($agency['open_house_listing']);
+            $hydratedAgency->setOldPublishState($agency['old_publish_state']);
+            $hydratedAgency->setEnable($agency['enable']);
+            $hydratedAgency->setDeleted($agency['deleted']);
+
 
             $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
             $agencyId = $agency['id'];
