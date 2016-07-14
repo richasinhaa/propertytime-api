@@ -43,11 +43,10 @@ class ListingRepository extends EntityRepository
         	return $this->find($id);
         }
 
-        $qb = $this->createQueryBuilder('e')
-                    ->where('e.publishListing = 1');
+        $qb = $this->createQueryBuilder('e');
 
         if (!is_null($search)) {
-            $qb = $qb->orWhere('e.city = :search')
+            $qb = $qb->AndWhere('e.city = :search')
                      ->orWhere('e.community = :search')
                      ->orWhere('e.subCommunity = :search')
                      ->orWhere('e.tower = :search')
@@ -119,6 +118,8 @@ class ListingRepository extends EntityRepository
             $qb->setMaxResults($limit);
         }
 
+        $qb =  $qb->AndWhere('e.publishListing = 1');
+
         $query = $qb->getQuery();
 
 
@@ -152,16 +153,15 @@ class ListingRepository extends EntityRepository
         $furnishing = null, $agentId = null, $fromDate = null, $toDate = null)
     {
         $qb = $this->createQueryBuilder('e')
-                    ->select('count(e)')
-                    ->where('e.publishListing = 1');
+                    ->select('count(e)');
 
         if (!is_null($id)) {
-            $qb = $qb->where('e.id = :id')
+            $qb = $qb->AndWhere('e.id = :id')
                     ->setParameter('id', $id);
         }
 
         if (!is_null($search)) {
-            $qb = $qb->where('e.city = :search')
+            $qb = $qb->AndWhere('e.city = :search')
                      ->orWhere('e.community = :search')
                      ->orWhere('e.subCommunity = :search')
                      ->orWhere('e.tower = :search')
@@ -225,6 +225,8 @@ class ListingRepository extends EntityRepository
             $qb = $qb->andWhere('e.createdOn <= :toDate')
                      ->setParameter('toDate', $toDate);
         }
+
+        $qb =  $qb->AndWhere('e.publishListing = 1');
 
         $query = $qb->getQuery();
 
@@ -343,8 +345,7 @@ class ListingRepository extends EntityRepository
     public function fetchSoldCount($agencyId=null, $search=null)
     {
         $qb = $this->createQueryBuilder('e')
-            ->select('count(e)')
-            ->where('e.publishListing = 1');
+            ->select('count(e)');
 
         if (!is_null($agencyId)) {
             $qb = $qb->andWhere('e.agencyId = :agencyId')
@@ -359,7 +360,9 @@ class ListingRepository extends EntityRepository
                      ->setParameter('search', $search);
         }
 
-        $qb = $qb->andWhere('e.isSold = 1');
+        $qb = $qb->andWhere('e.archived = 1');
+
+        $qb =  $qb->AndWhere('e.publishListing = 1');
 
         $query = $qb->getQuery();
 
