@@ -27,7 +27,8 @@ class LogRepository extends EntityRepository
             $search=null,
             $searchFrom=null,
             $contacted=null,
-            $liked=null)
+            $liked=null,
+            $ip=null)
     {
         $qb = $this->createQueryBuilder('e');
 
@@ -71,6 +72,11 @@ class LogRepository extends EntityRepository
                 ->setParameter('liked', $liked);
         }
 
+        if (!is_null($ip)) {
+            $qb = $qb->andWhere('e.ip = :ip')
+                ->setParameter('ip', $ip);
+        }
+
         if ($offset) {
             $qb->setMaxResults($limit);
             $qb->setFirstResult($offset);
@@ -98,7 +104,8 @@ class LogRepository extends EntityRepository
             $search=null,
             $searchFrom=null,
             $contacted=null,
-            $liked=null)
+            $liked=null,
+            $ip=null)
     {
         $qb = $this->createQueryBuilder('e')
             ->select('count(e)');
@@ -141,6 +148,11 @@ class LogRepository extends EntityRepository
         if (!is_null($liked)) {
             $qb = $qb->andWhere('e.liked = :liked')
                 ->setParameter('liked', $liked);
+        }
+
+        if (!is_null($ip)) {
+            $qb = $qb->andWhere('e.ip = :ip')
+                ->setParameter('ip', $ip);
         }
 
         $query = $qb->getQuery();

@@ -38,7 +38,8 @@ class LogManager
             $search=null,
             $searchFrom=null,
             $contacted=null,
-            $liked=null)
+            $liked=null,
+            $ip=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Log');
 
@@ -55,7 +56,8 @@ class LogManager
             $search,
             $searchFrom,
             $contacted,
-            $liked
+            $liked,
+            $ip
         );
 
         return $logs;
@@ -70,7 +72,8 @@ class LogManager
             $search=null,
             $searchFrom=null,
             $contacted=null,
-            $liked=null)
+            $liked=null,
+            $ip=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Log');
 
@@ -82,7 +85,8 @@ class LogManager
             $search,
             $searchFrom,
             $contacted,
-            $liked);
+            $liked,
+            $ip);
 
         return intval($count);
 
@@ -99,6 +103,7 @@ class LogManager
                 $searchFrom  = $requestParams['search_from'] ? $requestParams['search_from'] : null;
                 $contacted   = $requestParams['contacted'] ? $requestParams['contacted'] : null;
                 $liked       = $requestParams['liked'] ? $requestParams['liked'] : null;
+                $ip          = $requestParams['ip'] ? $requestParams['ip'] : null;
 
                 $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Log');
                 $log = new Log();
@@ -114,6 +119,7 @@ class LogManager
                     $log->setSearchFrom($searchFrom);
                     $log->setContacted($contacted);
                     $log->setLiked($liked);
+                    $log->setIp($ip);
 
                     $em = $this->doctrine->getManager();
                     $em->persist($log);

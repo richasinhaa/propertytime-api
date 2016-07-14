@@ -70,6 +70,13 @@ class Log
     protected $userId;
 
     /**
+     * @var string $ip
+     *
+     * @ORM\Column(name="ip", type="string")
+     */
+    protected $ip;
+
+    /**
      * @var datetime $createdAt
      *
      * @ORM\Column(name="created_at", type="datetime")
@@ -245,5 +252,26 @@ class Log
     public function getUserId()
     {
         return $this->userId;
+    }
+
+    
+    /**
+     * Get ip
+     *
+     * @return string 
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * Set ip
+     *
+     * @param string $ip
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
     }
 }

@@ -24,6 +24,7 @@ class Version20160714102749 extends AbstractMigration
             contacted TINYINT(1) DEFAULT NULL,
             liked TINYINT(1) DEFAULT NULL,
             user_id INTEGER DEFAULT NULL,
+            ip VARCHAR(200) DEFAULT NULL,
             created_at DATETIME NOT NULL,
             INDEX idx_search (search),
             INDEX idx_search_from (search_from),

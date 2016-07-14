@@ -38,6 +38,7 @@ class LogsController extends Controller
         $searchFrom = $request->query->get('search_from', null);
         $contacted = $request->query->get('contacted', null);
         $liked = $request->query->get('liked', null);
+        $ip = $request->query->get('ip', null);
 
         $logManager = $this->get('nuada_api.log_manager');
         $logs = $logManager->load(
@@ -50,7 +51,8 @@ class LogsController extends Controller
             $search,
             $searchFrom,
             $contacted,
-            $liked
+            $liked,
+            $ip
         );
 
         $logCount = $logManager->getCount(
@@ -61,7 +63,8 @@ class LogsController extends Controller
             $search,
             $searchFrom,
             $contacted,
-            $liked);
+            $liked,
+            $ip);
 
         if (null === $logs) {
             $logs = array();
@@ -110,6 +113,7 @@ class LogsController extends Controller
         $searchFrom = $request->query->get('search_from', null);
         $contacted = $request->query->get('contacted', null);
         $liked = $request->query->get('liked', null);
+        $ip = $request->query->get('ip', null);
 
         $logManager = $this->get('nuada_api.log_manager');
 
@@ -121,7 +125,8 @@ class LogsController extends Controller
             $search,
             $searchFrom,
             $contacted,
-            $liked);
+            $liked,
+            $ip);
 
         if (null === $logs) {
             $logs = array();
