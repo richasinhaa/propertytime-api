@@ -151,4 +151,11 @@ services:
         - @doctrine
         - @security.context
         - @validator
+
+      nuada_api.log_manager:
+        class: Nuada\ApiBundle\Manager\LogManager
+        arguments:
+        - @doctrine
+        - @security.context
+        - @validator
         

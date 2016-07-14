@@ -103,5 +103,10 @@ users:
     prefix: /api
     type:  rest
 
+logs:
+    resource: Nuada\ApiBundle\Controller\LogsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
