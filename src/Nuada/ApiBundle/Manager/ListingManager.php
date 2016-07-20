@@ -673,4 +673,20 @@ class ListingManager
         return $count;
     }
 
+    public function fetchAllListingTypes() {
+        $listingType = array();
+        $query = $this->legacyConnection->executeQuery('
+            select DISTINCT listing_type from bf_listing');
+
+        $data = $query->fetchAll();
+
+        if (!is_null($data)) {
+            foreach($data as $datum) {
+                $listingType[] = $datum['listing_type'];
+            }
+        }
+
+        return $listingType;
+    }
+
 }

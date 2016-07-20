@@ -300,4 +300,20 @@ class ListingsController extends Controller
 
         return View::create(array('count' => $listingCount), Codes::HTTP_OK);
     }
+
+    /**
+     * Get all listing types
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function getListingsTypesAction() {
+        $request = $this->get('request');
+
+        $listingManager = $this->get('nuada_api.listing_manager');
+        $listingTypes = $listingManager->fetchAllListingTypes();
+
+        return View::create(array('listing_types' => $listingTypes), Codes::HTTP_OK);
+    }
 }
