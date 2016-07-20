@@ -676,7 +676,7 @@ class ListingManager
     public function fetchAllListingTypes() {
         $listingType = array();
         $query = $this->legacyConnection->executeQuery('
-            select DISTINCT listing_type from bf_listing');
+            select DISTINCT listing_type from bf_listing where listing_type != ""');
 
         $data = $query->fetchAll();
 
