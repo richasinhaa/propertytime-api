@@ -37,7 +37,7 @@ class ListingRepository extends EntityRepository
     public function retrieveAll($id = null, $limit = null, $offset = null, $withDeleted = false, $search = null,
         $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
         $bed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
-        $furnishing = null, $agentId = null, $sortOn = null, $reverse = false)
+        $furnishing = null, $agentId = null, $sortOn = null, $reverse = false, $frequency = null)
     {
     	if (!is_null($id)) {
         	return $this->find($id);
@@ -103,6 +103,11 @@ class ListingRepository extends EntityRepository
                      ->setParameter('agentId', $agentId);
         }
 
+        if (!is_null($frequency)) {
+            $qb = $qb->andWhere('e.frequency = :frequency')
+                     ->setParameter('frequency', $frequency);
+        }
+
         if ($sortOn) {
             $order = $this->getSortCriteria($sortOn, $reverse);
             
@@ -150,7 +155,7 @@ class ListingRepository extends EntityRepository
     public function fetchCount($id = null, $withDeleted = false, $search = null,
         $city = null, $community = null, $category = null, $subcategory = null, $type = null, $agencyId = null, 
         $bed = null, $minPrice = null, $maxPrice = null, $minArea = null, $maxArea = null, 
-        $furnishing = null, $agentId = null, $fromDate = null, $toDate = null)
+        $furnishing = null, $agentId = null, $fromDate = null, $toDate = null, $frequency = null)
     {
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)');
@@ -224,6 +229,10 @@ class ListingRepository extends EntityRepository
         if (!is_null($toDate)) {
             $qb = $qb->andWhere('e.createdOn <= :toDate')
                      ->setParameter('toDate', $toDate);
+        }
+        if (!is_null($frequency)) {
+            $qb = $qb->andWhere('e.frequency = :frequency')
+                     ->setParameter('frequency', $frequency);
         }
 
         $qb =  $qb->AndWhere('e.publishListing = 1');

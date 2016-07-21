@@ -48,6 +48,7 @@ class ListingsController extends Controller
         $furnishing  = !empty($requestParams['furnishing']) ? $requestParams['furnishing'] : null;
         $agentId     = !empty($requestParams['agent_id']) ? $requestParams['agent_id'] : null;
         $sortOn      = !empty($requestParams['sort_on']) ? $requestParams['sort_on'] : null;
+        $frequency   = !empty($requestParams['frequency']) ? $requestParams['frequency'] : null;
 
         if (array_key_exists('with_agencies', $requestParams) && $requestParams['with_agencies'] === false) {
             $withAgencies = false;
@@ -105,7 +106,8 @@ class ListingsController extends Controller
             $sortOn,
             $reverse,
             $withAgencies,
-            $withPhotos);
+            $withPhotos,
+            $frequency);
 
         $propertyCount = $listingManager->getCount(
             $id,
@@ -123,7 +125,10 @@ class ListingsController extends Controller
             $minArea,
             $maxArea,
             $furnishing,
-            $agentId);
+            $agentId,
+            null, //fromdate
+            null, //todate
+            $frequency);
         
         if (null === $properties) {
             $properties = array();
@@ -159,6 +164,7 @@ class ListingsController extends Controller
         $agentId = $request->query->get('agent_id', null);
         $fromDate = $request->query->get('from', null);
         $toDate = $request->query->get('to', null);
+        $frequency = $request->query->get('frequency', null);
 
         if ($bed) {
             $bed = explode(',', $bed);
@@ -188,7 +194,8 @@ class ListingsController extends Controller
             $furnishing,
             $agentId,
             $fromDate,
-            $toDate);
+            $toDate,
+            $frequency);
 
         return View::create(array('count' => $propertyCount), Codes::HTTP_OK);
 

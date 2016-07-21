@@ -60,7 +60,8 @@ class ListingManager
             $sortOn = null,
             $reverse = null,
             $withAgencies=true,
-            $withPhotos=true)
+            $withPhotos=true,
+            $frequency=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
 
@@ -84,7 +85,8 @@ class ListingManager
             $furnishing,
             $agentId,
             $sortOn,
-            $reverse);
+            $reverse,
+            $frequency);
 
 
 
@@ -169,7 +171,8 @@ class ListingManager
             $furnishing = null,
             $agentId = null,
             $fromDate = null,
-            $toDate = null) {
+            $toDate = null,
+            $frequency=null) {
 
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
         
@@ -191,7 +194,8 @@ class ListingManager
             $furnishing,
             $agentId,
             $fromDate,
-            $toDate);
+            $toDate,
+            $frequency);
 
         return intval($count);
 
