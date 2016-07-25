@@ -231,7 +231,16 @@ class ListingRepository extends EntityRepository
                      ->setParameter('toDate', $toDate);
         }
         if (!is_null($frequency)) {
-            $qb = $qb->andWhere('e.frequency = :frequency')
+
+            if ($frequency === 'yearly') {
+                $frequency = array('yearly', 'per year');
+            } else if ($frequency === 'monthly') {
+                $frequency = array('per month');
+            } else  {
+                $frequency = array($frequency);
+            }
+
+            $qb = $qb->andWhere('e.frequency in (:frequency)')
                      ->setParameter('frequency', $frequency);
         }
 
