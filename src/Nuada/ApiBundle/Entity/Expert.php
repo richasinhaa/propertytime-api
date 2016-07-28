@@ -28,13 +28,6 @@ class Expert
     protected $name;
 
     /**
-     * @var string $profile
-     *
-     * @ORM\Column(name="profile", type="string")
-     */
-    protected $profile;
-
-    /**
      * @var text $description
      *
      * @ORM\Column(name="description", type="text")
@@ -104,6 +97,57 @@ class Expert
      */
     protected $deleted;
 
+    /**
+     * @var string $relevantExperience
+     *
+     * @ORM\Column(name="relevent_exp", type="float")
+     */
+    protected $relevantExperience;
+
+    /**
+     * @var string $into
+     *
+     * @ORM\Column(name="intro", type="string")
+     */
+    protected $intro;
+
+    /**
+     * @var string $facebook
+     *
+     * @ORM\Column(name="facebook", type="string")
+     */
+    protected $facebook;
+
+    /**
+     * @var string $twitter
+     *
+     * @ORM\Column(name="twitter", type="string")
+     */
+    protected $twitter;
+
+    /**
+     * @var string $google
+     *
+     * @ORM\Column(name="google", type="string")
+     */
+    protected $google;
+
+    /**
+     * @var string $linkedin
+     *
+     * @ORM\Column(name="linkedin", type="string")
+     */
+    protected $linkedin;
+
+    /**
+     * @var string $jobTitle
+     *
+     * @ORM\Column(name="job_title", type="string")
+     */
+    protected $jobTitle;
+
+
+
 
     /**
      * Get id
@@ -136,26 +180,6 @@ class Expert
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set profile
-     *
-     * @param string $profile
-     */
-    public function setProfile($profile)
-    {
-        $this->profile = $profile;
-    }
-
-    /**
-     * Get profile
-     *
-     * @return string 
-     */
-    public function getProfile()
-    {
-        return $this->profile;
     }
 
     /**
@@ -359,6 +383,146 @@ class Expert
     }
 
     /**
+     * Set relevantExperience
+     *
+     * @param string $relevantExperience
+     */
+    public function setRelevantExperience($relevantExperience)
+    {
+        $this->relevantExperience = $relevantExperience;
+    }
+
+    /**
+     * Get relevantExperience
+     *
+     * @return string 
+     */
+    public function getRelevantExperience()
+    {
+        return $this->relevantExperience;
+    }
+
+    /**
+     * Set jobTitle
+     *
+     * @param string $jobTitle
+     */
+    public function setJobTitle($jobTitle)
+    {
+        $this->jobTitle = $jobTitle;
+    }
+
+    /**
+     * Get jobTitle
+     *
+     * @return string 
+     */
+    public function getJobTitle()
+    {
+        return $this->jobTitle;
+    }
+
+    /**
+     * Set intro
+     *
+     * @param string $intro
+     */
+    public function setIntro($intro)
+    {
+        $this->intro = $intro;
+    }
+
+    /**
+     * Get intro
+     *
+     * @return string 
+     */
+    public function getIntro()
+    {
+        return $this->intro;
+    }
+
+    /**
+     * Set facebook
+     *
+     * @param string $facebook
+     */
+    public function setFacebook($facebook)
+    {
+        $this->facebook = $facebook;
+    }
+
+    /**
+     * Get facebook
+     *
+     * @return string 
+     */
+    public function getFacebook()
+    {
+        return $this->facebook;
+    }
+
+    /**
+     * Set twitter
+     *
+     * @param string $twitter
+     */
+    public function setTwitter($twitter)
+    {
+        $this->twitter = $twitter;
+    }
+
+    /**
+     * Get twitter
+     *
+     * @return string 
+     */
+    public function getTwitter()
+    {
+        return $this->twitter;
+    }
+
+    /**
+     * Set google
+     *
+     * @param string $google
+     */
+    public function setGoogle($google)
+    {
+        $this->google = $google;
+    }
+
+    /**
+     * Get google
+     *
+     * @return string 
+     */
+    public function getGoogle()
+    {
+        return $this->google;
+    }
+
+    /**
+     * Set linkedin
+     *
+     * @param string $linkedin
+     */
+    public function setLinkedin($linkedin)
+    {
+        $this->linkedin = $linkedin;
+    }
+
+    /**
+     * Get linkedin
+     *
+     * @return string 
+     */
+    public function getLinkedin()
+    {
+        return $this->linkedin;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -368,7 +532,6 @@ class Expert
         $data = array(
             'id'           => $this->getId(),
             'name'         => $this->getName(),
-            'profile'      => $this->getProfile(),
             'description'  => $this->getDescription(),
             'image_path'   => $this->getImagePath(),
             'phone'        => $this->getPhone(),
@@ -378,7 +541,14 @@ class Expert
             'country'      => $this->getCountry(),
             'expertise'    => $this->getExpertise(),
             'created_at'   => $this->getCreatedAt(),
-            'deleted'      => $this->getDeleted()
+            'deleted'      => $this->getDeleted(),
+            'relevant_experience' => $this->getRelevantExperience(),
+            'job_title'           => $this->getJobTitle(),
+            'one_liner_intro'     => $this->getIntro(),
+            'facebook'            => $this->getFacebook(),
+            'twitter'             => $this->getTwitter(),
+            'google'              => $this->getGoogle(),
+            'linkedin'            => $this->getLinkedin()
         );
 
         return $data;
