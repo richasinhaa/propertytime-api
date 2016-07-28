@@ -41,6 +41,7 @@ class AgenciesController extends Controller
         $withAgents = strtolower($request->get('with_agents', 'false')) == 'true';
         $search = $request->query->get('search', null);
         $searchForLocation = $request->query->get('search_for_location', null);
+        $rank = $request->query->get('rank', null);
 
         if ($search == '') {
             $search = null;
@@ -62,7 +63,8 @@ class AgenciesController extends Controller
             $reverse,
             $withPhotos,
             $withAgents,
-            $searchForLocation);
+            $searchForLocation,
+            $rank);
 
         $agencyCount = $agencyManager->getCount(
             $id,
@@ -71,7 +73,8 @@ class AgenciesController extends Controller
             $name,
             $userId,
             $userName,
-            $searchForLocation);
+            $searchForLocation,
+            $rank);
 
         if (null === $agencies) {
             $agencies = array();

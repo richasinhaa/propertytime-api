@@ -319,6 +319,13 @@ class Agency
      */
     protected $score;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="rank", type="string")
+     */
+    protected $rank;
+
 
     /**
      * Get id
@@ -1281,6 +1288,26 @@ class Agency
     }
 
     /**
+     * Set rank
+     *
+     * @param string $rank
+     */
+    public function setRank($rank)
+    {
+        $this->rank = $rank;
+    }
+
+    /**
+     * Get rank
+     *
+     * @return string
+     */
+    public function getRank()
+    {
+        return $this->rank;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1330,7 +1357,8 @@ class Agency
             'facebook_url'           => $this->getFaceboolUrl(),
             'instagram_url'          => $this->getInstagramUrl(),
             'twitter_url'            => $this->getTwitterUrl(),
-            'twitter_snippet'        => $this->getTwitterSnippet()
+            'twitter_snippet'        => $this->getTwitterSnippet(),
+            'rank'                   => $this->getRank()
         );
 
         if (!empty($listings)) {

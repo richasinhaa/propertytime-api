@@ -36,7 +36,8 @@ class AgencyRepository extends EntityRepository
             $userId = null,
             $userName = null,
             $sortOn = null,
-            $reverse = false)
+            $reverse = false,
+            $rank = null)
     {
         if (!is_null($id)) {
             return $this->find($id);
@@ -61,6 +62,11 @@ class AgencyRepository extends EntityRepository
         if (!is_null($userName)) {
             $qb = $qb->andWhere('e.userName = :userName')
                      ->setParameter('userName', $userName);
+        }
+
+        if (!is_null($rank)) {
+            $qb = $qb->andWhere('e.rank = :rank')
+                     ->setParameter('rank', $rank);
         }
 
         if ($sortOn) {
@@ -121,7 +127,8 @@ class AgencyRepository extends EntityRepository
         $search=null,
         $name = null,
         $userId = null,
-        $userName = null)
+        $userName = null,
+        $rank = null)
     {
         $qb = $this->createQueryBuilder('e')
                     ->select('count(e)');
@@ -148,6 +155,11 @@ class AgencyRepository extends EntityRepository
         if (!is_null($userName)) {
             $qb = $qb->andWhere('e.userName = :userName')
                 ->setParameter('userName', $userName);
+        }
+
+        if (!is_null($rank)) {
+            $qb = $qb->andWhere('e.rank = :rank')
+                     ->setParameter('rank', $rank);
         }
 
         $query = $qb->getQuery();

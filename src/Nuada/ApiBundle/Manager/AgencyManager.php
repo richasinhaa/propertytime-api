@@ -48,7 +48,8 @@ class AgencyManager
             $reverse = false,
             $withPhotos=true,
             $withAgents=false,
-            $searchForLocation=null)
+            $searchForLocation=null,
+            $rank=null)
     {
         $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
 
@@ -74,7 +75,8 @@ class AgencyManager
                 $userId,
                 $userName,
                 $sortOn,
-                $reverse);
+                $reverse,
+                $rank);
         }
 
 
@@ -201,7 +203,8 @@ class AgencyManager
                          $name = null,
                          $userId = null,
                          $userName = null,
-                         $searchForLocation=null)
+                         $searchForLocation=null,
+                         $rank=null)
     {
         if ($search) {
             $count = $this->findAgenciesCount($search);
@@ -218,7 +221,8 @@ class AgencyManager
                 $search,
                 $name,
                 $userId,
-                $userName);
+                $userName,
+                $rank);
         }
 
         return intval($count);
@@ -298,6 +302,7 @@ class AgencyManager
             $hydratedAgency->setOldPublishState($agency['old_publish_state']);
             $hydratedAgency->setEnable($agency['enable']);
             $hydratedAgency->setDeleted($agency['deleted']);
+            $hydratedAgency->setRank($agency['rank']);
 
 
             $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
@@ -457,6 +462,7 @@ class AgencyManager
                                         ? $requestParams['old_publish_state'] : null;
                 $enable              = !empty($requestParams['enable']) ? $requestParams['enable'] : false;
                 $score               = !empty($requestParams['score']) ? $requestParams['score'] : null;
+                $rank               = !empty($requestParams['rank']) ? $requestParams['rank'] : null;
 
                 if (is_null($name) 
                     || is_null($managerName)
@@ -514,6 +520,7 @@ class AgencyManager
                     $agency->setPhone($phone);
                     $agency->setPhone2($phone2);
                     $agency->setScore($score);
+                    $agency->setRank($rank);
 
                     $em = $this->doctrine->getManager();
                     $em->persist($agency);
@@ -588,6 +595,7 @@ class AgencyManager
                                         ? $requestParams['old_publish_state'] : null;
                 $enable              = !empty($requestParams['enable']) ? $requestParams['enable'] : null;
                 $score               = !empty($requestParams['score']) ? $requestParams['score'] : null;
+                $rank                = !empty($requestParams['rank']) ? $requestParams['rank'] : null;
 
 
                 $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
@@ -683,6 +691,9 @@ class AgencyManager
                     }
                     if (!is_null($score)) {
                         $agency->setScore($score);
+                    }
+                    if (!is_null($rank)) {
+                        $agency->setRank($rank);
                     }
 
 
