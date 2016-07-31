@@ -69,6 +69,8 @@ class AgencyRepository extends EntityRepository
                      ->setParameter('rank', $rank);
         }
 
+        $qb = $qb->andWhere('e.enable = 1');
+
         if ($sortOn) {
             $order = $this->getSortCriteria($sortOn, $reverse);
             
@@ -161,6 +163,8 @@ class AgencyRepository extends EntityRepository
             $qb = $qb->andWhere('e.rank = :rank')
                      ->setParameter('rank', $rank);
         }
+
+        $qb = $qb->andWhere('e.enable = 1');
 
         $query = $qb->getQuery();
 
