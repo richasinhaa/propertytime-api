@@ -13,6 +13,11 @@ agencies:
     prefix: /api
     type:  rest
 
+contactagencies:
+    resource: Nuada\ApiBundle\Controller\ContactAgenciesController
+    prefix: /api
+    type:  rest
+
 locations:
     resource: Nuada\ApiBundle\Controller\LocationsController
     prefix: /api
