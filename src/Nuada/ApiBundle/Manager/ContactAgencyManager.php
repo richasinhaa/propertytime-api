@@ -173,7 +173,7 @@ class ContactAgencyManager
         $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 
         // Additional headers
-        $headers .= 'From: propertytime.ae <b admin@propertytime.ae>' . "\r\n";
+        $headers .= 'From: propertytime.ae <admin@propertytime.ae>' . "\r\n";
 
         // Mail it
         mail($to, $subject, $message, $headers);
