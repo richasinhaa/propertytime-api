@@ -14,7 +14,7 @@ class ContactAgencyManager
 {
     protected $doctrine;
     protected $securityContext;
-    protected $photoManager;
+    protected $agencyManager;
     protected $legacyConnection;
 
     const LIMIT = 25;
@@ -22,11 +22,13 @@ class ContactAgencyManager
 
     public function __construct(Doctrine $doctrine,
                                 SecurityContextInterface $securityContext,
-                                ValidatorInterface $validator)
+                                ValidatorInterface $validator,
+                                AgencyManager $agencyManager)
     {
         $this->doctrine = $doctrine;
         $this->securityContext = $securityContext;
         $this->validator = $validator;
+        $this->agencyManager = $agencyManager;
     }
 
     public function contact($requestParams = null)
@@ -55,6 +57,13 @@ class ContactAgencyManager
 
                 try {
                     $conn->beginTransaction();
+                    $agency = $this->agencyManager->load($agencyId);
+                    if (!$agency) {
+                         throw new BadAttributeException('Agency with id '. $agencyId. ' cannot be found');
+                    }
+                    $agencyEmail = $agency->getEmail();
+                    $agencyName = $agency->getName();
+
                     $contactAgency->setCreatedOn(new \DateTime('now'));
                     $contactAgency->setModifiedOn(new \DateTime('now'));
                     $contactAgency->setDeleted(false);
@@ -70,6 +79,11 @@ class ContactAgencyManager
                     $em->persist($contactAgency);
                     $em->flush();
                     $conn->commit();
+                    try {
+                        $this->sendMail($name, $email, $phone, $agencyEmail, $agencyName);
+                    } catch (Exception $e) {
+                        return true;
+                    }
 
                     return true;
                 } catch (\Exception $e) {
@@ -117,6 +131,52 @@ class ContactAgencyManager
 
         return $contactAgencies;
 
+    }
+
+    public function sendMail($name, $email, $phone, $to, $agencyName) 
+    {$to = 'richa.sinha0603@gmail.com';
+        $subject = 'Lead Generated From Propertytime';
+
+        // message
+        $message = '
+        <html>
+        <head>
+          <title>Lead Generated From Propertytime</title>
+        </head>
+        <body>
+          <p>New Lead Generated for <b>';
+          $message = $message . $agencyName;
+          $message = $message . '</b> </p>
+          <table>
+            <tr>
+              <td>Name : </td><td>';
+              $message = $message . $name;
+              $message = $message . '</td>
+            </tr>
+            <tr>
+              <td>Email : </td><td>';
+              $message = $message . $email;
+              $message = $message . '</td>
+            </tr>
+            <tr>
+              <td>Contact Number : </td><td>';
+              $message = $message . $phone;
+              $message = $message . '</td>
+            </tr>
+          </table>
+        </body>
+        </html>
+        '; 
+
+        // To send HTML mail, the Content-type header must be set
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+        // Additional headers
+        $headers .= 'From: propertytime.ae <b admin@propertytime.ae>' . "\r\n";
+
+        // Mail it
+        mail($to, $subject, $message, $headers);
     }
 
 }
