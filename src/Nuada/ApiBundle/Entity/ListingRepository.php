@@ -116,12 +116,12 @@ class ListingRepository extends EntityRepository
             $order1['column'] = 'createdOn';
             $order1['direction'] = 'DESC';
             
-            $qb->orderBy('e.'.$order1['column'], $order1['direction']);
+            $qb->addOrderBy('e.'.$order1['column'], $order1['direction']);
 
             $order2['column'] = 'buildYear';
             $order2['direction'] = 'DESC';
 
-            $qb->orderBy('e.'.$order2['column'], $order2['direction']);
+            $qb->addOrderBy('e.'.$order2['column'], $order2['direction']);
         }
         
         if ($offset) {
