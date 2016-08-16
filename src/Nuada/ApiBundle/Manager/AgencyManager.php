@@ -242,6 +242,7 @@ class AgencyManager
                 ON an.agency_id = a.id
                 LEFT JOIN nl_neighbourhood n
                 ON an.neighbourhood_id = n.id
+                where a.enable = 1
                 group by a.id
                 order by a.score DESC',
                 array("$neighbourhood"));
@@ -253,6 +254,7 @@ class AgencyManager
                 LEFT JOIN nl_neighbourhood n
                 ON an.neighbourhood_id = n.id
                 where n.name = ?
+                and a.enable = 1
                 group by a.id
                 order by a.score DESC',
                 array("$neighbourhood"));
