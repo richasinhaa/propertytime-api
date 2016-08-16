@@ -113,6 +113,11 @@ class ListingRepository extends EntityRepository
             
             $qb->orderBy('e.'.$order['column'], $order['direction']);
         } else {
+            $order0['column'] = 'sqft';
+            $order0['direction'] = 'DESC';
+            
+            $qb->addOrderBy('e.'.$order0['column'], $order0['direction']);
+
             $order1['column'] = 'createdOn';
             $order1['direction'] = 'DESC';
             
