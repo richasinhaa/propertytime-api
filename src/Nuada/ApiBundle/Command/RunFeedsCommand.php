@@ -31,7 +31,7 @@ class RunFeedsCommand extends ContainerAwareCommand
         $totalCompanies = $this->fetchTotalCompanies();
 
         if ($totalCompanies) {
-            echo '=============Starting sync for '. $totalCompanies. ' companies ================';
+            echo "=============Starting sync for '. $totalCompanies. ' companies ================"."<br>";
             for ($i=0; $i < $totalCompanies; $i++) {
                 try {
                     $ch = curl_init(); 
@@ -48,8 +48,10 @@ class RunFeedsCommand extends ContainerAwareCommand
                 } catch(Exception $e) {
                     var_dump($e);die;
                 }
-                echo '============================Sync Completed=====================================';
             }
+
+            echo "<br>";
+            echo "============================Sync Completed=====================================";
         }
     }
 
