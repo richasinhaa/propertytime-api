@@ -3,7 +3,7 @@ parameters:
     database_driver: pdo_mysql
     database_host: 127.0.0.1
     database_port: null
-    database_name: propertytime
+    database_name: property
     database_user: root
     database_password: root
     mailer_transport: gmail
@@ -12,3 +12,4 @@ parameters:
     mailer_password: Nuada123!
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
+    feeds_url: 'http://beta.feeds.propertytime.ae/cron_task'
