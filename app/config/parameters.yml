@@ -12,4 +12,4 @@ parameters:
     mailer_password: Nuada123!
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
-    feeds_url: 'http://beta.feeds.propertytime.ae/cron_task'
+    feeds_url: 'http://feeds.propertytime.ae/cron_task'
