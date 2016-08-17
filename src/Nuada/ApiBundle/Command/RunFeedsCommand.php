@@ -31,16 +31,24 @@ class RunFeedsCommand extends ContainerAwareCommand
         $totalCompanies = $this->fetchTotalCompanies();
 
         if ($totalCompanies) {
+            echo '=============Starting sync for '. $totalCompanies. ' companies ================';
             for ($i=0; $i < $totalCompanies; $i++) {
                 try {
                     $ch = curl_init(); 
                     curl_setopt($ch, CURLOPT_URL, $this->feedsUrl);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-                    $output = curl_exec($ch);
+                    $result = curl_exec($ch);
+                    
+                    if (!$result || $result == '' || empty($result)) {
+                        $result = 'FAILED';
+                    }
+
+                    echo '   '. $result;
                     curl_close($ch);
                 } catch(Exception $e) {
                     var_dump($e);die;
                 }
+                echo '============================Sync Completed=====================================';
             }
         }
     }
