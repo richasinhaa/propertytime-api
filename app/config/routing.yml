@@ -113,5 +113,10 @@ logs:
     prefix: /api
     type:  rest
 
+mixpanels:
+    resource: Nuada\ApiBundle\Controller\MixpanelsController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"

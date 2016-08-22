@@ -3,7 +3,7 @@ parameters:
     database_driver: pdo_mysql
     database_host: 127.0.0.1
     database_port: null
-    database_name: propertytime
+    database_name: property
     database_user: root
     database_password: root
     mailer_transport: gmail
@@ -13,3 +13,4 @@ parameters:
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
     feeds_url: 'http://feeds.propertytime.ae/cron_task'
+    mixpanel_api_secret: 'b0919b3aed703bb84862096969e72cb9'
