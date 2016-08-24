@@ -1212,7 +1212,7 @@ class Agency
      *
      * @param string $facebookUrl
      */
-    public function setFaceboolUrl($facebookUrl)
+    public function setFacebookUrl($facebookUrl)
     {
         $this->facebookUrl = $facebookUrl;
     }
@@ -1222,7 +1222,7 @@ class Agency
      *
      * @return string 
      */
-    public function getFaceboolUrl()
+    public function getFacebookUrl()
     {
         return $this->facebookUrl;
     }

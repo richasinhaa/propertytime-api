@@ -548,7 +548,7 @@ class Agent
      *
      * @param string $facebookUrl
      */
-    public function setFaceboolUrl($facebookUrl)
+    public function setFacebookUrl($facebookUrl)
     {
         $this->facebookUrl = $facebookUrl;
     }
@@ -558,7 +558,7 @@ class Agent
      *
      * @return string 
      */
-    public function getFaceboolUrl()
+    public function getFacebookUrl()
     {
         return $this->facebookUrl;
     }

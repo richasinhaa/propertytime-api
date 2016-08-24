@@ -305,6 +305,11 @@ class AgencyManager
             $hydratedAgency->setEnable($agency['enable']);
             $hydratedAgency->setDeleted($agency['deleted']);
             $hydratedAgency->setRank($agency['rank']);
+            $hydratedAgency->setFacebookUrl($agency['facebook_url']);
+            $hydratedAgency->setTwitterUrl($agency['twitter_url']);
+            $hydratedAgency->setInstagramUrl('instagram_url');
+            $hydratedAgency->setTwitterSnippet('twitter_snippet');
+
 
 
             $listingRepo = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Listing');
@@ -465,6 +470,13 @@ class AgencyManager
                 $enable              = !empty($requestParams['enable']) ? $requestParams['enable'] : false;
                 $score               = !empty($requestParams['score']) ? $requestParams['score'] : null;
                 $rank               = !empty($requestParams['rank']) ? $requestParams['rank'] : null;
+                $facebookUrl        = !empty($requestParams['facebook_url']) 
+                                        ? $requestParams['facebook_url'] : null;
+                $instagramUrl       = !empty($requestParams['instagram_url']) 
+                                        ? $requestParams['instagram_url'] : null;
+                $twitterUrl         = !empty($requestParams['twitter_url']) ? $requestParams['twitter_url'] : null;
+                $twitterSnippet     = !empty($requestParams['twitter_snippet']) 
+                                        ? $requestParams['twitter_snippet'] : null;
 
                 if (is_null($name) 
                     || is_null($managerName)
@@ -523,6 +535,11 @@ class AgencyManager
                     $agency->setPhone2($phone2);
                     $agency->setScore($score);
                     $agency->setRank($rank);
+                    $agency->setFacebookUrl($facebookUrl);
+                    $agency->setTwitterUrl($twitterUrl);
+                    $agency->setInstagramUrl($instagramUrl);
+                    $agency->setTwitterSnippet($twitterSnippet);
+                    $agency->setFax($fax);
 
                     $em = $this->doctrine->getManager();
                     $em->persist($agency);
@@ -598,6 +615,13 @@ class AgencyManager
                 $enable              = !empty($requestParams['enable']) ? $requestParams['enable'] : null;
                 $score               = !empty($requestParams['score']) ? $requestParams['score'] : null;
                 $rank                = !empty($requestParams['rank']) ? $requestParams['rank'] : null;
+                $facebookUrl        = !empty($requestParams['facebook_url']) 
+                                        ? $requestParams['facebook_url'] : null;
+                $instagramUrl       = !empty($requestParams['instagram_url']) 
+                                        ? $requestParams['instagram_url'] : null;
+                $twitterUrl         = !empty($requestParams['twitter_url']) ? $requestParams['twitter_url'] : null;
+                $twitterSnippet     = !empty($requestParams['twitter_snippet']) 
+                                        ? $requestParams['twitter_snippet'] : null;
 
 
                 $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
@@ -696,6 +720,18 @@ class AgencyManager
                     }
                     if (!is_null($rank)) {
                         $agency->setRank($rank);
+                    }
+                    if (!is_null($facebookUrl)) {
+                        $agency->setFacebookUrl($facebookUrl);
+                    }
+                    if (!is_null($twitterUrl)) {
+                        $agency->setTwitterUrl($twitterUrl);
+                    }
+                    if (!is_null($instagramUrl)) {
+                        $agency->setInstagramUrl($instagramUrl);
+                    }
+                    if (!is_null($twitterSnippet)) {
+                        $agency->setTwitterSnippet($twitterSnippet);
                     }
 
 

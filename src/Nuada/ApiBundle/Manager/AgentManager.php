@@ -98,6 +98,13 @@ class AgentManager
                                         ? $requestParams['auto_created'] : null;
                 $enable              = !empty($requestParams['enable']) 
                                         ? $requestParams['enable'] : false;
+                $facebookUrl        = !empty($requestParams['facebook_url']) 
+                                        ? $requestParams['facebook_url'] : null;
+                $instagramUrl       = !empty($requestParams['instagram_url']) 
+                                        ? $requestParams['instagram_url'] : null;
+                $twitterUrl         = !empty($requestParams['twitter_url']) ? $requestParams['twitter_url'] : null;
+                $twitterSnippet     = !empty($requestParams['twitter_snippet']) 
+                                        ? $requestParams['twitter_snippet'] : null;
 
                 if (is_null($name) 
                     || is_null($agencyId)
@@ -127,6 +134,10 @@ class AgentManager
                     $agent->setAutoCreated($autoCreated);
                     $agent->setPhone($phone);
                     $agent->setEmail($email);
+                    $agent->setFacebookUrl($facebookUrl);
+                    $agent->setTwitterUrl($twitterUrl);
+                    $agent->setInstagramUrl($instagramUrl);
+                    $agent->setTwitterSnippet($twitterSnippet);
 
                     $em = $this->doctrine->getManager();
                     $em->persist($agent);
@@ -171,6 +182,13 @@ class AgentManager
                                         ? $requestParams['auto_created'] : null;
                 $enable              = !empty($requestParams['enable']) 
                                         ? $requestParams['enable'] : null;
+                $facebookUrl        = !empty($requestParams['facebook_url']) 
+                                        ? $requestParams['facebook_url'] : null;
+                $instagramUrl       = !empty($requestParams['instagram_url']) 
+                                        ? $requestParams['instagram_url'] : null;
+                $twitterUrl         = !empty($requestParams['twitter_url']) ? $requestParams['twitter_url'] : null;
+                $twitterSnippet     = !empty($requestParams['twitter_snippet']) 
+                                        ? $requestParams['twitter_snippet'] : null;
 
 
                 $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agent');
@@ -212,6 +230,18 @@ class AgentManager
                     }
                     if (!is_null($email)) {
                         $agent->setEmail($email);
+                    }
+                    if (!is_null($facebookUrl)) {
+                        $agent->setFacebookUrl($facebookUrl);
+                    }
+                    if (!is_null($twitterUrl)) {
+                        $agent->setTwitterUrl($twitterUrl);
+                    }
+                    if (!is_null($instagramUrl)) {
+                        $agent->setInstagramUrl($instagramUrl);
+                    }
+                    if (!is_null($twitterSnippet)) {
+                        $agent->setTwitterSnippet($twitterSnippet);
                     }
 
                     $em = $this->doctrine->getManager();
