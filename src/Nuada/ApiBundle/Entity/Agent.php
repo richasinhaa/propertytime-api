@@ -70,7 +70,7 @@ class Agent
     /**
      * @var string $photo
      *
-     * @ORM\Column(name="photo", type="string")
+     * @ORM\Column(name="photo", type="text")
      */
     protected $photo;
 
