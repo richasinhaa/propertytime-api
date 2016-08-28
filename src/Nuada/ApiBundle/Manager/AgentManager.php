@@ -109,9 +109,8 @@ class AgentManager
                 if (is_null($name) 
                     || is_null($agencyId)
                     || is_null($email)
-                    || is_null($userId) 
                     || is_null($phone)) {
-                    throw new BadAttributeException('Request has null value for name or agency_id or email or user_id or phone');
+                    throw new BadAttributeException('Request has null value for name or agency_id or email or phone');
                 }
 
                 $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agent');
