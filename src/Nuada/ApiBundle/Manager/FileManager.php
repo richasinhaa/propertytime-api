@@ -56,7 +56,7 @@ class FileManager extends FileBag
             $document->setType($type);
             $document->setCreatedOn(new \DateTime());
             $document->setDeleted(false);
-            var_dump($document);die;
+            
             $em = $this->doctrine->getManager();
             $result = $document->upload();
             $em->persist($document);
