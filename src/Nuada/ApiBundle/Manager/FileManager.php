@@ -46,12 +46,13 @@ class FileManager extends FileBag
             $document = new Document();
             if (is_null($fileType)) {
                 $document->setUploadDirectory($this->container->get('kernel')->getRootDir() .'/uploads/document');
-            } elseif ($fileType == 'Agent') {
-                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/uploads/agents');
             } elseif ($fileType == 'Agency') {
                 $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/uploads/agency');
+            } elseif ($fileType == 'Agent') {
+                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/uploads/agents');
             } else {
                 return null;
+            }
                 
             $document->setFile($file->get('files'));
             $document->setName($fileName);
@@ -64,8 +65,6 @@ class FileManager extends FileBag
             $result = $document->upload();
             $em->persist($document);
             $em->flush();
-            }
-            }
         } catch (Exception $e) {
             throw $e;
         }
