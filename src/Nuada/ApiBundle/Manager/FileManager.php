@@ -47,9 +47,9 @@ class FileManager extends FileBag
             if (is_null($fileType)) {
                 $document->setUploadDirectory($this->container->get('kernel')->getRootDir() .'/uploads/document');
             } elseif ($fileType == 'Agency') {
-                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/uploads/agency');
+                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/landingpage/uploads/agency');
             } elseif ($fileType == 'Agent') {
-                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/uploads/agents');
+                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/landingpage/uploads/agents');
             } else {
                 return null;
             }
