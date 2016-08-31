@@ -35,7 +35,7 @@ class FileManager extends FileBag
         $this->container = $container;
     }
 
-    public function add($file = null)
+    public function add($file = null, $fileType=null)
     {
         try {
             $uploadedFile = $file->get('files');
@@ -44,14 +44,19 @@ class FileManager extends FileBag
             $size = $uploadedFile->getClientSize();
 
             $document = new Document();
-            $document->setUploadDirectory($this->container->get('kernel')->getRootDir() .'/uploads/document');
+            if (is_null($fileType)) {
+                $document->setUploadDirectory($this->container->get('kernel')->getRootDir() .'/uploads/document');
+            } else {
+                $document->setUploadDirectory('/home/ubuntu/propertyonlineui/POCs/uploads');
+            }
+                
             $document->setFile($file->get('files'));
             $document->setName($fileName);
             $document->setSize($size);
             $document->setType($type);
             $document->setCreatedOn(new \DateTime());
             $document->setDeleted(false);
-
+            var_dump($document);die;
             $em = $this->doctrine->getManager();
             $result = $document->upload();
             $em->persist($document);

@@ -27,9 +27,11 @@ class FilesController extends Controller
     {
         $requestParams = $this->getRequest()->request->all();
         $file = $this->getRequest()->files;
+        //type = Agent; for saving agent photos
+        $type = !empty($requestParams['type']) ? $requestParams['type'] : null; 
         $fileManager = $this->get('nuada_api.file_manager');
         try {
-            $response = $fileManager->add($file);
+            $response = $fileManager->add($file, $type);
         } catch (BadAttributeException $e) {
             return View::create($e->getMessage(), Codes::HTTP_BAD_REQUEST);
         }
