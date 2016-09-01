@@ -64,4 +64,29 @@ class UsersController extends Controller
 
         return View::create(array('message' => $message, 'user' => $user), Codes::HTTP_OK);
     }
+
+    /**
+     * Get user
+     *
+     * @Method({"GET"})
+     *
+     * @return array
+     */
+    public function postUsersAction()
+    {
+        $request = $this->getRequest()->request->all();
+
+        $userManager = $this->get('nuada_api.user_manager');
+
+        $user = $userManager->addUser($request);
+
+        if (is_null($user)) {
+            $message = 'failed';
+            return View::create(array('message' => $message, 'user' => $user), Codes::HTTP_BAD_REQUEST);
+        } else {
+            $message = 'success';
+        }
+
+        return View::create(array('message' => $message, 'user' => $user), Codes::HTTP_OK);
+    }
 }
