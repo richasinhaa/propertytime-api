@@ -130,7 +130,7 @@ class UserManager
                 $user->setPassword($password);
                 $user->setLocked(0);
                 $user->setExpired(0);
-                $user->setRoles('a:1:{i:0;s:9:"ROLE_USER";}');
+                //$user->setRoles('a:1:{i:0;s:9:"ROLE_USER";}');
                 $user->setCredentialsExpired(0);
                 $user->setName($name);
                 $user->setPhone($phone);

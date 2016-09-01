@@ -58,56 +58,6 @@ class User extends BaseUser
     protected $userType;
 
 
-    /**
-     * @var string $phone
-     *
-     * @ORM\Column(name="phone", type="string")
-     */
-    protected $phone;
-
-     /**
-     * @var string $salt
-     *
-     * @ORM\Column(name="salt", type="string")
-     */
-    protected $salt;	
-
-    /**
-     * @var string $password
-     *
-     * @ORM\Column(name="password", type="string")
-     */
-    protected $password;   
-
-    /**
-     * @var boolean $locked
-     *
-     * @ORM\Column(name="locked", type="string")
-     */
-    protected $locked; 
-
-    /**
-     * @var boolean $expired
-     *
-     * @ORM\Column(name="expired", type="string")
-     */
-    protected $locked;   
-
-    /**
-     * @var string $roles
-     *
-     * @ORM\Column(name="roles", type="string")
-     */
-    protected $roles;  
-
-    /**
-     * @var boolean $credentialsExpired
-     *
-     * @ORM\Column(name="credentials_expired", type="string")
-     */
-    protected $credentialsExpired; 
-
-
     public function __construct()
     {
         parent::__construct();
@@ -223,16 +173,6 @@ class User extends BaseUser
     public function setExpired($expired)
     {
         $this->expired = $expired;
-    }
-
-     /**
-     * Set roles
-     *
-     * @param string $roles
-     */
-    public function setRoles($roles)
-    {
-        $this->roles = $roles;
     }
 
      /**
