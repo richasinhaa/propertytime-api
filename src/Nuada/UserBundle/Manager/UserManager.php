@@ -95,8 +95,8 @@ class UserManager
 
     public function addUser($requestParams = null)
     {
-        $salt = 'x';
-        $password = 'y';
+        $salt = '6np7lp1i79ss8k0swo00ccs8o4g8gow';
+        $password = '$2$13$6np7lp1i79ss8k0swo00cOotwXlTxI12bSOqVvcxLc5eJL0QNRAFS';
         try {
             if (!empty($requestParams)) {
                 $emailId = !empty($requestParams['email']) ? $requestParams['email'] : null;
