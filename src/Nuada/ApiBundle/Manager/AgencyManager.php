@@ -307,8 +307,10 @@ class AgencyManager
             $hydratedAgency->setRank($agency['rank']);
             $hydratedAgency->setFacebookUrl($agency['facebook_url']);
             $hydratedAgency->setTwitterUrl($agency['twitter_url']);
-            $hydratedAgency->setInstagramUrl('instagram_url');
-            $hydratedAgency->setTwitterSnippet('twitter_snippet');
+            $hydratedAgency->setInstagramUrl($agency['instagram_url']);
+            $hydratedAgency->setTwitterSnippet($agency['twitter_snippet']);
+            $hydratedAgency->setManagerPhoto($agency['manager_photo']);
+            $hydratedAgency->setCoverPhoto($agency['cover_photo']);
 
 
 
@@ -477,6 +479,10 @@ class AgencyManager
                 $twitterUrl         = !empty($requestParams['twitter_url']) ? $requestParams['twitter_url'] : null;
                 $twitterSnippet     = !empty($requestParams['twitter_snippet']) 
                                         ? $requestParams['twitter_snippet'] : null;
+                $managerPhoto     = !empty($requestParams['manager_photo']) 
+                                        ? $requestParams['manager_photo'] : null;
+                $coverPhoto     = !empty($requestParams['cover_photo']) 
+                                        ? $requestParams['cover_photo'] : null;
 
                 if (is_null($name) 
                     || is_null($managerName)
@@ -540,6 +546,8 @@ class AgencyManager
                     $agency->setInstagramUrl($instagramUrl);
                     $agency->setTwitterSnippet($twitterSnippet);
                     $agency->setFax($fax);
+                    $agency->setManagerPhoto($managerPhoto);
+                    $agency->setCoverPhoto($coverPhoto);
 
                     $em = $this->doctrine->getManager();
                     $em->persist($agency);
@@ -622,6 +630,10 @@ class AgencyManager
                 $twitterUrl         = !empty($requestParams['twitter_url']) ? $requestParams['twitter_url'] : null;
                 $twitterSnippet     = !empty($requestParams['twitter_snippet']) 
                                         ? $requestParams['twitter_snippet'] : null;
+                $managerPhoto     = !empty($requestParams['manager_photo']) 
+                                        ? $requestParams['manager_photo'] : null;
+                $coverPhoto     = !empty($requestParams['cover_photo']) 
+                                        ? $requestParams['cover_photo'] : null;
 
 
                 $er = $this->doctrine->getManager()->getRepository('NuadaApiBundle:Agency');
@@ -732,6 +744,12 @@ class AgencyManager
                     }
                     if (!is_null($twitterSnippet)) {
                         $agency->setTwitterSnippet($twitterSnippet);
+                    }
+                    if (!is_null($managerPhoto)) {
+                        $agency->setManagerPhoto($managerPhoto);
+                    }
+                    if (!is_null($coverPhoto)) {
+                        $agency->setCoverPhoto($coverPhoto);
                     }
 
 

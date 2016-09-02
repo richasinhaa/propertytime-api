@@ -326,6 +326,20 @@ class Agency
      */
     protected $rank;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="manager_photo", type="string")
+     */
+    protected $managerPhoto;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cover_photo", type="string")
+     */
+    protected $coverPhoto;
+
 
     /**
      * Get id
@@ -1308,6 +1322,46 @@ class Agency
     }
 
     /**
+     * Set managerPhoto
+     *
+     * @param string $managerPhoto
+     */
+    public function setManagerPhoto($managerPhoto)
+    {
+        $this->managerPhoto = $managerPhoto;
+    }
+
+    /**
+     * Get managerPhoto
+     *
+     * @return string
+     */
+    public function getManagerPhoto()
+    {
+        return $this->managerPhoto;
+    }
+
+    /**
+     * Set coverPhoto
+     *
+     * @param string $coverPhoto
+     */
+    public function setCoverPhoto($coverPhoto)
+    {
+        $this->coverPhoto = $coverPhoto;
+    }
+
+    /**
+     * Get coverPhoto
+     *
+     * @return string
+     */
+    public function getCoverPhoto()
+    {
+        return $this->coverPhoto;
+    }
+
+    /**
      * Serialise
      *
      * @return array
@@ -1358,7 +1412,9 @@ class Agency
             'instagram_url'          => $this->getInstagramUrl(),
             'twitter_url'            => $this->getTwitterUrl(),
             'twitter_snippet'        => $this->getTwitterSnippet(),
-            'rank'                   => $this->getRank()
+            'rank'                   => $this->getRank(),
+            'manager_photo'          => $this->getManagerPhoto(),
+            'cover_photo'            => $this->getCoverPhoto(),
         );
 
         if (!empty($listings)) {
