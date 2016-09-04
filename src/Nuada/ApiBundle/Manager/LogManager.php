@@ -60,7 +60,14 @@ class LogManager
             $ip
         );
 
-        return $logs;
+        $output = array();
+        foreach( $logs as $log ){
+            $date = $log->getCreatedAt();
+            $date = $date->format('m/d/Y');
+           $output[date('y', strtotime($date))][date('m', strtotime($date))][] = $log;
+        }
+
+        return $output;
 
     }
 
