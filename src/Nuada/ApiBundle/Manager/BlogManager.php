@@ -228,6 +228,7 @@ class BlogManager
             select * from nl_blogs
             where type = ?
             and visible = 1
+            order by created_at desc
             limit $limit
             ", array($blogType['type']));
 
@@ -236,12 +237,11 @@ class BlogManager
                 $blog = $this->hydrate($datum);
                 $blogs[] = $blog;
             }
-            
-            
         }
         
         return $blogs;
-    }
+    } 
+    
 
     public function hydrate($blogArray) {
         $blog = new Blog();
