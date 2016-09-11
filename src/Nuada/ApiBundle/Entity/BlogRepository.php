@@ -80,6 +80,7 @@ class BlogRepository extends EntityRepository
         if ($limit && !$offset) {
             $qb->setMaxResults($limit);
         }
+        $qb = $qb->orderBy('e.createdAt', 'desc');
 
         $query = $qb->getQuery();
 
