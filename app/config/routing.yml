@@ -118,5 +118,10 @@ mixpanels:
     prefix: /api
     type:  rest
 
+authenticateusers:
+    resource: Nuada\UserBundle\Controller\AuthenticateUsersController
+    prefix: /api
+    type:  rest
+
 _user_bundle:
     resource: "@UserBundle/Resources/config/routing.yml"
