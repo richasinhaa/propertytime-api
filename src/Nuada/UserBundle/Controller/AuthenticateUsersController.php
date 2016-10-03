@@ -42,7 +42,7 @@ class AuthenticateUsersController extends Controller
             $salt = $user->getSalt();
 
             if($encoder->isPasswordValid($user->getPassword(), $password, $salt)) {
-                return View::create(array('message' => 'Authenticated', 'email' => $user->getUsername()), Codes::HTTP_OK);
+                return View::create(array('message' => 'Authenticated', 'email' => $user->getUsername(), 'name' => $user->getName(), 'user_id' => $user->getId()), Codes::HTTP_OK);
             } else {
                 return View::create(array('message' => 'Username or Password not valid.'), Codes::HTTP_UNAUTHORIZED);
             }
