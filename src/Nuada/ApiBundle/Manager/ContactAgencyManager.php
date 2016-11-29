@@ -189,7 +189,7 @@ class ContactAgencyManager
 
         // Additional headers
         $headers .= 'From: propertytime.ae <admin@propertytime.ae>' . "\r\n";
-        $headers .= 'Cc: info@propertytime.ae' . "\r\n";
+        $headers .= 'Cc: admin@propertytime.ae' . "\r\n";
 
         // Mail it
         mail($to, $subject, $message, $headers);
@@ -237,7 +237,7 @@ class ContactAgencyManager
 
         // Additional headers
         $headers .= 'From: propertytime.ae <admin@propertytime.ae>' . "\r\n";
-        $headers .= 'Cc: info@propertytime.ae' . "\r\n";
+        $headers .= 'Cc: admin@propertytime.ae' . "\r\n";
 
         // Mail it
         mail($to, $subject, $message, $headers);
