@@ -193,7 +193,8 @@ class ContactAgencyManager
     }
 
     public function sendLeadMail($name, $email, $phone, $to, $agencyName) 
-    {$to = 'richa.sinha0603@gmail.com';
+    {
+        $to = 'admin@nuadalabs.com';
         $subject = 'Lead Generated From Propertytime';
 
         // message
