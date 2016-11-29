@@ -145,13 +145,13 @@ class ContactAgencyManager
     public function sendQueryMail($name, $email, $phone, $enquiry) 
     {
         $to = 'admin@nuadalabs.com';
-        $subject = 'Lead Generated From Propertytime';
+        $subject = 'New Query From Propertytime Website Contact Form';
 
         // message
         $message = '
         <html>
         <head>
-          <title>New Query From Propertytime Website Contact Form</title>
+          <title>New Query Received!</title>
         </head>
         <body>
          <table>
