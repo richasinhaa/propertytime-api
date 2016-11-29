@@ -56,7 +56,10 @@ class ContactAgencyManager
 
                 try {
                     $conn->beginTransaction();
-                    $agency = $this->agencyManager->load($agencyId);
+                    $agency = null;
+                    if (!is_null($agencyId)) {
+                        $agency = $this->agencyManager->load($agencyId);
+                    }
                     /*if (!$agency) {
                          throw new BadAttributeException('Agency with id '. $agencyId. ' cannot be found');
                     }*/
