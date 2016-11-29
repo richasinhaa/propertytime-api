@@ -44,12 +44,11 @@ class ContactAgencyManager
                 $keepInformed = !empty($requestParams['keep_informed']) ? $requestParams['keep_informed'] : false;
 
                 if (is_null($name) 
-                    || is_null($agencyId) 
                     || is_null($phone)
                     || is_null($email) 
                     || is_null($customerType)
                     || is_null($enquiry)) {
-                    throw new BadAttributeException('Agency Id or Name or phone or email or customer type or enquiry empty');
+                    throw new BadAttributeException('Name or phone or email or customer type or enquiry empty');
                 }
 
                 $contactAgency = new ContactAgency();
@@ -58,11 +57,17 @@ class ContactAgencyManager
                 try {
                     $conn->beginTransaction();
                     $agency = $this->agencyManager->load($agencyId);
-                    if (!$agency) {
+                    /*if (!$agency) {
                          throw new BadAttributeException('Agency with id '. $agencyId. ' cannot be found');
+                    }*/
+
+                    $agencyEmail = null;
+                    $agencyName = null;
+
+                    if ($agency) {
+                        $agencyEmail = $agency->getEmail();
+                        $agencyName = $agency->getName();
                     }
-                    $agencyEmail = $agency->getEmail();
-                    $agencyName = $agency->getName();
 
                     $contactAgency->setCreatedOn(new \DateTime('now'));
                     $contactAgency->setModifiedOn(new \DateTime('now'));
@@ -80,7 +85,11 @@ class ContactAgencyManager
                     $em->flush();
                     $conn->commit();
                     try {
-                        $this->sendMail($name, $email, $phone, $agencyEmail, $agencyName);
+                        if ($agencyName && $agencyEmail) {
+                            $this->sendLeadMail($name, $email, $phone, $agencyEmail, $agencyName);
+                        } else {
+                            $this->sendQueryMail($name, $email, $phone, $enquiry);
+                        }
                     } catch (Exception $e) {
                         return true;
                     }
@@ -133,7 +142,57 @@ class ContactAgencyManager
 
     }
 
-    public function sendMail($name, $email, $phone, $to, $agencyName) 
+    public function sendQueryMail($name, $email, $phone, $enquiry) 
+    {
+        $to = 'admin@nuadalabs.com';
+        $subject = 'Lead Generated From Propertytime';
+
+        // message
+        $message = '
+        <html>
+        <head>
+          <title>New Query From Propertytime Website Contact Form</title>
+        </head>
+        <body>
+         <table>
+            <tr>
+              <td>Name : </td><td>';
+              $message = $message . $name;
+              $message = $message . '</td>
+            </tr>
+            <tr>
+              <td>Email : </td><td>';
+              $message = $message . $email;
+              $message = $message . '</td>
+            </tr>
+            <tr>
+              <td>Contact Number : </td><td>';
+              $message = $message . $phone;
+              $message = $message . '</td>
+            </tr>
+            <tr>
+              <td>Message : </td><td>';
+              $message = $message . $enquiry;
+              $message = $message . '</td>
+            </tr>
+          </table>
+        </body>
+        </html>
+        '; 
+
+        // To send HTML mail, the Content-type header must be set
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+        // Additional headers
+        $headers .= 'From: propertytime.ae <admin@propertytime.ae>' . "\r\n";
+        $headers .= 'Cc: info@propertytime.ae' . "\r\n";
+
+        // Mail it
+        mail($to, $subject, $message, $headers);
+    }
+
+    public function sendLeadMail($name, $email, $phone, $to, $agencyName) 
     {$to = 'richa.sinha0603@gmail.com';
         $subject = 'Lead Generated From Propertytime';
 
