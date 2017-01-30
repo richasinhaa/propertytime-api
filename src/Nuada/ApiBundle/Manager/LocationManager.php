@@ -106,6 +106,9 @@ class LocationManager
                 where name != '0'
                 and name is not null
                 and name != ''
+                and enable = 1
+                and deleted = 0
+                and publish = 1
                 order by name"
             );
 
